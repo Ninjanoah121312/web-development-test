@@ -51,7 +51,7 @@
   <div id="death-screen">
     <div class="death-content">
       <h1>YOU DIED</h1>
-      <p>Click to Respawn</p>
+      <p>Click/Space to Respawn</p>
     </div>
   </div>
 
@@ -264,6 +264,16 @@
       isDead = false;
       resetGame();
     });
+    document.addEventListener("keydown", e => {
+      if (!isDead) return;
+    
+      if (e.key === " " || e.code === "Space") {
+        deathScreen.classList.remove("active");
+        isDead = false;
+        resetGame();
+      }
+    });
+
 
     // ============================================
     // GAME FUNCTIONS
@@ -713,4 +723,5 @@
 
 </body>
 </html>
+
 
