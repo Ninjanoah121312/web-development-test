@@ -77,8 +77,10 @@
     
     // LAVA HASTIGHED KONFIGURATION
     const LAVA_START_SPEED = 0.10;              // Start hastighed for lava
-    const LAVA_SPEED_INCREASE_RATE = 0.0055;    // Hvor hurtigt lava hastigheden stiger over tid (lavere = langsommere stigning)
+    const LAVA_SPEED_INCREASE_RATE = 0.0085;    // Hvor hurtigt lava hastigheden stiger over tid (lavere = langsommere stigning)
     const LAVA_HEIGHT_BOOST_FACTOR = 0.05;      // Hvor meget højde påvirker lava speed
+    const LAVA_MAX_SPEED = 1.75; // <-- set whatever max speed you want
+
     
     // PLATFORM AFSTAND KONFIGURATION (i pixels)
     const PLATFORM_DISTANCE_X_MIN = 120;        // Minimum horizontal afstand til næste platform
@@ -522,21 +524,21 @@
           const moveSpeed = parseFloat(p.dataset.moveSpeed);
           let dir = parseFloat(p.dataset.moveDir);
           let px = parseFloat(p.style.left) + moveSpeed * dir;
-          
+
           const originalLeft = parseFloat(p.dataset.originalLeft);
           const moveRange = parseFloat(p.dataset.moveRange);
-          
+
           if(px < originalLeft - moveRange || px > originalLeft + moveRange){
             dir *= -1;
             p.dataset.moveDir = String(dir);
             px = Math.max(originalLeft - moveRange, Math.min(px, originalLeft + moveRange));
           }
-          
+
           if(px <= LEFT_WALL || px + p.offsetWidth >= RIGHT_WALL){
             dir *= -1;
             p.dataset.moveDir = String(dir);
           }
-          
+
           p.style.left = px + "px";
         }
 
@@ -553,7 +555,7 @@
         }
       });
 
-      // Collision detection
+      // COLLISION - nu korrekt
       for(let i = 0; i < platforms.length; i++){
         const p = platforms[i];
         const px = parseFloat(p.style.left);
@@ -561,24 +563,39 @@
         const pw = p.offsetWidth;
         const type = p.dataset.type;
 
+        // Ignore disappearing blue platforms
         if(type === "blue" && p.dataset.disappearing === "true") continue;
 
+        // Horisontal overlap
         if(x + PLAYER_SIZE > px && x < px + pw){
+          // -------------------
+          // White platforms - semi-solid
+          // -------------------
+          if(type === "white"){
+            if(oldY + PLAYER_SIZE <= py && y + PLAYER_SIZE >= py){
+              velY = 0;
+              y = py - PLAYER_SIZE;
+              grounded = true;
+              jumpsLeft = 2;
+            }
+            continue; // hop videre til næste platform
+          }
+
+          // -------------------
+          // Normal platforms - solid ovenfra og nedenfra
+          // -------------------
           if(oldY + PLAYER_SIZE <= py && y + PLAYER_SIZE >= py){
-            if(type=="red"){
+            if(type === "red"){
               playKillBrickSound();
               die(false);
               return;
             }
-            else if(type=="blue") {
+            else if(type === "blue"){
               onBluePlatform = true;
-              
               if(p.dataset.blueTimer == "0"){
                 p.dataset.blueTimer = String(now);
               }
-              
               const elapsed = (now - parseFloat(p.dataset.blueTimer)) / 1000;
-              
               if(elapsed >= 1.0){
                 p.dataset.disappearing = "true";
                 p.dataset.respawnTime = String(now + 5000);
@@ -592,7 +609,7 @@
                 jumpsLeft = 2;
               }
             }
-            else {
+            else { // green & orange
               velY = 0;
               y = py - PLAYER_SIZE;
               grounded = true;
@@ -600,8 +617,11 @@
             }
           }
           else if(oldY >= py + 18 && y < py + 18 && velY < 0){
-            velY = 0;
-            y = py + 18;
+            // Solid ovenfra: stop opad collision for alle typer undtagen white (white ignoreres her)
+            if(type !== "white") {
+              velY = 0;
+              y = py + 18;
+            }
           }
         }
       }
@@ -612,7 +632,7 @@
 
       // Walking sound logic
       const isMovingHorizontally = (keys["a"] || keys["A"] || keys["ArrowLeft"] || keys["d"] || keys["D"] || keys["ArrowRight"]) && grounded;
-      
+
       if(isMovingHorizontally && !isWalking) {
         isWalking = true;
         playWalkingSound();
@@ -627,42 +647,36 @@
         return;
       }
 
-      // PERFEKT CENTRERET KAMERA - holder spilleren PRÆCIS i midten af skærmen
+      // Kamera - centrer spiller
       const targetY = (window.innerHeight - PLAYER_SIZE) / 2;
       const offset = targetY - y;
-      
-      // Flyt alle platforme med offset
+
       platforms.forEach(p => {
         p.style.top = (parseFloat(p.style.top) + offset) + "px";
       });
-      
-      // Flyt lava med offset
+
       lavaY += offset;
       lavaEl.style.top = lavaY + "px";
-      
-      // Flyt lowestPlatformY reference
+
       lowestPlatformY += offset;
-      
-      // Flyt startingY reference
       startingY += offset;
-      
-      // Sæt spilleren til eksakt centrum
       y = targetY;
 
-      // Calculate height from starting position
       currentHeight = Math.max(0, startingY - y);
       maxHeight = Math.max(maxHeight, currentHeight);
 
-      // Lava speed med konfigurerbar stigning
       const heightBoost = Math.min(currentHeight / 100000, 1.5);
-      lavaSpeed = LAVA_START_SPEED + globalDifficulty * LAVA_SPEED_INCREASE_RATE + heightBoost * LAVA_HEIGHT_BOOST_FACTOR;
+      
+
+      lavaSpeed = Math.min(
+        LAVA_START_SPEED + globalDifficulty * LAVA_SPEED_INCREASE_RATE + heightBoost * LAVA_HEIGHT_BOOST_FACTOR,
+        LAVA_MAX_SPEED
+      );
       lavaY -= lavaSpeed;
       lavaEl.style.top = lavaY + "px";
 
-      // Update lava ambient sound based on visibility and distance
       updateLavaSound();
 
-      // Background color transition
       const heightProgress = Math.min(currentHeight / 15000, 1);
       const r = Math.floor(2 + heightProgress * 18);
       const g = Math.floor(6 + heightProgress * 4);
@@ -677,7 +691,6 @@
       curEl.textContent = `NU: ${Math.floor(currentHeight/10)}`;
       maxEl.textContent = `TOP: ${Math.floor(maxHeight/10)}`;
 
-      // Cleanup and generation
       recyclePlatforms();
       generatePlatforms();
 
@@ -686,6 +699,9 @@
 
       animationId = requestAnimationFrame(update);
     }
+
+
+
 
     // Initialize volumes and start game
     initializeVolumes();
