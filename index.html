@@ -2,7 +2,7 @@
 <html lang="da">
 <head>
   <meta charset="UTF-8">
-  <title>Infinite Obby</title>
+  <title>BLOCK JUMP</title>
   <link rel="stylesheet" href="test.css">
 </head>
 <body>
@@ -15,12 +15,12 @@
   <audio id="lava-sound" src="lava.mp3" preload="auto" loop></audio>
 
   <div id="hud">
-    <span id="current">NU: 0</span>
-    <span id="max">TOP: 0</span>
+    <span id="current">HØJDE: 0</span>
+    <span id="max">TOP HØJDE: 0</span>
   </div>
 
   <div id="hp-display">Double Jump = true</div>
-  <div id="pause-hint">Tryk P for pause</div>
+  <div id="pause-hint">Tryk ESC for pause</div>
 
   <div id="lava"></div>
   <div id="player"></div>
@@ -36,12 +36,13 @@
       <div class="help-section" id="help-menu">
         <h3>HELP</h3>
         <p>🟢 <strong>Grøn:</strong> Sikker platform</p>
-        <p>🔴 <strong>Rød:</strong> Dør ved berøring</p>
+        <p>🔴 <strong>Rød:</strong> Dør ved at lande på den</p>
         <p>🔵 <strong>Blå:</strong> Forsvinder efter 1 sekund</p>
         <p>🟠 <strong>Orange:</strong> Bevæger sig</p>
-        <p>⚪ <strong>Hvid:</strong> Transparent platform</p>
-        <p><strong>Controls:</strong> A/D/← → bevægelse, SPACE/W/↑ hop</p>
-        <p><strong>Undgå lavaen!</strong></p>
+        <p>⚪ <strong>Hvid/grålig:</strong> platform man kan hoppe igennem og lande på</p>
+        <p><strong>Controls:</strong> W/A/D/SPACE og Piltaster kan bruges + man har double jump</p>
+        <p><strong>Undgå Lavaen!</strong></p>
+        <p><strong>ESC to pause</strong></p>
         <button class="menu-btn" id="back-btn">BACK</button>
       </div>
     </div>
@@ -77,21 +78,22 @@
     
     // LAVA HASTIGHED KONFIGURATION
     const LAVA_START_SPEED = 0.10;              // Start hastighed for lava
-    const LAVA_SPEED_INCREASE_RATE = 0.0085;    // Hvor hurtigt lava hastigheden stiger over tid (lavere = langsommere stigning)
+    const LAVA_SPEED_INCREASE_RATE = 0.09;    // Hvor hurtigt lava hastigheden stiger over tid (lavere = langsommere stigning)
     const LAVA_HEIGHT_BOOST_FACTOR = 0.05;      // Hvor meget højde påvirker lava speed
-    const LAVA_MAX_SPEED = 1.75; // <-- set whatever max speed you want
+    const LAVA_MAX_SPEED = 2.25
+  ; // <-- set whatever max speed you want
 
     
     // PLATFORM AFSTAND KONFIGURATION (i pixels)
-    const PLATFORM_DISTANCE_X_MIN = 120;        // Minimum horizontal afstand til næste platform
+    const PLATFORM_DISTANCE_X_MIN = 389;        // Minimum horizontal afstand til næste platform
     const PLATFORM_DISTANCE_X_MAX = 400;        // Maximum horizontal afstand til næste platform
-    const PLATFORM_DISTANCE_Y_MIN = 80;         // Minimum vertikal afstand til næste platform
-    const PLATFORM_DISTANCE_Y_MAX = 120;        // Maximum vertikal afstand til næste platform
+    const PLATFORM_DISTANCE_Y_MIN = 120;         // Minimum vertikal afstand til næste platform
+    const PLATFORM_DISTANCE_Y_MAX = 200;        // Maximum vertikal afstand til næste platform
     
     // PLATFORM KONFIGURATION
     const PLATFORM_WIDTH = 250;                 // Bredde på alle platforme
-    const PLATFORM_MOVE_SPEED = 1.2;            // Hastighed for bevægende platforme
-    const PLATFORM_MOVE_RANGE = 150;            // Hvor langt platforme bevæger sig
+    const PLATFORM_MOVE_SPEED = 1.5;            // Hastighed for bevægende platforme
+    const PLATFORM_MOVE_RANGE = 300;            // Hvor langt platforme bevæger sig
     
     // ============================================
     // GAME ELEMENTS
@@ -224,9 +226,10 @@
     document.addEventListener("keydown", e=>{
       if(isDead) return;
       keys[e.key]=true;
-      if(e.key === "p" || e.key === "P"){
+      if(e.key === "p" || e.key === "P" || e.key === "Escape") {
         togglePause();
       }
+      
     });
     
     document.addEventListener("keyup", e=>{
