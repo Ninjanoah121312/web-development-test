@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <title>BLOCK JUMP</title>
+  <link rel="stylesheet" href="test.css">
+</head>
+<body>
+
+  <audio id="respawn-sound" src="respawn.mp3" preload="auto"></audio>
+  <audio id="lava-die-sound" src="lava_die.mp3" preload="auto"></audio>
+  <audio id="jump-sound" src="jump.mp3" preload="auto"></audio>
+  <audio id="walking-sound" src="walking.mp3" preload="auto" loop></audio>
+  <audio id="kill-brick-sound" src="kill_brick.mp3" preload="auto"></audio>
+  <audio id="lava-sound" src="lava.mp3" preload="auto" loop></audio>
+
+  <div id="hud">
+    <span id="current">HØJDE: 0</span>
+    <span id="max">TOP HØJDE: 0</span>
+  </div>
+
+  <div id="hp-display">Double Jump = true</div>
+  <div id="pause-hint">Tryk ESC for pause</div>
+
+  <div id="lava"></div>
+  <div id="player"></div>
+
+  <div id="pause-menu">
+    <div class="menu-content">
+      <h2 id="pause-title">PAUSED</h2>
+      <div class="menu-buttons" id="main-menu">
+        <button class="menu-btn" id="continue-btn">CONTINUE</button>
+        <button class="menu-btn" id="help-btn">HELP</button>
+        <button class="menu-btn restart" id="restart-btn">RESTART</button>
+      </div>
+      <div class="help-section" id="help-menu">
+        <h3>HELP</h3>
+        <p>🟢 <strong>Grøn:</strong> Sikker platform</p>
+        <p>🔴 <strong>Rød:</strong> Dør ved at lande på den</p>
+        <p>🔵 <strong>Blå:</strong> Forsvinder efter 1 sekund</p>
+        <p>🟠 <strong>Orange:</strong> Bevæger sig</p>
+        <p>⚪ <strong>Hvid/grålig:</strong> platform man kan hoppe igennem og lande på</p>
+        <p><strong>Controls:</strong> W/A/D/SPACE og Piltaster kan bruges + man har double jump</p>
+        <p><strong>Undgå Lavaen!</strong></p>
+        <p><strong>ESC to pause</strong></p>
+        <button class="menu-btn" id="back-btn">BACK</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="death-screen">
+    <div class="death-content">
+      <h1>YOU DIED</h1>
+      <p>Click to Respawn</p>
+    </div>
+  </div>
+
+  <script>
+    // ============================================
+    // KONFIGURATION - JUSTER HER
+    // ============================================
+    
+    // SOUND VOLUME KONFIGURATION (0.0 til 1.0)
+    const VOLUME_RESPAWN = 0.7;
+    const VOLUME_LAVA_DIE = 0.6;
+    const VOLUME_JUMP = 0.4;
+    const VOLUME_WALKING = 0.7;
+    const VOLUME_KILL_BRICK = 0.8;
+    const VOLUME_LAVA = 0.4;                    // Volume for lava ambient sound
+    
+    // SOUND START TIME KONFIGURATION (i sekunder)
+    const START_TIME_RESPAWN = 0;               // Hvor mange sekunder inde i lyden skal respawn starte
+    const START_TIME_LAVA_DIE = 0.1;              // Hvor mange sekunder inde i lyden skal lava_die starte
+    const START_TIME_JUMP = 0;                  // Hvor mange sekunder inde i lyden skal jump starte
+    const START_TIME_WALKING = 0;               // Hvor mange sekunder inde i lyden skal walking starte
+    const START_TIME_KILL_BRICK = 0.5;            // Hvor mange sekunder inde i lyden skal kill_brick starte
+    const START_TIME_LAVA = 0;                  // Hvor mange sekunder inde i lyden skal lava starte
+    
+    // LAVA HASTIGHED KONFIGURATION
+    const LAVA_START_SPEED = 0.10;              // Start hastighed for lava
+    const LAVA_SPEED_INCREASE_RATE = 0.08;    // Hvor hurtigt lava hastigheden stiger over tid (lavere = langsommere stigning)
+    const LAVA_HEIGHT_BOOST_FACTOR = 0.05;      // Hvor meget højde påvirker lava speed
+    const LAVA_MAX_SPEED = 2.25
+  ; // <-- set whatever max speed you want
+
+    
+    // PLATFORM AFSTAND KONFIGURATION (i pixels)
+    const PLATFORM_DISTANCE_X_MIN = 389;        // Minimum horizontal afstand til næste platform
+    const PLATFORM_DISTANCE_X_MAX = 400;        // Maximum horizontal afstand til næste platform
+    const PLATFORM_DISTANCE_Y_MIN = 120;         // Minimum vertikal afstand til næste platform
+    const PLATFORM_DISTANCE_Y_MAX = 200;        // Maximum vertikal afstand til næste platform
+    
+    // PLATFORM KONFIGURATION
+    const PLATFORM_WIDTH = 250;                 // Bredde på alle platforme
+    const PLATFORM_MOVE_SPEED = 1.7;            // Hastighed for bevægende platforme
+    const PLATFORM_MOVE_RANGE = 250;            // Hvor langt platforme bevæger sig
+    
+    // ============================================
+    // GAME ELEMENTS
+    // ============================================
+    const player = document.getElementById("player");
+    const curEl = document.getElementById("current");
+    const maxEl = document.getElementById("max");
+    const lavaEl = document.getElementById("lava");
+    const pauseMenu = document.getElementById("pause-menu");
+    const continueBtn = document.getElementById("continue-btn");
+    const restartBtn = document.getElementById("restart-btn");
+    const helpBtn = document.getElementById("help-btn");
+    const backBtn = document.getElementById("back-btn");
+    const deathScreen = document.getElementById("death-screen");
+    const mainMenu = document.getElementById("main-menu");
+    const helpMenu = document.getElementById("help-menu");
+    const pauseTitle = document.getElementById("pause-title");
+    
+    // AUDIO ELEMENTS
+    const respawnSound = document.getElementById("respawn-sound");
+    const lavaDieSound = document.getElementById("lava-die-sound");
+    const jumpSound = document.getElementById("jump-sound");
+    const walkingSound = document.getElementById("walking-sound");
+    const killBrickSound = document.getElementById("kill-brick-sound");
+    const lavaSound = document.getElementById("lava-sound");
+
+    const PLAYER_SIZE = 40;
+    
+    let x, y, velY, jumpsLeft, lowestPlatformY;
+    let currentHeight, globalDifficulty, lavaY, lavaSpeed;
+    let maxHeight = parseInt(localStorage.getItem('obbyTopHeight') || '0');
+    let startingY = 0;
+    let paused = false;
+    let isDead = false;
+    let animationId = null;
+    let wasOnBluePlatform = false;
+    let isWalking = false;
+    let diedFromLava = false;
+    let lavaInView = false;
+
+    const gravity = 0.9;
+    const jumpPower = 16;
+    const speed = 6;
+    const keys = {};
+
+    let platforms = [];
+    let platformPool = [];
+
+    const LEFT_WALL = 0;
+    const RIGHT_WALL = window.innerWidth;
+
+    // ============================================
+    // AUDIO FUNCTIONS
+    // ============================================
+    function initializeVolumes() {
+      respawnSound.volume = VOLUME_RESPAWN;
+      lavaDieSound.volume = VOLUME_LAVA_DIE;
+      jumpSound.volume = VOLUME_JUMP;
+      walkingSound.volume = VOLUME_WALKING;
+      killBrickSound.volume = VOLUME_KILL_BRICK;
+      lavaSound.volume = VOLUME_LAVA;
+    }
+
+    function playRespawnSound() {
+      respawnSound.currentTime = START_TIME_RESPAWN;
+      respawnSound.play().catch(err => console.log("Audio play failed:", err));
+    }
+
+    function playLavaDieSound() {
+      lavaDieSound.currentTime = START_TIME_LAVA_DIE;
+      lavaDieSound.play().catch(err => console.log("Audio play failed:", err));
+    }
+
+    function playJumpSound() {
+      jumpSound.currentTime = START_TIME_JUMP;
+      jumpSound.play().catch(err => console.log("Audio play failed:", err));
+    }
+
+    function playWalkingSound() {
+      if (walkingSound.paused) {
+        walkingSound.currentTime = START_TIME_WALKING;
+        walkingSound.play().catch(err => console.log("Audio play failed:", err));
+      }
+    }
+
+    function stopWalkingSound() {
+      walkingSound.pause();
+      walkingSound.currentTime = START_TIME_WALKING;
+    }
+
+    function playKillBrickSound() {
+      killBrickSound.currentTime = START_TIME_KILL_BRICK;
+      killBrickSound.play().catch(err => console.log("Audio play failed:", err));
+    }
+
+    function updateLavaSound() {
+      // Check if lava is visible on screen
+      const isLavaVisible = lavaY < window.innerHeight;
+      
+      if (isLavaVisible && !lavaInView) {
+        // Lava just entered view
+        lavaInView = true;
+        lavaSound.currentTime = START_TIME_LAVA;
+        lavaSound.play().catch(err => console.log("Audio play failed:", err));
+      } else if (!isLavaVisible && lavaInView) {
+        // Lava just left view
+        lavaInView = false;
+        lavaSound.pause();
+        lavaSound.currentTime = START_TIME_LAVA;
+      }
+      
+      // Adjust volume based on distance to lava (closer = louder)
+      if (isLavaVisible) {
+        const distanceToLava = lavaY - (y + PLAYER_SIZE);
+        const maxDistance = window.innerHeight;
+        const volumeMultiplier = Math.max(0, Math.min(1, 1 - (distanceToLava / maxDistance)));
+        lavaSound.volume = VOLUME_LAVA * volumeMultiplier;
+      }
+    }
+
+    function stopLavaSound() {
+      lavaSound.pause();
+      lavaSound.currentTime = START_TIME_LAVA;
+      lavaInView = false;
+    }
+
+    // ============================================
+    // EVENT LISTENERS
+    // ============================================
+    document.addEventListener("keydown", e=>{
+      if(isDead) return;
+      keys[e.key]=true;
+      if(e.key === "Escape" || e.key === "Escape" || e.key === "Escape") {
+        togglePause();
+      }
+      
+    });
+    
+    document.addEventListener("keyup", e=>{
+      keys[e.key]=false;
+    });
+
+    continueBtn.addEventListener("click", togglePause);
+    
+    helpBtn.addEventListener("click", () => {
+      mainMenu.style.display = "none";
+      helpMenu.style.display = "block";
+      pauseTitle.textContent = "HELP";
+    });
+    
+    backBtn.addEventListener("click", () => {
+      helpMenu.style.display = "none";
+      mainMenu.style.display = "block";
+      pauseTitle.textContent = "PAUSED";
+    });
+    
+    restartBtn.addEventListener("click", () => {
+      pauseMenu.classList.remove("active");
+      helpMenu.style.display = "none";
+      mainMenu.style.display = "block";
+      pauseTitle.textContent = "PAUSED";
+      localStorage.setItem('obbyTopHeight', maxHeight);
+      resetGame();
+    });
+
+    deathScreen.addEventListener("click", () => {
+      deathScreen.classList.remove("active");
+      isDead = false;
+      resetGame();
+    });
+
+    // ============================================
+    // GAME FUNCTIONS
+    // ============================================
+    function togglePause(){
+      paused = !paused;
+      if(paused){
+        pauseMenu.classList.add("active");
+        helpMenu.style.display = "none";
+        mainMenu.style.display = "block";
+        pauseTitle.textContent = "PAUSED";
+        if(animationId) cancelAnimationFrame(animationId);
+        stopWalkingSound();
+        stopLavaSound();
+      } else {
+        pauseMenu.classList.remove("active");
+        update();
+      }
+    }
+
+    function die(fromLava = false){
+      isDead = true;
+      diedFromLava = fromLava;
+      localStorage.setItem('obbyTopHeight', maxHeight);
+      if(animationId) cancelAnimationFrame(animationId);
+      stopWalkingSound();
+      stopLavaSound();
+      
+      if(fromLava) {
+        playLavaDieSound();
+      }
+      
+      deathScreen.classList.add("active");
+    }
+
+    function resetGame(){
+      if(animationId) cancelAnimationFrame(animationId);
+      
+      // Stop sounds
+      stopWalkingSound();
+      stopLavaSound();
+      
+      // Play respawn sound
+      playRespawnSound();
+      
+      platforms.forEach(p => {
+        p.style.display = 'none';
+        platformPool.push(p);
+      });
+      platforms = [];
+      
+      // Reset variables - spilleren starter i EKSAKT midten
+      const centerY = (window.innerHeight - PLAYER_SIZE) / 2;
+      x = (window.innerWidth - PLAYER_SIZE) / 2;
+      y = centerY;
+      startingY = centerY;
+      velY = 0;
+      jumpsLeft = 2;
+      currentHeight = 0;
+      globalDifficulty = 0;
+      lavaY = window.innerHeight + 200;
+      lavaSpeed = LAVA_START_SPEED;
+      isDead = false;
+      paused = false;
+      wasOnBluePlatform = false;
+      isWalking = false;
+      diedFromLava = false;
+      lavaInView = false;
+      
+      document.body.style.background = "#020617";
+      
+      Object.keys(keys).forEach(k => keys[k] = false);
+      
+      player.style.left = x + "px";
+      player.style.top = y + "px";
+      lavaEl.style.top = lavaY + "px";
+      
+      curEl.textContent = `HØJDE: 0`;
+      maxEl.textContent = `TOP HØJDE: ${Math.floor(maxHeight/10)}`;
+      
+      // Create start platform - lige under spilleren
+      const startPlatformY = centerY + PLAYER_SIZE + 1;
+      createPlatform(window.innerWidth/2 - 200, startPlatformY, 400, "green");
+      lowestPlatformY = startPlatformY;
+      
+      generatePlatforms();
+      update();
+    }
+
+    const maxJumpHeight = (jumpPower*jumpPower)/(2*gravity);
+
+    function createPlatform(px, py, width, type="green"){
+      let p;
+      
+      if(platformPool.length > 0){
+        p = platformPool.pop();
+        p.style.display = 'block';
+      } else {
+        p = document.createElement("div");
+        p.className = "platform";
+        document.body.appendChild(p);
+      }
+      
+      p.className = "platform " + type;
+      p.dataset.type = type;
+      p.style.left = px + "px";
+      p.style.top = py + "px";
+      p.style.width = width + "px";
+      p.style.opacity = "1";
+      
+      p.dataset.moving = "false";
+      p.dataset.moveDir = "1";
+      p.dataset.moveSpeed = "0";
+      p.dataset.blueTimer = "0";
+      p.dataset.disappearing = "false";
+      p.dataset.respawnTime = "0";
+      
+      platforms.push(p);
+      
+      if(type === "orange"){
+        p.dataset.moving = "true";
+        p.dataset.moveSpeed = String(PLATFORM_MOVE_SPEED);
+        p.dataset.moveDir = String(Math.random() > 0.5 ? 1 : -1);
+        p.dataset.originalLeft = String(px);
+        p.dataset.moveRange = String(PLATFORM_MOVE_RANGE);
+      }
+      
+      return p;
+    }
+
+    function generatePlatforms(){
+      const targetCount = 25;
+      
+      if(platforms.length >= targetCount) return;
+      
+      while(platforms.length < targetCount){
+        const last = platforms[platforms.length-1];
+        if(!last) break;
+        
+        const lastY = parseFloat(last.style.top);
+        const lastX = parseFloat(last.style.left) + last.offsetWidth/2;
+
+        globalDifficulty += 0.05;
+
+        // Brug konfigurerbare Y afstande
+        const gapY = PLATFORM_DISTANCE_Y_MIN + Math.random() * (PLATFORM_DISTANCE_Y_MAX - PLATFORM_DISTANCE_Y_MIN);
+        const safeGapY = Math.min(maxJumpHeight * 0.60, gapY);
+
+        // Brug konfigurerbare X afstande
+        const horizontalDist = PLATFORM_DISTANCE_X_MIN + Math.random() * (PLATFORM_DISTANCE_X_MAX - PLATFORM_DISTANCE_X_MIN);
+        const offsetX = (Math.random() * 2 - 1) * horizontalDist;
+
+        const width = PLATFORM_WIDTH;
+
+        let px = lastX + offsetX - width/2;
+        px = Math.max(LEFT_WALL + 20, Math.min(px, RIGHT_WALL - width - 20));
+        const py = lastY - safeGapY;
+
+        let type = "green";
+        const rand = Math.random();
+        
+        const lastPlatform = platforms[platforms.length-1];
+        const wasLastRed = lastPlatform.dataset.type === "red";
+        
+        let redChance, blueChance, orangeChance, whiteChance;
+        
+        if(currentHeight > 8000){
+          redChance = 0.10;
+          blueChance = 0.70;
+          orangeChance = 0.10;
+          whiteChance = 0.05;
+        } else if(currentHeight > 5000){
+          redChance = 0.08;
+          blueChance = 0.55;
+          orangeChance = 0.15;
+          whiteChance = 0.12;
+        } else if(currentHeight > 2500){
+          redChance = 0.10;
+          blueChance = 0.45;
+          orangeChance = 0.20;
+          whiteChance = 0.15;
+        } else {
+          redChance = Math.min(0.05 + globalDifficulty*0.005, 0.20);
+          blueChance = Math.min(0.10 + globalDifficulty*0.010, 0.40);
+          orangeChance = Math.min(0.15 + globalDifficulty*0.006, 0.25);
+          whiteChance = Math.min(0.08 + globalDifficulty*0.004, 0.15);
+        }
+        
+        if(wasLastRed){
+          const adjustedRand = rand / (1 - redChance);
+          if(adjustedRand < blueChance/(1-redChance)) type = "blue";
+          else if(adjustedRand < (blueChance+orangeChance)/(1-redChance)) type = "orange";
+          else if(adjustedRand < (blueChance+orangeChance+whiteChance)/(1-redChance)) type = "white";
+          else type = "green";
+        } else {
+          if(rand < redChance) type = "red";
+          else if(rand < redChance + blueChance) type = "blue";
+          else if(rand < redChance + blueChance + orangeChance) type = "orange";
+          else if(rand < redChance + blueChance + orangeChance + whiteChance) type = "white";
+          else type = "green";
+        }
+
+        createPlatform(px, py, width, type);
+      }
+    }
+
+    function recyclePlatforms(){
+      const renderDistance = window.innerHeight * 1.2;
+      const topBound = y - renderDistance;
+      const bottomBound = y + renderDistance;
+      
+      for(let i = platforms.length - 1; i >= 0; i--){
+        const p = platforms[i];
+        if(i === 0) continue;
+        
+        const py = parseFloat(p.style.top);
+        
+        if(py > lavaY || py < topBound || py > bottomBound){
+          p.style.display = 'none';
+          platformPool.push(p);
+          platforms.splice(i, 1);
+        }
+      }
+    }
+
+    function update(){
+      if(paused || isDead) return;
+
+      const oldY = y;
+      const oldX = x;
+
+      // Movement
+      if(keys["a"] || keys["A"] || keys["ArrowLeft"]) x -= speed;
+      if(keys["d"] || keys["D"] || keys["ArrowRight"]) x += speed;
+      x = Math.max(LEFT_WALL, Math.min(x, RIGHT_WALL - PLAYER_SIZE));
+
+      // Jumping
+      if((keys[" "] || keys["w"] || keys["W"] || keys["ArrowUp"]) && jumpsLeft>0 && !keys._jumpHeld){
+        velY = -jumpPower;
+        jumpsLeft--;
+        keys._jumpHeld = true;
+        playJumpSound();
+      }
+      if(!keys[" "] && !keys["w"] && !keys["W"] && !keys["ArrowUp"]) keys._jumpHeld = false;
+
+      velY += gravity;
+      y += velY;
+
+      let grounded = false;
+      let onBluePlatform = false;
+
+      // Update lowestPlatformY
+      if(platforms.length > 0){
+        lowestPlatformY = Math.max(...platforms.map(p => parseFloat(p.style.top)));
+      }
+
+      // Moving platforms
+      const now = Date.now();
+      platforms.forEach(p=>{
+        if(p.dataset.moving === "true"){
+          const moveSpeed = parseFloat(p.dataset.moveSpeed);
+          let dir = parseFloat(p.dataset.moveDir);
+          let px = parseFloat(p.style.left) + moveSpeed * dir;
+
+          const originalLeft = parseFloat(p.dataset.originalLeft);
+          const moveRange = parseFloat(p.dataset.moveRange);
+
+          if(px < originalLeft - moveRange || px > originalLeft + moveRange){
+            dir *= -1;
+            p.dataset.moveDir = String(dir);
+            px = Math.max(originalLeft - moveRange, Math.min(px, originalLeft + moveRange));
+          }
+
+          if(px <= LEFT_WALL || px + p.offsetWidth >= RIGHT_WALL){
+            dir *= -1;
+            p.dataset.moveDir = String(dir);
+          }
+
+          p.style.left = px + "px";
+        }
+
+        // Blue platform logic
+        if(p.dataset.type === "blue"){
+          if(p.dataset.disappearing === "true"){
+            const respawnTime = parseFloat(p.dataset.respawnTime);
+            if(now >= respawnTime){
+              p.style.opacity = "1";
+              p.dataset.disappearing = "false";
+              p.dataset.blueTimer = "0";
+            }
+          }
+        }
+      });
+
+      // COLLISION - nu korrekt
+      for(let i = 0; i < platforms.length; i++){
+        const p = platforms[i];
+        const px = parseFloat(p.style.left);
+        const py = parseFloat(p.style.top);
+        const pw = p.offsetWidth;
+        const type = p.dataset.type;
+
+        // Ignore disappearing blue platforms
+        if(type === "blue" && p.dataset.disappearing === "true") continue;
+
+        // Horisontal overlap
+        if(x + PLAYER_SIZE > px && x < px + pw){
+          // -------------------
+          // White platforms - semi-solid
+          // -------------------
+          if(type === "white"){
+            if(oldY + PLAYER_SIZE <= py && y + PLAYER_SIZE >= py){
+              velY = 0;
+              y = py - PLAYER_SIZE;
+              grounded = true;
+              jumpsLeft = 2;
+            }
+            continue; // hop videre til næste platform
+          }
+
+          // -------------------
+          // Normal platforms - solid ovenfra og nedenfra
+          // -------------------
+          if(oldY + PLAYER_SIZE <= py && y + PLAYER_SIZE >= py){
+            if(type === "red"){
+              playKillBrickSound();
+              die(false);
+              return;
+            }
+            else if(type === "blue"){
+              onBluePlatform = true;
+              if(p.dataset.blueTimer == "0"){
+                p.dataset.blueTimer = String(now);
+              }
+              const elapsed = (now - parseFloat(p.dataset.blueTimer)) / 1000;
+              if(elapsed >= 1.0){
+                p.dataset.disappearing = "true";
+                p.dataset.respawnTime = String(now + 5000);
+                p.style.opacity = "0";
+                wasOnBluePlatform = true;
+              } else {
+                p.style.opacity = String(Math.max(0.2, 1 - elapsed));
+                velY = 0;
+                y = py - PLAYER_SIZE;
+                grounded = true;
+                jumpsLeft = 2;
+              }
+            }
+            else { // green & orange
+              velY = 0;
+              y = py - PLAYER_SIZE;
+              grounded = true;
+              jumpsLeft = 2;
+            }
+          }
+          else if(oldY >= py + 18 && y < py + 18 && velY < 0){
+            // Solid ovenfra: stop opad collision for alle typer undtagen white (white ignoreres her)
+            if(type !== "white") {
+              velY = 0;
+              y = py + 18;
+            }
+          }
+        }
+      }
+
+      if(wasOnBluePlatform && !onBluePlatform && !grounded){
+        wasOnBluePlatform = false;
+      }
+
+      // Walking sound logic
+      const isMovingHorizontally = (keys["a"] || keys["A"] || keys["ArrowLeft"] || keys["d"] || keys["D"] || keys["ArrowRight"]) && grounded;
+
+      if(isMovingHorizontally && !isWalking) {
+        isWalking = true;
+        playWalkingSound();
+      } else if(!isMovingHorizontally && isWalking) {
+        isWalking = false;
+        stopWalkingSound();
+      }
+
+      // Death check
+      if((y > lowestPlatformY + 400 && y > lavaY) || y > window.innerHeight + 500){
+        die(true);
+        return;
+      }
+
+      // Kamera - centrer spiller
+      const targetY = (window.innerHeight - PLAYER_SIZE) / 2;
+      const offset = targetY - y;
+
+      platforms.forEach(p => {
+        p.style.top = (parseFloat(p.style.top) + offset) + "px";
+      });
+
+      lavaY += offset;
+      lavaEl.style.top = lavaY + "px";
+
+      lowestPlatformY += offset;
+      startingY += offset;
+      y = targetY;
+
+      currentHeight = Math.max(0, startingY - y);
+      maxHeight = Math.max(maxHeight, currentHeight);
+
+      const heightBoost = Math.min(currentHeight / 100000, 1.5);
+      
+
+      lavaSpeed = Math.min(
+        LAVA_START_SPEED + globalDifficulty * LAVA_SPEED_INCREASE_RATE + heightBoost * LAVA_HEIGHT_BOOST_FACTOR,
+        LAVA_MAX_SPEED
+      );
+      lavaY -= lavaSpeed;
+      lavaEl.style.top = lavaY + "px";
+
+      updateLavaSound();
+
+      const heightProgress = Math.min(currentHeight / 15000, 1);
+      const r = Math.floor(2 + heightProgress * 18);
+      const g = Math.floor(6 + heightProgress * 4);
+      const b = Math.floor(23 + heightProgress * 27);
+      document.body.style.background = `rgb(${r}, ${g}, ${b})`;
+
+      if(y + PLAYER_SIZE >= lavaY){
+        die(true);
+        return;
+      }
+
+      curEl.textContent = `HØJDE: ${Math.floor(currentHeight/10)}`;
+      maxEl.textContent = `TOP HØJDE: ${Math.floor(maxHeight/10)}`;
+
+      recyclePlatforms();
+      generatePlatforms();
+
+      player.style.left = x + "px";
+      player.style.top = y + "px";
+
+      animationId = requestAnimationFrame(update);
+    }
+
+
+
+
+    // Initialize volumes and start game
+    initializeVolumes();
+    resetGame();
+  </script>
+
+</body>
+</html>
