@@ -78,7 +78,7 @@
     
     // LAVA HASTIGHED KONFIGURATION
     const LAVA_START_SPEED = 0.10;              // Start hastighed for lava
-    const LAVA_SPEED_INCREASE_RATE = 0.09;    // Hvor hurtigt lava hastigheden stiger over tid (lavere = langsommere stigning)
+    const LAVA_SPEED_INCREASE_RATE = 0.08;    // Hvor hurtigt lava hastigheden stiger over tid (lavere = langsommere stigning)
     const LAVA_HEIGHT_BOOST_FACTOR = 0.05;      // Hvor meget højde påvirker lava speed
     const LAVA_MAX_SPEED = 2.25
   ; // <-- set whatever max speed you want
@@ -226,7 +226,7 @@
     document.addEventListener("keydown", e=>{
       if(isDead) return;
       keys[e.key]=true;
-      if(e.key === "p" || e.key === "P" || e.key === "Escape") {
+      if(e.key === "Escape" || e.key === "Escape" || e.key === "Escape") {
         togglePause();
       }
       
@@ -713,3 +713,4 @@
 
 </body>
 </html>
+
