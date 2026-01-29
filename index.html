@@ -17,6 +17,7 @@
   <div id="hud">
     <span id="current">HØJDE: 0</span>
     <span id="max">TOP HØJDE: 0</span>
+    <span id="difficulty-display">DIFFICULTY: MEDIUM</span>
   </div>
 
   <div id="hp-display">Double Jump = true</div>
@@ -49,6 +50,19 @@
               <input type="checkbox" id="effects-toggle" checked>
               <span class="slider"></span>
             </label>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h4>Difficulty</h4>
+          <div class="setting-item">
+            <span>Game Difficulty</span>
+            <select id="difficulty-select" class="difficulty-dropdown">
+              <option value="easy">Easy</option>
+              <option value="medium" selected>Medium</option>
+              <option value="hard">Hard</option>
+              <option value="impossible">Impossible</option>
+            </select>
           </div>
         </div>
 
@@ -174,18 +188,28 @@
     const LAVA_START_SPEED = 0.10;
     const LAVA_SPEED_INCREASE_RATE = 0.08;
     const LAVA_HEIGHT_BOOST_FACTOR = 0.05;
-    const LAVA_MAX_SPEED = 2.25;
+    
+    // DIFFICULTY SETTINGS
+    const DIFFICULTY_SETTINGS = {
+      easy: { maxSpeed: 1.0, name: 'Easy' },
+      medium: { maxSpeed: 1.45, name: 'Medium' },
+      hard: { maxSpeed: 1.75, name: 'Hard' },
+      impossible: { maxSpeed: 2.0, name: 'Impossible' }
+    };
     
     // PLATFORM AFSTAND KONFIGURATION (i pixels)
-    const PLATFORM_DISTANCE_X_MIN = 389;
-    const PLATFORM_DISTANCE_X_MAX = 400;
-    const PLATFORM_DISTANCE_Y_MIN = 120;
-    const PLATFORM_DISTANCE_Y_MAX = 200;
+    const PLATFORM_DISTANCE_X_MIN = 300;
+    const PLATFORM_DISTANCE_X_MAX = 350;
+    const PLATFORM_DISTANCE_Y_MIN = 100;
+    const PLATFORM_DISTANCE_Y_MAX = 160;
     
     // PLATFORM KONFIGURATION
     const PLATFORM_WIDTH = 250;
     const PLATFORM_MOVE_SPEED = 1.7;
     const PLATFORM_MOVE_RANGE = 175;
+    
+    // LAVA HITBOX OFFSET (gør at man dør lidt før visuelt)
+    const LAVA_HITBOX_OFFSET = 50;
     
     // ============================================
     // GAME ELEMENTS
@@ -193,6 +217,7 @@
     const player = document.getElementById("player");
     const curEl = document.getElementById("current");
     const maxEl = document.getElementById("max");
+    const difficultyEl = document.getElementById("difficulty-display");
     const lavaEl = document.getElementById("lava");
     const pauseMenu = document.getElementById("pause-menu");
     const continueBtn = document.getElementById("continue-btn");
@@ -221,6 +246,7 @@
     // SETTINGS
     const effectsToggle = document.getElementById("effects-toggle");
     const languageSelect = document.getElementById("language-select");
+    const difficultySelect = document.getElementById("difficulty-select");
     const audioRespawn = document.getElementById("audio-respawn");
     const audioLava = document.getElementById("audio-lava");
     const audioJump = document.getElementById("audio-jump");
@@ -232,7 +258,6 @@
     
     let x, y, velY, jumpsLeft, lowestPlatformY;
     let currentHeight, globalDifficulty, lavaY, lavaSpeed;
-    let maxHeight = parseInt(localStorage.getItem('obbyTopHeight') || '0');
     let startingY = 0;
     let paused = false;
     let isDead = false;
@@ -243,6 +268,20 @@
     let lavaInView = false;
     let effectsEnabled = localStorage.getItem('effectsEnabled') !== 'false';
     let currentLanguage = localStorage.getItem('language') || 'da';
+    let currentDifficulty = localStorage.getItem('difficulty') || 'medium';
+    
+    // Delta time for consistent framerate
+    let lastFrameTime = 0;
+    const TARGET_FPS = 60;
+    const FRAME_TIME = 1000 / TARGET_FPS;
+    
+    // Separate max heights for each difficulty
+    let maxHeights = {
+      easy: parseInt(localStorage.getItem('obbyTopHeightEasy') || '0'),
+      medium: parseInt(localStorage.getItem('obbyTopHeightMedium') || '0'),
+      hard: parseInt(localStorage.getItem('obbyTopHeightHard') || '0'),
+      impossible: parseInt(localStorage.getItem('obbyTopHeightImpossible') || '0')
+    };
 
     const gravity = 0.9;
     const jumpPower = 16;
@@ -262,6 +301,7 @@
       da: {
         height: 'HØJDE',
         topHeight: 'TOP HØJDE',
+        difficulty: 'DIFFICULTY',
         doubleJump: 'Double Jump = true',
         pauseHint: 'Tryk ESC for pause',
         paused: 'PAUSED',
@@ -288,6 +328,8 @@
         helpPause: 'ESC for pause',
         settingsGraphics: 'Graphics',
         settingsVisualEffects: 'Visual Effects',
+        settingsDifficulty: 'Difficulty',
+        settingsGameDifficulty: 'Game Difficulty',
         settingsAudio: 'Audio',
         settingsAudioSettings: 'Audio Settings',
         settingsLanguage: 'Language',
@@ -301,6 +343,7 @@
       en: {
         height: 'HEIGHT',
         topHeight: 'TOP HEIGHT',
+        difficulty: 'DIFFICULTY',
         doubleJump: 'Double Jump = true',
         pauseHint: 'Press ESC to pause',
         paused: 'PAUSED',
@@ -327,6 +370,8 @@
         helpPause: 'ESC to pause',
         settingsGraphics: 'Graphics',
         settingsVisualEffects: 'Visual Effects',
+        settingsDifficulty: 'Difficulty',
+        settingsGameDifficulty: 'Game Difficulty',
         settingsAudio: 'Audio',
         settingsAudioSettings: 'Audio Settings',
         settingsLanguage: 'Language',
@@ -348,13 +393,12 @@
       
       const t = translations[lang];
       
-      // Update HUD
       curEl.textContent = `${t.height}: ${Math.floor(currentHeight/10)}`;
-      maxEl.textContent = `${t.topHeight}: ${Math.floor(maxHeight/10)}`;
+      maxEl.textContent = `${t.topHeight}: ${Math.floor(maxHeights[currentDifficulty]/10)}`;
+      difficultyEl.textContent = `${t.difficulty}: ${DIFFICULTY_SETTINGS[currentDifficulty].name.toUpperCase()}`;
       document.getElementById('hp-display').textContent = t.doubleJump;
       document.getElementById('pause-hint').textContent = t.pauseHint;
       
-      // Update menu buttons
       document.getElementById('continue-btn').textContent = t.continue;
       document.getElementById('settings-btn').textContent = t.settings;
       document.getElementById('help-btn').textContent = t.help;
@@ -363,11 +407,9 @@
       document.getElementById('settings-back-btn').textContent = t.back;
       document.getElementById('audio-back-btn').textContent = t.back;
       
-      // Update death screen
       document.getElementById('death-title').textContent = t.youDied;
       document.getElementById('death-subtitle').textContent = t.respawn;
       
-      // Update help menu
       document.querySelector('.help-green').textContent = t.helpGreen;
       document.querySelector('.help-green-desc').textContent = t.helpGreenDesc;
       document.querySelector('.help-red').textContent = t.helpRed;
@@ -383,7 +425,6 @@
       document.querySelector('.help-avoid').textContent = t.helpAvoid;
       document.querySelector('.help-pause').textContent = t.helpPause;
       
-      // Update audio settings
       document.getElementById('audio-respawn-label').textContent = t.audioRespawn;
       document.getElementById('audio-lava-label').textContent = t.audioLava;
       document.getElementById('audio-jump-label').textContent = t.audioJump;
@@ -391,7 +432,6 @@
       document.getElementById('audio-brick-label').textContent = t.audioBrick;
       document.getElementById('audio-ambient-label').textContent = t.audioAmbient;
       
-      // Update settings menu
       document.getElementById('audio-settings-btn').textContent = t.settingsAudioSettings;
     }
 
@@ -399,6 +439,12 @@
       effectsEnabled = enabled;
       localStorage.setItem('effectsEnabled', enabled);
       document.body.classList.toggle('no-effects', !enabled);
+    }
+
+    function changeDifficulty(difficulty) {
+      currentDifficulty = difficulty;
+      localStorage.setItem('difficulty', difficulty);
+      updateLanguage(currentLanguage);
     }
 
     // ============================================
@@ -542,7 +588,7 @@
       audioMenu.style.display = "none";
       mainMenu.style.display = "block";
       pauseTitle.textContent = translations[currentLanguage].paused;
-      localStorage.setItem('obbyTopHeight', maxHeight);
+      saveMaxHeight();
       resetGame();
     });
 
@@ -552,6 +598,10 @@
 
     languageSelect.addEventListener("change", (e) => {
       updateLanguage(e.target.value);
+    });
+
+    difficultySelect.addEventListener("change", (e) => {
+      changeDifficulty(e.target.value);
     });
 
     deathScreen.addEventListener("click", () => {
@@ -572,6 +622,11 @@
     // ============================================
     // GAME FUNCTIONS
     // ============================================
+    function saveMaxHeight() {
+      const storageKey = `obbyTopHeight${currentDifficulty.charAt(0).toUpperCase() + currentDifficulty.slice(1)}`;
+      localStorage.setItem(storageKey, maxHeights[currentDifficulty]);
+    }
+
     function togglePause(){
       paused = !paused;
       if(paused){
@@ -586,6 +641,7 @@
         stopLavaSound();
       } else {
         pauseMenu.classList.remove("active");
+        lastFrameTime = 0;
         update();
       }
     }
@@ -593,7 +649,7 @@
     function die(fromLava = false){
       isDead = true;
       diedFromLava = fromLava;
-      localStorage.setItem('obbyTopHeight', maxHeight);
+      saveMaxHeight();
       if(animationId) cancelAnimationFrame(animationId);
       stopWalkingSound();
       stopLavaSound();
@@ -634,6 +690,7 @@
       isWalking = false;
       diedFromLava = false;
       lavaInView = false;
+      lastFrameTime = 0;
       
       document.body.style.background = "#020617";
       
@@ -645,7 +702,8 @@
       
       const t = translations[currentLanguage];
       curEl.textContent = `${t.height}: 0`;
-      maxEl.textContent = `${t.topHeight}: ${Math.floor(maxHeight/10)}`;
+      maxEl.textContent = `${t.topHeight}: ${Math.floor(maxHeights[currentDifficulty]/10)}`;
+      difficultyEl.textContent = `${t.difficulty}: ${DIFFICULTY_SETTINGS[currentDifficulty].name.toUpperCase()}`;
       
       const startPlatformY = centerY + PLAYER_SIZE + 1;
       createPlatform(window.innerWidth/2 - 200, startPlatformY, 400, "green");
@@ -716,12 +774,12 @@
         let gapY, safeGapY, horizontalDist;
         
         if(wasLastRed) {
-          gapY = PLATFORM_DISTANCE_Y_MIN * 0.7 + Math.random() * (PLATFORM_DISTANCE_Y_MAX * 0.7 - PLATFORM_DISTANCE_Y_MIN * 0.7);
-          safeGapY = Math.min(maxJumpHeight * 0.50, gapY);
-          horizontalDist = PLATFORM_DISTANCE_X_MIN * 0.6 + Math.random() * (PLATFORM_DISTANCE_X_MAX * 0.6 - PLATFORM_DISTANCE_X_MIN * 0.6);
+          gapY = PLATFORM_DISTANCE_Y_MIN * 0.5;
+          safeGapY = Math.min(maxJumpHeight * 0.35, gapY);
+          horizontalDist = PLATFORM_DISTANCE_X_MIN * 0.4;
         } else {
           gapY = PLATFORM_DISTANCE_Y_MIN + Math.random() * (PLATFORM_DISTANCE_Y_MAX - PLATFORM_DISTANCE_Y_MIN);
-          safeGapY = Math.min(maxJumpHeight * 0.60, gapY);
+          safeGapY = Math.min(maxJumpHeight * 0.55, gapY);
           horizontalDist = PLATFORM_DISTANCE_X_MIN + Math.random() * (PLATFORM_DISTANCE_X_MAX - PLATFORM_DISTANCE_X_MIN);
         }
 
@@ -738,22 +796,22 @@
         let redChance, blueChance, orangeChance, whiteChance;
         
         if(currentHeight > 8000){
-          redChance = 0.10;
+          redChance = 0.08;
           blueChance = 0.70;
           orangeChance = 0.10;
           whiteChance = 0.05;
         } else if(currentHeight > 5000){
-          redChance = 0.08;
+          redChance = 0.06;
           blueChance = 0.55;
           orangeChance = 0.15;
           whiteChance = 0.12;
         } else if(currentHeight > 2500){
-          redChance = 0.10;
+          redChance = 0.08;
           blueChance = 0.45;
           orangeChance = 0.20;
           whiteChance = 0.15;
         } else {
-          redChance = Math.min(0.05 + globalDifficulty*0.005, 0.20);
+          redChance = Math.min(0.03 + globalDifficulty*0.003, 0.12);
           blueChance = Math.min(0.10 + globalDifficulty*0.010, 0.40);
           orangeChance = Math.min(0.15 + globalDifficulty*0.006, 0.25);
           whiteChance = Math.min(0.08 + globalDifficulty*0.004, 0.15);
@@ -794,13 +852,24 @@
       }
     }
 
-    function update(){
+    function update(currentTime = 0){
       if(paused || isDead) return;
+
+      // Delta time calculation for consistent framerate across devices
+      if(!lastFrameTime) lastFrameTime = currentTime;
+      const deltaTime = currentTime - lastFrameTime;
+      const deltaMultiplier = deltaTime / FRAME_TIME;
+      lastFrameTime = currentTime;
+
+      // Cap delta multiplier to prevent huge jumps
+      const cappedDelta = Math.min(deltaMultiplier, 3);
 
       const oldY = y;
 
-      if(keys["a"] || keys["A"] || keys["ArrowLeft"]) x -= speed;
-      if(keys["d"] || keys["D"] || keys["ArrowRight"]) x += speed;
+      // Movement with delta time
+      const moveSpeed = speed * cappedDelta;
+      if(keys["a"] || keys["A"] || keys["ArrowLeft"]) x -= moveSpeed;
+      if(keys["d"] || keys["D"] || keys["ArrowRight"]) x += moveSpeed;
       x = Math.max(LEFT_WALL, Math.min(x, RIGHT_WALL - PLAYER_SIZE));
 
       if((keys[" "] || keys["w"] || keys["W"] || keys["ArrowUp"]) && jumpsLeft>0 && !keys._jumpHeld){
@@ -811,8 +880,9 @@
       }
       if(!keys[" "] && !keys["w"] && !keys["W"] && !keys["ArrowUp"]) keys._jumpHeld = false;
 
-      velY += gravity;
-      y += velY;
+      // Gravity with delta time
+      velY += gravity * cappedDelta;
+      y += velY * cappedDelta;
 
       let grounded = false;
       let onBluePlatform = false;
@@ -824,9 +894,9 @@
       const now = Date.now();
       platforms.forEach(p=>{
         if(p.dataset.moving === "true"){
-          const moveSpeed = parseFloat(p.dataset.moveSpeed);
+          const platformMoveSpeed = parseFloat(p.dataset.moveSpeed) * cappedDelta;
           let dir = parseFloat(p.dataset.moveDir);
-          let px = parseFloat(p.style.left) + moveSpeed * dir;
+          let px = parseFloat(p.style.left) + platformMoveSpeed * dir;
 
           const originalLeft = parseFloat(p.dataset.originalLeft);
           const moveRange = parseFloat(p.dataset.moveRange);
@@ -961,15 +1031,18 @@
       y = targetY;
 
       currentHeight = Math.max(0, startingY - y);
-      maxHeight = Math.max(maxHeight, currentHeight);
+      maxHeights[currentDifficulty] = Math.max(maxHeights[currentDifficulty], currentHeight);
 
       const heightBoost = Math.min(currentHeight / 100000, 1.5);
 
+      const LAVA_MAX_SPEED = DIFFICULTY_SETTINGS[currentDifficulty].maxSpeed;
       lavaSpeed = Math.min(
         LAVA_START_SPEED + globalDifficulty * LAVA_SPEED_INCREASE_RATE + heightBoost * LAVA_HEIGHT_BOOST_FACTOR,
         LAVA_MAX_SPEED
       );
-      lavaY -= lavaSpeed;
+      
+      // Lava speed with delta time
+      lavaY -= lavaSpeed * cappedDelta;
       lavaEl.style.top = lavaY + "px";
 
       updateLavaSound();
@@ -980,14 +1053,15 @@
       const b = Math.floor(23 + heightProgress * 27);
       document.body.style.background = `rgb(${r}, ${g}, ${b})`;
 
-      if(y + PLAYER_SIZE >= lavaY){
+      // Improved lava hitbox
+      if(y + PLAYER_SIZE >= lavaY - LAVA_HITBOX_OFFSET){
         die(true);
         return;
       }
 
       const t = translations[currentLanguage];
       curEl.textContent = `${t.height}: ${Math.floor(currentHeight/10)}`;
-      maxEl.textContent = `${t.topHeight}: ${Math.floor(maxHeight/10)}`;
+      maxEl.textContent = `${t.topHeight}: ${Math.floor(maxHeights[currentDifficulty]/10)}`;
 
       recyclePlatforms();
       generatePlatforms();
@@ -1005,6 +1079,7 @@
     effectsToggle.checked = effectsEnabled;
     toggleEffects(effectsEnabled);
     languageSelect.value = currentLanguage;
+    difficultySelect.value = currentDifficulty;
     updateLanguage(currentLanguage);
     resetGame();
   </script>
