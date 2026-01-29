@@ -487,7 +487,7 @@
       
       for(let i = platforms.length - 1; i >= 0; i--){
         const p = platforms[i];
-        if(i === 0) continue;
+        // Fjernet "if(i === 0) continue;" så start-platformen OGSÅ kan fjernes af lava
         
         const py = parseFloat(p.style.top);
         
@@ -555,14 +555,25 @@
           p.style.left = px + "px";
         }
 
-        // Blue platform logic
+        // Blue platform logic - continues countdown even when not standing on it
         if(p.dataset.type === "blue"){
           if(p.dataset.disappearing === "true"){
+            // Handle respawn
             const respawnTime = parseFloat(p.dataset.respawnTime);
             if(now >= respawnTime){
               p.style.opacity = "1";
               p.dataset.disappearing = "false";
               p.dataset.blueTimer = "0";
+            }
+          } else if(p.dataset.blueTimer !== "0"){
+            // Continue countdown even when not standing on platform
+            const elapsed = (now - parseFloat(p.dataset.blueTimer)) / 1000;
+            if(elapsed >= 1.0){
+              p.dataset.disappearing = "true";
+              p.dataset.respawnTime = String(now + 5000);
+              p.style.opacity = "0";
+            } else {
+              p.style.opacity = String(Math.max(0.2, 1 - elapsed));
             }
           }
         }
