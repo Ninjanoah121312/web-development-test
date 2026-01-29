@@ -665,7 +665,8 @@ input:checked + .slider:before{
 }
 
 /* LANGUAGE DROPDOWN */
-.language-dropdown{
+.language-dropdown,
+.difficulty-dropdown{
   padding: 10px 15px;
   font-size: 18px;
   background: rgba(15, 23, 42, 0.8);
@@ -677,13 +678,15 @@ input:checked + .slider:before{
   transition: all 0.3s ease;
 }
 
-.language-dropdown:hover{
+.language-dropdown:hover,
+.difficulty-dropdown:hover{
   background: rgba(15, 23, 42, 1);
   border-color: rgba(56, 189, 248, 0.8);
   box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
 }
 
-.language-dropdown option{
+.language-dropdown option,
+.difficulty-dropdown option{
   background: #0f172a;
   color: #38bdf8;
   padding: 10px;
