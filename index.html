@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="da">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>BLOCK JUMP</title>
@@ -15,13 +15,13 @@
   <audio id="lava-sound" src="lava.mp3" preload="auto" loop></audio>
 
   <div id="hud">
-    <span id="current">HØJDE: 0</span>
-    <span id="max">TOP HØJDE: 0</span>
+    <span id="current">HEIGHT: 0</span>
+    <span id="max">TOP HEIGHT: 0</span>
     <span id="difficulty-display">DIFFICULTY: MEDIUM</span>
   </div>
 
   <div id="hp-display">Double Jump = true</div>
-  <div id="pause-hint">Tryk ESC for pause</div>
+  <div id="pause-hint">Press ESC to pause</div>
 
   <div id="lava"></div>
   <div id="player"></div>
@@ -33,9 +33,16 @@
       <!-- MAIN MENU -->
       <div class="menu-buttons" id="main-menu">
         <button class="menu-btn" id="continue-btn">CONTINUE</button>
-        <button class="menu-btn" id="settings-btn">SETTINGS</button>
-        <button class="menu-btn" id="help-btn">HELP</button>
+        <button class="menu-btn" id="extra-btn">EXTRA</button>
         <button class="menu-btn restart" id="restart-btn">RESTART</button>
+      </div>
+      
+      <!-- EXTRA MENU -->
+      <div class="help-section" id="extra-menu">
+        <h3>EXTRA</h3>
+        <button class="menu-btn secondary" id="settings-btn">SETTINGS</button>
+        <button class="menu-btn secondary" id="help-btn">HELP</button>
+        <button class="menu-btn" id="extra-back-btn">BACK</button>
       </div>
       
       <!-- SETTINGS MENU -->
@@ -43,9 +50,9 @@
         <h3>SETTINGS</h3>
         
         <div class="settings-section">
-          <h4>Graphics</h4>
+          <h4 id="settings-graphics-title">Graphics</h4>
           <div class="setting-item">
-            <span>Visual Effects</span>
+            <span id="settings-visual-effects">Visual Effects</span>
             <label class="toggle">
               <input type="checkbox" id="effects-toggle" checked>
               <span class="slider"></span>
@@ -54,9 +61,9 @@
         </div>
 
         <div class="settings-section">
-          <h4>Difficulty</h4>
+          <h4 id="settings-difficulty-title">Difficulty</h4>
           <div class="setting-item">
-            <span>Game Difficulty</span>
+            <span id="settings-game-difficulty">Game Difficulty</span>
             <select id="difficulty-select" class="difficulty-dropdown">
               <option value="easy">Easy</option>
               <option value="medium" selected>Medium</option>
@@ -67,17 +74,18 @@
         </div>
 
         <div class="settings-section">
-          <h4>Audio</h4>
+          <h4 id="settings-audio-title">Audio</h4>
           <button class="menu-btn secondary" id="audio-settings-btn">Audio Settings</button>
         </div>
 
         <div class="settings-section">
-          <h4>Language</h4>
+          <h4 id="settings-language-title">Language</h4>
           <div class="setting-item">
-            <span>Sprog / Language</span>
+            <span id="settings-language-label">Language</span>
             <select id="language-select" class="language-dropdown">
-              <option value="da">🇩🇰 Dansk</option>
               <option value="en">🇬🇧 English</option>
+              <option value="da">🇩🇰 Dansk</option>
+              <option value="de">🇩🇪 Deutsch</option>
             </select>
           </div>
         </div>
@@ -87,7 +95,7 @@
 
       <!-- AUDIO SETTINGS MENU -->
       <div class="help-section" id="audio-menu">
-        <h3>AUDIO SETTINGS</h3>
+        <h3 id="audio-settings-title">AUDIO SETTINGS</h3>
         
         <div class="setting-item">
           <span id="audio-respawn-label">Respawn Sound</span>
@@ -143,13 +151,13 @@
       <!-- HELP MENU -->
       <div class="help-section" id="help-menu">
         <h3>HELP</h3>
-        <p>🟢 <strong class="help-green">Grøn:</strong> <span class="help-green-desc">Sikker platform</span></p>
-        <p>🔴 <strong class="help-red">Rød:</strong> <span class="help-red-desc">Dør ved at lande på den</span></p>
-        <p>🔵 <strong class="help-blue">Blå:</strong> <span class="help-blue-desc">Forsvinder efter 1 sekund</span></p>
-        <p>🟠 <strong class="help-orange">Orange:</strong> <span class="help-orange-desc">Bevæger sig</span></p>
-        <p>⚪ <strong class="help-white">Hvid/grålig:</strong> <span class="help-white-desc">platform man kan hoppe igennem og lande på</span></p>
-        <p><strong class="help-controls">Controls:</strong> <span class="help-controls-desc">W/A/D/SPACE og Piltaster kan bruges + man har double jump</span></p>
-        <p><strong class="help-avoid">Undgå Lavaen!</strong></p>
+        <p>🟢 <strong class="help-green">Green:</strong> <span class="help-green-desc">Safe platform</span></p>
+        <p>🔴 <strong class="help-red">Red:</strong> <span class="help-red-desc">Die when landing on it</span></p>
+        <p>🔵 <strong class="help-blue">Blue:</strong> <span class="help-blue-desc">Disappears after 1 second</span></p>
+        <p>🟠 <strong class="help-orange">Orange:</strong> <span class="help-orange-desc">Moving platform</span></p>
+        <p>⚪ <strong class="help-white">White/gray:</strong> <span class="help-white-desc">platform you can jump through and land on</span></p>
+        <p><strong class="help-controls">Controls:</strong> <span class="help-controls-desc">W/A/D/SPACE and Arrow Keys + you have double jump</span></p>
+        <p><strong class="help-avoid">Avoid the Lava!</strong></p>
         <p><strong class="help-pause">ESC to pause</strong></p>
         <button class="menu-btn" id="help-back-btn">BACK</button>
       </div>
@@ -165,10 +173,9 @@
 
   <script>
     // ============================================
-    // KONFIGURATION - JUSTER HER
+    // KONFIGURATION
     // ============================================
     
-    // SOUND VOLUME KONFIGURATION (0.0 til 1.0)
     const VOLUME_RESPAWN = 0.7;
     const VOLUME_LAVA_DIE = 0.6;
     const VOLUME_JUMP = 0.4;
@@ -176,7 +183,6 @@
     const VOLUME_KILL_BRICK = 0.8;
     const VOLUME_LAVA = 0.4;
     
-    // SOUND START TIME KONFIGURATION (i sekunder)
     const START_TIME_RESPAWN = 0;
     const START_TIME_LAVA_DIE = 0.1;
     const START_TIME_JUMP = 0;
@@ -184,12 +190,10 @@
     const START_TIME_KILL_BRICK = 0.5;
     const START_TIME_LAVA = 0;
     
-    // LAVA HASTIGHED KONFIGURATION
     const LAVA_START_SPEED = 0.10;
     const LAVA_SPEED_INCREASE_RATE = 0.08;
     const LAVA_HEIGHT_BOOST_FACTOR = 0.05;
     
-    // DIFFICULTY SETTINGS
     const DIFFICULTY_SETTINGS = {
       easy: { maxSpeed: 1.25, name: 'Easy' },
       medium: { maxSpeed: 1.75, name: 'Medium' },
@@ -197,18 +201,15 @@
       impossible: { maxSpeed: 3, name: 'Impossible' }
     };
     
-    // PLATFORM AFSTAND KONFIGURATION (i pixels)
     const PLATFORM_DISTANCE_X_MIN = 300;
     const PLATFORM_DISTANCE_X_MAX = 350;
     const PLATFORM_DISTANCE_Y_MIN = 100;
     const PLATFORM_DISTANCE_Y_MAX = 160;
     
-    // PLATFORM KONFIGURATION
     const PLATFORM_WIDTH = 250;
     const PLATFORM_MOVE_SPEED = 1.7;
     const PLATFORM_MOVE_RANGE = 175;
     
-    // LAVA HITBOX OFFSET (gør at man dør lidt før visuelt)
     const LAVA_HITBOX_OFFSET = 50;
     
     // ============================================
@@ -222,6 +223,8 @@
     const pauseMenu = document.getElementById("pause-menu");
     const continueBtn = document.getElementById("continue-btn");
     const restartBtn = document.getElementById("restart-btn");
+    const extraBtn = document.getElementById("extra-btn");
+    const extraBackBtn = document.getElementById("extra-back-btn");
     const helpBtn = document.getElementById("help-btn");
     const settingsBtn = document.getElementById("settings-btn");
     const helpBackBtn = document.getElementById("help-back-btn");
@@ -230,12 +233,12 @@
     const audioBackBtn = document.getElementById("audio-back-btn");
     const deathScreen = document.getElementById("death-screen");
     const mainMenu = document.getElementById("main-menu");
+    const extraMenu = document.getElementById("extra-menu");
     const helpMenu = document.getElementById("help-menu");
     const settingsMenu = document.getElementById("settings-menu");
     const audioMenu = document.getElementById("audio-menu");
     const pauseTitle = document.getElementById("pause-title");
     
-    // AUDIO ELEMENTS
     const respawnSound = document.getElementById("respawn-sound");
     const lavaDieSound = document.getElementById("lava-die-sound");
     const jumpSound = document.getElementById("jump-sound");
@@ -243,7 +246,6 @@
     const killBrickSound = document.getElementById("kill-brick-sound");
     const lavaSound = document.getElementById("lava-sound");
 
-    // SETTINGS
     const effectsToggle = document.getElementById("effects-toggle");
     const languageSelect = document.getElementById("language-select");
     const difficultySelect = document.getElementById("difficulty-select");
@@ -266,16 +268,24 @@
     let isWalking = false;
     let diedFromLava = false;
     let lavaInView = false;
-    let effectsEnabled = localStorage.getItem('effectsEnabled') !== 'false';
-    let currentLanguage = localStorage.getItem('language') || 'da';
-    let currentDifficulty = localStorage.getItem('difficulty') || 'medium';
     
-    // Delta time for consistent framerate
+    // Load settings from localStorage
+    let effectsEnabled = localStorage.getItem('effectsEnabled') !== 'false';
+    let currentLanguage = localStorage.getItem('language') || 'en';
+    let currentDifficulty = localStorage.getItem('difficulty') || 'medium';
+    let audioSettings = {
+      respawn: localStorage.getItem('audioRespawn') !== 'false',
+      lava: localStorage.getItem('audioLava') !== 'false',
+      jump: localStorage.getItem('audioJump') !== 'false',
+      walking: localStorage.getItem('audioWalking') !== 'false',
+      brick: localStorage.getItem('audioBrick') !== 'false',
+      ambient: localStorage.getItem('audioAmbient') !== 'false'
+    };
+    
     let lastFrameTime = 0;
     const TARGET_FPS = 60;
     const FRAME_TIME = 1000 / TARGET_FPS;
     
-    // Separate max heights for each difficulty
     let maxHeights = {
       easy: parseInt(localStorage.getItem('obbyTopHeightEasy') || '0'),
       medium: parseInt(localStorage.getItem('obbyTopHeightMedium') || '0'),
@@ -298,48 +308,6 @@
     // TRANSLATIONS
     // ============================================
     const translations = {
-      da: {
-        height: 'HØJDE',
-        topHeight: 'TOP HØJDE',
-        difficulty: 'DIFFICULTY',
-        doubleJump: 'Double Jump = true',
-        pauseHint: 'Tryk ESC for pause',
-        paused: 'PAUSED',
-        continue: 'CONTINUE',
-        settings: 'SETTINGS',
-        help: 'HELP',
-        restart: 'RESTART',
-        back: 'BACK',
-        youDied: 'DU DØDE',
-        respawn: 'Klik/Space for Respawn',
-        helpGreen: 'Grøn:',
-        helpGreenDesc: 'Sikker platform',
-        helpRed: 'Rød:',
-        helpRedDesc: 'Dør ved at lande på den',
-        helpBlue: 'Blå:',
-        helpBlueDesc: 'Forsvinder efter 1 sekund',
-        helpOrange: 'Orange:',
-        helpOrangeDesc: 'Bevæger sig',
-        helpWhite: 'Hvid/grålig:',
-        helpWhiteDesc: 'platform man kan hoppe igennem og lande på',
-        helpControls: 'Controls:',
-        helpControlsDesc: 'W/A/D/SPACE og Piltaster kan bruges + man har double jump',
-        helpAvoid: 'Undgå Lavaen!',
-        helpPause: 'ESC for pause',
-        settingsGraphics: 'Graphics',
-        settingsVisualEffects: 'Visual Effects',
-        settingsDifficulty: 'Difficulty',
-        settingsGameDifficulty: 'Game Difficulty',
-        settingsAudio: 'Audio',
-        settingsAudioSettings: 'Audio Settings',
-        settingsLanguage: 'Language',
-        audioRespawn: 'Respawn Lyd',
-        audioLava: 'Lava Døds Lyd',
-        audioJump: 'Hop Lyd',
-        audioWalking: 'Gå Lyd',
-        audioBrick: 'Dræb Klods Lyd',
-        audioAmbient: 'Lava Ambiente Lyd'
-      },
       en: {
         height: 'HEIGHT',
         topHeight: 'TOP HEIGHT',
@@ -348,6 +316,7 @@
         pauseHint: 'Press ESC to pause',
         paused: 'PAUSED',
         continue: 'CONTINUE',
+        extra: 'EXTRA',
         settings: 'SETTINGS',
         help: 'HELP',
         restart: 'RESTART',
@@ -375,12 +344,110 @@
         settingsAudio: 'Audio',
         settingsAudioSettings: 'Audio Settings',
         settingsLanguage: 'Language',
+        settingsLanguageLabel: 'Language',
         audioRespawn: 'Respawn Sound',
         audioLava: 'Lava Death Sound',
         audioJump: 'Jump Sound',
         audioWalking: 'Walking Sound',
         audioBrick: 'Kill Brick Sound',
-        audioAmbient: 'Lava Ambient Sound'
+        audioAmbient: 'Lava Ambient Sound',
+        langEnglish: 'English',
+        langDanish: 'Danish',
+        langGerman: 'German'
+      },
+      da: {
+        height: 'HØJDE',
+        topHeight: 'TOP HØJDE',
+        difficulty: 'SVÆRHEDSGRAD',
+        doubleJump: 'Dobbelt Hop = sand',
+        pauseHint: 'Tryk ESC for pause',
+        paused: 'PAUSE',
+        continue: 'FORTSÆT',
+        extra: 'EKSTRA',
+        settings: 'INDSTILLINGER',
+        help: 'HJÆLP',
+        restart: 'GENSTART',
+        back: 'TILBAGE',
+        youDied: 'DU DØDE',
+        respawn: 'Klik/Mellemrum for Genstart',
+        helpGreen: 'Grøn:',
+        helpGreenDesc: 'Sikker platform',
+        helpRed: 'Rød:',
+        helpRedDesc: 'Dør ved at lande på den',
+        helpBlue: 'Blå:',
+        helpBlueDesc: 'Forsvinder efter 1 sekund',
+        helpOrange: 'Orange:',
+        helpOrangeDesc: 'Bevæger sig',
+        helpWhite: 'Hvid/grålig:',
+        helpWhiteDesc: 'platform man kan hoppe igennem og lande på',
+        helpControls: 'Kontroller:',
+        helpControlsDesc: 'W/A/D/MELLEMRUM og Piletaster + dobbelt hop',
+        helpAvoid: 'Undgå Lavaen!',
+        helpPause: 'ESC for pause',
+        settingsGraphics: 'Grafik',
+        settingsVisualEffects: 'Visuelle Effekter',
+        settingsDifficulty: 'Sværhedsgrad',
+        settingsGameDifficulty: 'Spil Sværhedsgrad',
+        settingsAudio: 'Lyd',
+        settingsAudioSettings: 'Lydindstillinger',
+        settingsLanguage: 'Sprog',
+        settingsLanguageLabel: 'Sprog',
+        audioRespawn: 'Genstart Lyd',
+        audioLava: 'Lava Døds Lyd',
+        audioJump: 'Hop Lyd',
+        audioWalking: 'Gå Lyd',
+        audioBrick: 'Dræb Klods Lyd',
+        audioAmbient: 'Lava Ambiente Lyd',
+        langEnglish: 'Engelsk',
+        langDanish: 'Dansk',
+        langGerman: 'Tysk'
+      },
+      de: {
+        height: 'HÖHE',
+        topHeight: 'TOP HÖHE',
+        difficulty: 'SCHWIERIGKEIT',
+        doubleJump: 'Doppelsprung = wahr',
+        pauseHint: 'ESC drücken zum Pausieren',
+        paused: 'PAUSIERT',
+        continue: 'FORTSETZEN',
+        extra: 'EXTRA',
+        settings: 'EINSTELLUNGEN',
+        help: 'HILFE',
+        restart: 'NEUSTART',
+        back: 'ZURÜCK',
+        youDied: 'DU BIST GESTORBEN',
+        respawn: 'Klick/Leertaste zum Neustart',
+        helpGreen: 'Grün:',
+        helpGreenDesc: 'Sichere Plattform',
+        helpRed: 'Rot:',
+        helpRedDesc: 'Stirb beim Landen darauf',
+        helpBlue: 'Blau:',
+        helpBlueDesc: 'Verschwindet nach 1 Sekunde',
+        helpOrange: 'Orange:',
+        helpOrangeDesc: 'Bewegende Plattform',
+        helpWhite: 'Weiß/grau:',
+        helpWhiteDesc: 'Plattform durch die man springen und landen kann',
+        helpControls: 'Steuerung:',
+        helpControlsDesc: 'W/A/D/LEERTASTE und Pfeiltasten + Doppelsprung',
+        helpAvoid: 'Vermeide die Lava!',
+        helpPause: 'ESC zum Pausieren',
+        settingsGraphics: 'Grafik',
+        settingsVisualEffects: 'Visuelle Effekte',
+        settingsDifficulty: 'Schwierigkeit',
+        settingsGameDifficulty: 'Spiel Schwierigkeit',
+        settingsAudio: 'Audio',
+        settingsAudioSettings: 'Audioeinstellungen',
+        settingsLanguage: 'Sprache',
+        settingsLanguageLabel: 'Sprache',
+        audioRespawn: 'Neustart Ton',
+        audioLava: 'Lava Tod Ton',
+        audioJump: 'Sprung Ton',
+        audioWalking: 'Lauf Ton',
+        audioBrick: 'Kill Brick Ton',
+        audioAmbient: 'Lava Ambiente Ton',
+        langEnglish: 'Englisch',
+        langDanish: 'Dänisch',
+        langGerman: 'Deutsch'
       }
     };
 
@@ -400,12 +467,14 @@
       document.getElementById('pause-hint').textContent = t.pauseHint;
       
       document.getElementById('continue-btn').textContent = t.continue;
+      document.getElementById('extra-btn').textContent = t.extra;
       document.getElementById('settings-btn').textContent = t.settings;
       document.getElementById('help-btn').textContent = t.help;
       document.getElementById('restart-btn').textContent = t.restart;
       document.getElementById('help-back-btn').textContent = t.back;
       document.getElementById('settings-back-btn').textContent = t.back;
       document.getElementById('audio-back-btn').textContent = t.back;
+      document.getElementById('extra-back-btn').textContent = t.back;
       
       document.getElementById('death-title').textContent = t.youDied;
       document.getElementById('death-subtitle').textContent = t.respawn;
@@ -433,6 +502,20 @@
       document.getElementById('audio-ambient-label').textContent = t.audioAmbient;
       
       document.getElementById('audio-settings-btn').textContent = t.settingsAudioSettings;
+      document.getElementById('audio-settings-title').textContent = t.settingsAudioSettings;
+      document.getElementById('settings-graphics-title').textContent = t.settingsGraphics;
+      document.getElementById('settings-visual-effects').textContent = t.settingsVisualEffects;
+      document.getElementById('settings-difficulty-title').textContent = t.settingsDifficulty;
+      document.getElementById('settings-game-difficulty').textContent = t.settingsGameDifficulty;
+      document.getElementById('settings-audio-title').textContent = t.settingsAudio;
+      document.getElementById('settings-language-title').textContent = t.settingsLanguage;
+      document.getElementById('settings-language-label').textContent = t.settingsLanguageLabel;
+      
+      // Update language dropdown options
+      const langOptions = document.querySelectorAll('#language-select option');
+      langOptions[0].textContent = `🇬🇧 ${t.langEnglish}`;
+      langOptions[1].textContent = `🇩🇰 ${t.langDanish}`;
+      langOptions[2].textContent = `🇩🇪 ${t.langGerman}`;
     }
 
     function toggleEffects(enabled) {
@@ -442,9 +525,25 @@
     }
 
     function changeDifficulty(difficulty) {
-      currentDifficulty = difficulty;
-      localStorage.setItem('difficulty', difficulty);
-      updateLanguage(currentLanguage);
+      if(currentDifficulty !== difficulty) {
+        currentDifficulty = difficulty;
+        localStorage.setItem('difficulty', difficulty);
+        updateLanguage(currentLanguage);
+        
+        // Kill player when changing difficulty
+        if(!isDead && !paused) {
+          die(false);
+        }
+      }
+    }
+
+    function saveAudioSettings() {
+      localStorage.setItem('audioRespawn', audioRespawn.checked);
+      localStorage.setItem('audioLava', audioLava.checked);
+      localStorage.setItem('audioJump', audioJump.checked);
+      localStorage.setItem('audioWalking', audioWalking.checked);
+      localStorage.setItem('audioBrick', audioBrick.checked);
+      localStorage.setItem('audioAmbient', audioAmbient.checked);
     }
 
     // ============================================
@@ -457,6 +556,14 @@
       walkingSound.volume = VOLUME_WALKING;
       killBrickSound.volume = VOLUME_KILL_BRICK;
       lavaSound.volume = VOLUME_LAVA;
+      
+      // Load audio settings
+      audioRespawn.checked = audioSettings.respawn;
+      audioLava.checked = audioSettings.lava;
+      audioJump.checked = audioSettings.jump;
+      audioWalking.checked = audioSettings.walking;
+      audioBrick.checked = audioSettings.brick;
+      audioAmbient.checked = audioSettings.ambient;
     }
 
     function playRespawnSound() {
@@ -545,16 +652,28 @@
 
     continueBtn.addEventListener("click", togglePause);
     
-    settingsBtn.addEventListener("click", () => {
+    extraBtn.addEventListener("click", () => {
       mainMenu.style.display = "none";
+      extraMenu.style.display = "block";
+      pauseTitle.textContent = translations[currentLanguage].extra;
+    });
+    
+    extraBackBtn.addEventListener("click", () => {
+      extraMenu.style.display = "none";
+      mainMenu.style.display = "block";
+      pauseTitle.textContent = translations[currentLanguage].paused;
+    });
+    
+    settingsBtn.addEventListener("click", () => {
+      extraMenu.style.display = "none";
       settingsMenu.style.display = "block";
       pauseTitle.textContent = translations[currentLanguage].settings;
     });
     
     settingsBackBtn.addEventListener("click", () => {
       settingsMenu.style.display = "none";
-      mainMenu.style.display = "block";
-      pauseTitle.textContent = translations[currentLanguage].paused;
+      extraMenu.style.display = "block";
+      pauseTitle.textContent = translations[currentLanguage].extra;
     });
     
     audioSettingsBtn.addEventListener("click", () => {
@@ -570,15 +689,15 @@
     });
     
     helpBtn.addEventListener("click", () => {
-      mainMenu.style.display = "none";
+      extraMenu.style.display = "none";
       helpMenu.style.display = "block";
       pauseTitle.textContent = translations[currentLanguage].help;
     });
     
     helpBackBtn.addEventListener("click", () => {
       helpMenu.style.display = "none";
-      mainMenu.style.display = "block";
-      pauseTitle.textContent = translations[currentLanguage].paused;
+      extraMenu.style.display = "block";
+      pauseTitle.textContent = translations[currentLanguage].extra;
     });
     
     restartBtn.addEventListener("click", () => {
@@ -586,6 +705,7 @@
       helpMenu.style.display = "none";
       settingsMenu.style.display = "none";
       audioMenu.style.display = "none";
+      extraMenu.style.display = "none";
       mainMenu.style.display = "block";
       pauseTitle.textContent = translations[currentLanguage].paused;
       saveMaxHeight();
@@ -603,6 +723,14 @@
     difficultySelect.addEventListener("change", (e) => {
       changeDifficulty(e.target.value);
     });
+
+    // Audio settings listeners
+    audioRespawn.addEventListener("change", saveAudioSettings);
+    audioLava.addEventListener("change", saveAudioSettings);
+    audioJump.addEventListener("change", saveAudioSettings);
+    audioWalking.addEventListener("change", saveAudioSettings);
+    audioBrick.addEventListener("change", saveAudioSettings);
+    audioAmbient.addEventListener("change", saveAudioSettings);
 
     deathScreen.addEventListener("click", () => {
       deathScreen.classList.remove("active");
@@ -634,6 +762,7 @@
         helpMenu.style.display = "none";
         settingsMenu.style.display = "none";
         audioMenu.style.display = "none";
+        extraMenu.style.display = "none";
         mainMenu.style.display = "block";
         pauseTitle.textContent = translations[currentLanguage].paused;
         if(animationId) cancelAnimationFrame(animationId);
@@ -855,18 +984,15 @@
     function update(currentTime = 0){
       if(paused || isDead) return;
 
-      // Delta time calculation for consistent framerate across devices
       if(!lastFrameTime) lastFrameTime = currentTime;
       const deltaTime = currentTime - lastFrameTime;
       const deltaMultiplier = deltaTime / FRAME_TIME;
       lastFrameTime = currentTime;
 
-      // Cap delta multiplier to prevent huge jumps
       const cappedDelta = Math.min(deltaMultiplier, 3);
 
       const oldY = y;
 
-      // Movement with delta time
       const moveSpeed = speed * cappedDelta;
       if(keys["a"] || keys["A"] || keys["ArrowLeft"]) x -= moveSpeed;
       if(keys["d"] || keys["D"] || keys["ArrowRight"]) x += moveSpeed;
@@ -880,7 +1006,6 @@
       }
       if(!keys[" "] && !keys["w"] && !keys["W"] && !keys["ArrowUp"]) keys._jumpHeld = false;
 
-      // Gravity with delta time
       velY += gravity * cappedDelta;
       y += velY * cappedDelta;
 
@@ -1041,7 +1166,6 @@
         LAVA_MAX_SPEED
       );
       
-      // Lava speed with delta time
       lavaY -= lavaSpeed * cappedDelta;
       lavaEl.style.top = lavaY + "px";
 
@@ -1053,7 +1177,6 @@
       const b = Math.floor(23 + heightProgress * 27);
       document.body.style.background = `rgb(${r}, ${g}, ${b})`;
 
-      // Improved lava hitbox
       if(y + PLAYER_SIZE >= lavaY - LAVA_HITBOX_OFFSET){
         die(true);
         return;
@@ -1086,6 +1209,3 @@
 
 </body>
 </html>
-
-
-
