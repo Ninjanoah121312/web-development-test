@@ -1,807 +1,397 @@
-body{
-  margin:0;
-  background:#020617;
-  overflow:hidden;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  transition: background 3s ease;
-}
-
-/* NO EFFECTS MODE */
-body.no-effects #player,
-body.no-effects .platform,
-body.no-effects #hud span,
-body.no-effects #hp-display,
-body.no-effects #pause-hint,
-body.no-effects .death-content h1,
-body.no-effects .death-content p,
-body.no-effects #pause-menu h2{
-  animation: none !important;
-  box-shadow: none !important;
-  text-shadow: none !important;
-  filter: none !important;
-}
-
-body.no-effects .platform{
-  border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-/* Lava keeps visual in no-effects mode but with correct hitbox */
-body.no-effects #lava{
-  animation: none !important;
-  filter: none !important;
-}
-
-#player{
-  width:40px;
-  height:40px;
-  background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 50%, #0284c7 100%);
-  position:absolute;
-  border-radius:10px;
-  z-index:100;
-  box-shadow: 
-    0 0 25px rgba(56, 189, 248, 0.9),
-    0 0 50px rgba(56, 189, 248, 0.6),
-    0 0 75px rgba(56, 189, 248, 0.3),
-    0 6px 15px rgba(0, 0, 0, 0.4),
-    inset 0 2px 0 rgba(255, 255, 255, 0.4),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.2);
-  transition: transform 0.1s ease;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  animation: playerFloat 2s ease-in-out infinite;
-}
-
-@keyframes playerFloat{
-  0%, 100%{
-    box-shadow: 
-      0 0 25px rgba(56, 189, 248, 0.9),
-      0 0 50px rgba(56, 189, 248, 0.6),
-      0 0 75px rgba(56, 189, 248, 0.3),
-      0 6px 15px rgba(0, 0, 0, 0.4),
-      inset 0 2px 0 rgba(255, 255, 255, 0.4),
-      inset 0 -2px 0 rgba(0, 0, 0, 0.2);
-  }
-  50%{
-    box-shadow: 
-      0 0 35px rgba(56, 189, 248, 1),
-      0 0 70px rgba(56, 189, 248, 0.7),
-      0 0 100px rgba(56, 189, 248, 0.4),
-      0 8px 20px rgba(0, 0, 0, 0.5),
-      inset 0 2px 0 rgba(255, 255, 255, 0.5),
-      inset 0 -2px 0 rgba(0, 0, 0, 0.3);
-  }
-}
-
-.platform{
-  height:18px;
-  position:absolute;
-  border-radius:10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  transition: opacity 0.3s ease;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-.green{
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
-  box-shadow: 
-    0 0 20px rgba(34, 197, 94, 0.6),
-    0 4px 15px rgba(0, 0, 0, 0.5),
-    inset 0 2px 0 rgba(255, 255, 255, 0.3),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
-  border: 2px solid rgba(74, 222, 128, 0.4);
-}
-
-.red{
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
-  box-shadow: 
-    0 0 25px rgba(239, 68, 68, 0.8),
-    0 0 50px rgba(239, 68, 68, 0.4),
-    0 4px 15px rgba(0, 0, 0, 0.5),
-    inset 0 2px 0 rgba(255, 255, 255, 0.2),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
-  animation: redPulse 2s ease-in-out infinite;
-  border: 2px solid rgba(248, 113, 113, 0.6);
-}
-
-@keyframes redPulse{
-  0%, 100%{
-    box-shadow: 
-      0 0 25px rgba(239, 68, 68, 0.8),
-      0 0 50px rgba(239, 68, 68, 0.4),
-      0 4px 15px rgba(0, 0, 0, 0.5),
-      inset 0 2px 0 rgba(255, 255, 255, 0.2),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.3);
-    filter: brightness(1);
-  }
-  50%{
-    box-shadow: 
-      0 0 35px rgba(239, 68, 68, 1),
-      0 0 70px rgba(239, 68, 68, 0.6),
-      0 0 100px rgba(239, 68, 68, 0.3),
-      0 6px 20px rgba(0, 0, 0, 0.6),
-      inset 0 2px 0 rgba(255, 255, 255, 0.3),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.4);
-    filter: brightness(1.15);
-  }
-}
-
-.blue{
-  background: linear-gradient(135deg, 
-    rgba(56,189,248,0.9) 0%, 
-    rgba(14,165,233,0.7) 50%,
-    rgba(2,132,199,0.6) 100%);
-  transition: opacity 0.3s ease;
-  box-shadow: 
-    0 0 25px rgba(56, 189, 248, 0.7),
-    0 0 50px rgba(56, 189, 248, 0.4),
-    0 4px 15px rgba(0, 0, 0, 0.4),
-    inset 0 2px 0 rgba(255, 255, 255, 0.5),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
-  border: 2px solid rgba(125, 211, 252, 0.6);
-  animation: blueShimmer 3s ease-in-out infinite;
-  backdrop-filter: blur(3px);
-}
-
-@keyframes blueShimmer{
-  0%, 100%{
-    box-shadow: 
-      0 0 25px rgba(56, 189, 248, 0.7),
-      0 0 50px rgba(56, 189, 248, 0.4),
-      0 4px 15px rgba(0, 0, 0, 0.4),
-      inset 0 2px 0 rgba(255, 255, 255, 0.5),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.2);
-  }
-  50%{
-    box-shadow: 
-      0 0 35px rgba(56, 189, 248, 0.9),
-      0 0 70px rgba(56, 189, 248, 0.5),
-      0 4px 20px rgba(0, 0, 0, 0.5),
-      inset 0 2px 0 rgba(255, 255, 255, 0.6),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.3);
-  }
-}
-
-.orange{
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #c2410c 100%);
-  box-shadow: 
-    0 0 20px rgba(249, 115, 22, 0.7),
-    0 4px 15px rgba(0, 0, 0, 0.5),
-    inset 0 2px 0 rgba(255, 255, 255, 0.3),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
-  animation: orangeMove 1s ease-in-out infinite alternate;
-  border: 2px solid rgba(251, 146, 60, 0.5);
-}
-
-@keyframes orangeMove{
-  0%{
-    box-shadow: 
-      0 0 20px rgba(249, 115, 22, 0.7),
-      0 4px 15px rgba(0, 0, 0, 0.5),
-      inset 0 2px 0 rgba(255, 255, 255, 0.3),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.2);
-  }
-  100%{
-    box-shadow: 
-      0 0 30px rgba(249, 115, 22, 0.9),
-      0 0 50px rgba(249, 115, 22, 0.5),
-      0 4px 20px rgba(0, 0, 0, 0.6),
-      inset 0 2px 0 rgba(255, 255, 255, 0.4),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.3);
-  }
-}
-
-.white{
-  background: linear-gradient(135deg, 
-    rgba(200,200,200,0.85) 0%, 
-    rgba(180,180,180,0.75) 50%,
-    rgba(160,160,160,0.7) 100%);
-  box-shadow: 
-    0 0 25px rgba(200, 200, 200, 0.6),
-    0 0 50px rgba(200, 200, 200, 0.3),
-    0 4px 15px rgba(0, 0, 0, 0.4),
-    inset 0 2px 0 rgba(255, 255, 255, 0.6),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
-  border: 2px solid rgba(200, 200, 200, 0.5);
-  backdrop-filter: blur(8px);
-  animation: whiteGhost 2.5s ease-in-out infinite;
-}
-
-@keyframes whiteGhost{
-  0%, 100%{
-    opacity: 0.75;
-    box-shadow: 
-      0 0 25px rgba(200, 200, 200, 0.6),
-      0 0 50px rgba(200, 200, 200, 0.3),
-      0 4px 15px rgba(0, 0, 0, 0.4),
-      inset 0 2px 0 rgba(255, 255, 255, 0.6),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.2);
-  }
-  50%{
-    opacity: 0.95;
-    box-shadow: 
-      0 0 35px rgba(200, 200, 200, 0.8),
-      0 0 70px rgba(200, 200, 200, 0.4),
-      0 0 100px rgba(200, 200, 200, 0.2),
-      0 4px 20px rgba(0, 0, 0, 0.5),
-      inset 0 2px 0 rgba(255, 255, 255, 0.7),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.25);
-  }
-}
-
-#hud{
-  position:fixed;
-  top:20px;
-  left:20px;
-  color:#38bdf8;
-  font-weight:bold;
-  font-size:20px;
-  z-index:1000;
-  text-shadow: 
-    0 0 10px rgba(56, 189, 248, 0.8),
-    0 2px 10px rgba(0, 0, 0, 1);
-}
-
-#hud span{
-  display:block;
-  margin-bottom:10px;
-  background: linear-gradient(135deg, 
-    rgba(2, 6, 23, 0.85) 0%, 
-    rgba(15, 23, 42, 0.8) 50%,
-    rgba(2, 6, 23, 0.85) 100%);
-  padding: 12px 18px;
-  border-radius: 12px;
-  backdrop-filter: blur(12px);
-  border: 2px solid rgba(56, 189, 248, 0.4);
-  box-shadow: 
-    0 0 20px rgba(56, 189, 248, 0.3),
-    0 4px 20px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-}
-
-#hud span:hover{
-  background: linear-gradient(135deg, 
-    rgba(2, 6, 23, 0.95) 0%, 
-    rgba(15, 23, 42, 0.9) 50%,
-    rgba(2, 6, 23, 0.95) 100%);
-  border-color: rgba(56, 189, 248, 0.6);
-  transform: translateX(8px);
-  box-shadow: 
-    0 0 30px rgba(56, 189, 248, 0.5),
-    0 6px 25px rgba(0, 0, 0, 0.7),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.4);
-}
-
-#hp-display{
-  position:fixed;
-  bottom:75px;
-  left:20px;
-  color:#22c55e;
-  font-weight:bold;
-  font-size:20px;
-  z-index:1000;
-  text-shadow: 
-    0 0 10px rgba(34, 197, 94, 0.8),
-    0 2px 10px rgba(0, 0, 0, 1);
-  background: linear-gradient(135deg, 
-    rgba(2, 6, 23, 0.85) 0%, 
-    rgba(15, 23, 42, 0.8) 50%,
-    rgba(2, 6, 23, 0.85) 100%);
-  padding: 12px 18px;
-  border-radius: 12px;
-  backdrop-filter: blur(12px);
-  border: 2px solid rgba(34, 197, 94, 0.4);
-  box-shadow: 
-    0 0 20px rgba(34, 197, 94, 0.3),
-    0 4px 20px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
-}
-
-#pause-hint{
-  position:fixed;
-  bottom:20px;
-  left:20px;
-  color:#38bdf8;
-  font-weight:bold;
-  font-size:16px;
-  z-index:1000;
-  opacity:0.85;
-  text-shadow: 
-    0 0 8px rgba(56, 189, 248, 0.8),
-    0 2px 8px rgba(0, 0, 0, 1);
-  background: linear-gradient(135deg, 
-    rgba(2, 6, 23, 0.75) 0%, 
-    rgba(15, 23, 42, 0.7) 50%,
-    rgba(2, 6, 23, 0.75) 100%);
-  padding: 10px 16px;
-  border-radius: 10px;
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(56, 189, 248, 0.25);
-  box-shadow: 
-    0 0 15px rgba(56, 189, 248, 0.2),
-    0 4px 15px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
-  animation: hintPulse 3s ease-in-out infinite;
-}
-
-@keyframes hintPulse{
-  0%, 100%{
-    opacity: 0.75;
-  }
-  50%{
-    opacity: 1;
-  }
-}
-
-#lava{
-  position:absolute;
-  left:0;
-  width:100%;
-  height:100vh;
-  background:linear-gradient(to top, 
-    #dc2626 0%, 
-    #ef4444 12%, 
-    #f97316 25%, 
-    #fb923c 38%,
-    #fcd34d 50%,
-    rgba(252,211,77,0.8) 60%,
-    rgba(251,146,60,0.6) 70%,
-    rgba(249,115,22,0.4) 80%,
-    rgba(239,68,68,0.2) 90%,
-    rgba(220,38,38,0) 100%);
-  z-index:50;
-  box-shadow:
-    0 -30px 80px rgba(220,38,38,0.9),
-    0 -20px 60px rgba(239,68,68,0.7),
-    0 -10px 40px rgba(249,115,22,0.5);
-  animation: lavaGlow 3s ease-in-out infinite;
-}
-
-@keyframes lavaGlow{
-  0%, 100%{
-    box-shadow:
-      0 -30px 80px rgba(220,38,38,0.9),
-      0 -20px 60px rgba(239,68,68,0.7),
-      0 -10px 40px rgba(249,115,22,0.5);
-    filter: brightness(1) saturate(1);
-  }
-  50%{
-    box-shadow:
-      0 -35px 100px rgba(220,38,38,1),
-      0 -25px 80px rgba(239,68,68,0.8),
-      0 -15px 60px rgba(249,115,22,0.6),
-      0 -5px 40px rgba(252,211,77,0.4);
-    filter: brightness(1.15) saturate(1.2);
-  }
-}
-
-#pause-menu{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:rgba(2,6,23,0.97);
-  display:none;
-  justify-content:center;
-  align-items:center;
-  z-index:2000;
-  backdrop-filter: blur(20px);
-}
-
-#pause-menu.active{
-  display:flex;
-}
-
-#pause-menu .menu-content{
-  background: linear-gradient(135deg, 
-    rgba(2, 6, 23, 0.98) 0%, 
-    rgba(15, 23, 42, 0.95) 50%,
-    rgba(2, 6, 23, 0.98) 100%);
-  padding:55px;
-  border-radius:25px;
-  text-align:center;
-  max-width:600px;
-  width:90%;
-  border:3px solid rgba(56, 189, 248, 0.6);
-  box-shadow: 
-    0 0 60px rgba(56, 189, 248, 0.6),
-    0 0 100px rgba(56, 189, 248, 0.3),
-    0 25px 80px rgba(0, 0, 0, 0.9),
-    inset 0 2px 0 rgba(255, 255, 255, 0.15),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.3);
-  max-height: 85vh;
-  overflow-y: auto;
-}
-
-#pause-menu h2{
-  color:#38bdf8;
-  font-size:64px;
-  margin:0 0 40px 0;
-  text-shadow: 
-    0 0 25px rgba(56, 189, 248, 1),
-    0 0 50px rgba(56, 189, 248, 0.7),
-    0 0 75px rgba(56, 189, 248, 0.4),
-    0 4px 15px rgba(0, 0, 0, 1);
-  animation: titleGlow 2s ease-in-out infinite;
-  letter-spacing: 2px;
-}
-
-@keyframes titleGlow{
-  0%, 100%{
-    text-shadow: 
-      0 0 25px rgba(56, 189, 248, 1),
-      0 0 50px rgba(56, 189, 248, 0.7),
-      0 0 75px rgba(56, 189, 248, 0.4),
-      0 4px 15px rgba(0, 0, 0, 1);
-  }
-  50%{
-    text-shadow: 
-      0 0 35px rgba(56, 189, 248, 1),
-      0 0 70px rgba(56, 189, 248, 0.8),
-      0 0 105px rgba(56, 189, 248, 0.5),
-      0 0 140px rgba(56, 189, 248, 0.3),
-      0 6px 20px rgba(0, 0, 0, 1);
-  }
-}
-
-#pause-menu .menu-btn{
-  width:100%;
-  padding:20px;
-  margin:14px 0;
-  font-size:24px;
-  font-weight:bold;
-  border:3px solid #38bdf8;
-  background: linear-gradient(135deg, 
-    rgba(56, 189, 248, 0.15) 0%, 
-    rgba(56, 189, 248, 0.08) 50%,
-    rgba(56, 189, 248, 0.15) 100%);
-  color:#38bdf8;
-  border-radius:15px;
-  cursor:pointer;
-  transition:all 0.3s ease;
-  box-shadow: 
-    0 0 20px rgba(56, 189, 248, 0.3),
-    0 4px 20px rgba(0, 0, 0, 0.4),
-    inset 0 2px 0 rgba(255, 255, 255, 0.15),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.2);
-  text-shadow: 
-    0 0 10px rgba(56, 189, 248, 0.5),
-    0 2px 5px rgba(0, 0, 0, 0.8);
-  letter-spacing: 1px;
-}
-
-#pause-menu .menu-btn.secondary{
-  font-size: 20px;
-  padding: 16px;
-}
-
-#pause-menu .menu-btn:hover{
-  background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 50%, #0284c7 100%);
-  color:#020617;
-  transform: translateY(-4px);
-  box-shadow: 
-    0 0 35px rgba(56, 189, 248, 1),
-    0 0 60px rgba(56, 189, 248, 0.6),
-    0 10px 30px rgba(0, 0, 0, 0.6),
-    inset 0 2px 0 rgba(255, 255, 255, 0.4),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.3);
-  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-  border-color: rgba(125, 211, 252, 0.8);
-}
-
-#pause-menu .menu-btn:active{
-  transform: translateY(-2px);
-}
-
-#pause-menu .menu-btn.restart{
-  border-color:#ef4444;
-  color:#ef4444;
-  background: linear-gradient(135deg, 
-    rgba(239, 68, 68, 0.15) 0%, 
-    rgba(239, 68, 68, 0.08) 50%,
-    rgba(239, 68, 68, 0.15) 100%);
-  text-shadow: 
-    0 0 10px rgba(239, 68, 68, 0.5),
-    0 2px 5px rgba(0, 0, 0, 0.8);
-  box-shadow: 
-    0 0 20px rgba(239, 68, 68, 0.3),
-    0 4px 20px rgba(0, 0, 0, 0.4),
-    inset 0 2px 0 rgba(255, 255, 255, 0.15),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.2);
-}
-
-#pause-menu .menu-btn.restart:hover{
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
-  color:white;
-  box-shadow: 
-    0 0 35px rgba(239, 68, 68, 1),
-    0 0 60px rgba(239, 68, 68, 0.6),
-    0 10px 30px rgba(0, 0, 0, 0.6),
-    inset 0 2px 0 rgba(255, 255, 255, 0.3),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.3);
-  border-color: rgba(248, 113, 113, 0.8);
-  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-}
-
-.help-section{
-  text-align:left;
-  display:none;
-  max-height: 60vh;
-  overflow-y: auto;
-  padding-right: 10px;
-}
-
-#main-menu{
-  display:block;
-}
-
-#help-menu h3,
-#settings-menu h3,
-#audio-menu h3,
-#extra-menu h3{
-  color:#38bdf8;
-  font-size:32px;
-  margin:0 0 25px 0;
-  text-align:center;
-  text-shadow: 
-    0 0 20px rgba(56, 189, 248, 0.8),
-    0 4px 10px rgba(0, 0, 0, 1);
-  letter-spacing: 1px;
-}
-
-#help-menu p{
-  color:#22c55e;
-  margin:12px 0;
-  font-size:16px;
-  line-height:2;
-  background: linear-gradient(135deg,
-    rgba(34, 197, 94, 0.08) 0%,
-    rgba(34, 197, 94, 0.12) 50%,
-    rgba(34, 197, 94, 0.08) 100%);
-  padding: 10px 15px;
-  border-radius: 10px;
-  border-left: 4px solid #22c55e;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-  box-shadow: 
-    0 2px 10px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-}
-
-#help-menu p:hover{
-  background: linear-gradient(135deg,
-    rgba(34, 197, 94, 0.12) 0%,
-    rgba(34, 197, 94, 0.16) 50%,
-    rgba(34, 197, 94, 0.12) 100%);
-  transform: translateX(5px);
-}
-
-#help-menu strong{
-  color:#38bdf8;
-  text-shadow: 
-    0 0 12px rgba(56, 189, 248, 0.7),
-    0 1px 3px rgba(0, 0, 0, 0.8);
-}
-
-/* SETTINGS STYLES */
-.settings-section{
-  margin: 25px 0;
-  padding: 20px;
-  background: rgba(56, 189, 248, 0.05);
-  border-radius: 15px;
-  border: 2px solid rgba(56, 189, 248, 0.2);
-}
-
-.settings-section h4{
-  color: #38bdf8;
-  font-size: 24px;
-  margin: 0 0 15px 0;
-  text-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
-}
-
-.setting-item{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px;
-  margin: 10px 0;
-  background: rgba(15, 23, 42, 0.5);
-  border-radius: 10px;
-  border: 2px solid rgba(56, 189, 248, 0.2);
-}
-
-.setting-item span{
-  color: #38bdf8;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-/* TOGGLE SWITCH */
-.toggle{
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
-}
-
-.toggle input{
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider{
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(239, 68, 68, 0.5);
-  transition: 0.4s;
-  border-radius: 34px;
-  border: 2px solid rgba(239, 68, 68, 0.8);
-}
-
-.slider:before{
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 2px;
-  background-color: white;
-  transition: 0.4s;
-  border-radius: 50%;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-}
-
-input:checked + .slider{
-  background-color: rgba(34, 197, 94, 0.5);
-  border-color: rgba(34, 197, 94, 0.8);
-}
-
-input:checked + .slider:before{
-  transform: translateX(26px);
-}
-
-.slider:hover{
-  box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
-}
-
-/* LANGUAGE DROPDOWN */
-.language-dropdown,
-.difficulty-dropdown{
-  padding: 10px 15px;
-  font-size: 18px;
-  background: rgba(15, 23, 42, 0.8);
-  color: #38bdf8;
-  border: 2px solid rgba(56, 189, 248, 0.4);
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-
-.language-dropdown:hover,
-.difficulty-dropdown:hover{
-  background: rgba(15, 23, 42, 1);
-  border-color: rgba(56, 189, 248, 0.8);
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
-}
-
-.language-dropdown option,
-.difficulty-dropdown option{
-  background: #0f172a;
-  color: #38bdf8;
-  padding: 10px;
-}
-
-#death-screen{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.96);
-  display:none;
-  justify-content:center;
-  align-items:center;
-  z-index:3000;
-  cursor:pointer;
-  backdrop-filter: blur(15px);
-}
-
-#death-screen.active{
-  display:flex;
-}
-
-.death-content{
-  text-align:center;
-}
-
-.death-content h1{
-  color:#ef4444;
-  font-size:96px;
-  margin-bottom:30px;
-  animation:deathPulse 1.5s infinite;
-  text-shadow: 
-    0 0 40px rgba(239, 68, 68, 1),
-    0 0 80px rgba(239, 68, 68, 0.8),
-    0 0 120px rgba(239, 68, 68, 0.6),
-    0 0 160px rgba(239, 68, 68, 0.4),
-    0 6px 20px rgba(0, 0, 0, 1);
-  letter-spacing: 3px;
-}
-
-.death-content p{
-  color:#38bdf8;
-  font-size:40px;
-  font-weight:bold;
-  text-shadow: 
-    0 0 25px rgba(56, 189, 248, 1),
-    0 0 50px rgba(56, 189, 248, 0.6),
-    0 4px 15px rgba(0, 0, 0, 1);
-  animation: promptBlink 2s ease-in-out infinite;
-  letter-spacing: 2px;
-}
-
-@keyframes deathPulse{
-  0%, 100%{
-    opacity:1;
-    transform:scale(1);
-    text-shadow: 
-      0 0 40px rgba(239, 68, 68, 1),
-      0 0 80px rgba(239, 68, 68, 0.8),
-      0 0 120px rgba(239, 68, 68, 0.6),
-      0 0 160px rgba(239, 68, 68, 0.4),
-      0 6px 20px rgba(0, 0, 0, 1);
-  }
-  50%{
-    opacity:0.85;
-    transform:scale(1.08);
-    text-shadow: 
-      0 0 50px rgba(239, 68, 68, 1),
-      0 0 100px rgba(239, 68, 68, 0.9),
-      0 0 150px rgba(239, 68, 68, 0.7),
-      0 0 200px rgba(239, 68, 68, 0.5),
-      0 8px 25px rgba(0, 0, 0, 1);
-  }
-}
-
-@keyframes promptBlink{
-  0%, 100%{
-    opacity: 1;
-  }
-  50%{
-    opacity: 0.4;
-  }
-}
-
-/* SCROLLBAR */
-#pause-menu .menu-content::-webkit-scrollbar,
-.help-section::-webkit-scrollbar{
-  width: 10px;
-}
-
-#pause-menu .menu-content::-webkit-scrollbar-track,
-.help-section::-webkit-scrollbar-track{
-  background: rgba(2, 6, 23, 0.5);
-  border-radius: 10px;
-}
-
-#pause-menu .menu-content::-webkit-scrollbar-thumb,
-.help-section::-webkit-scrollbar-thumb{
-  background: linear-gradient(180deg, #38bdf8, #0ea5e9);
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
-}
-
-#pause-menu .menu-content::-webkit-scrollbar-thumb:hover,
-.help-section::-webkit-scrollbar-thumb:hover{
-  background: linear-gradient(180deg, #0ea5e9, #0284c7);
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BLOCK JUMP</title>
+  <link rel="stylesheet" href="test.css">
+</head>
+<body>
+
+  <!-- ================================================
+       AUDIO
+  ================================================ -->
+  <audio id="respawn-sound"     src="sounds/respawn.mp3"           preload="auto"></audio>
+  <audio id="lava-die-sound"    src="sounds/lava_die.mp3"          preload="auto"></audio>
+  <audio id="jump-sound"        src="sounds/jump.mp3"              preload="auto"></audio>
+  <audio id="walking-sound"     src="sounds/walking.mp3"           preload="auto" loop></audio>
+  <audio id="kill-brick-sound"  src="sounds/kill_brick.mp3"        preload="auto"></audio>
+  <audio id="lava-sound"        src="sounds/lava.mp3"              preload="auto" loop></audio>
+  <audio id="achievement-sound" src="sounds/music/achievement.mp3" preload="auto"></audio>
+
+  <!-- ================================================
+       HUD
+  ================================================ -->
+  <div id="hud">
+    <span id="current">HEIGHT: 0</span>
+    <span id="max">TOP HEIGHT: 0</span>
+    <span id="difficulty-display">DIFFICULTY: MEDIUM</span>
+  </div>
+
+  <div id="hp-display">Double Jump = true</div>
+  <div id="pause-hint">Press ESC to pause</div>
+  <div id="version-tag">v1.2.0</div>
+
+  <!-- ================================================
+       GAME WORLD
+  ================================================ -->
+  <div id="lava"></div>
+  <div id="player"></div>
+
+  <!-- ================================================
+       ACHIEVEMENT TOAST  (v1.2.0)
+  ================================================ -->
+  <div id="achievement-toast">
+    <div class="toast-icon" id="toast-icon">🏆</div>
+    <div class="toast-body">
+      <div class="toast-label" id="toast-label">ACHIEVEMENT UNLOCKED</div>
+      <div class="toast-title" id="toast-title">—</div>
+      <div class="toast-desc"  id="toast-desc">—</div>
+    </div>
+  </div>
+
+  <!-- ================================================
+       CONFIRM MODAL  (Reset Data)
+  ================================================ -->
+  <div id="confirm-modal">
+    <div class="modal-box">
+      <h3 id="confirm-title">⚠ RESET ALL DATA?</h3>
+      <p  id="confirm-body">This will permanently erase all scores, achievements, and settings. This cannot be undone.</p>
+      <div class="modal-btns">
+        <button id="confirm-yes">RESET</button>
+        <button id="confirm-no">CANCEL</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+       PAUSE MENU
+  ================================================ -->
+  <div id="pause-menu">
+    <div class="menu-content">
+
+      <h2 id="pause-title">PAUSED</h2>
+
+      <!-- ── MAIN MENU ── -->
+      <div id="main-menu" class="menu-panel">
+        <button class="menu-btn"         id="continue-btn">CONTINUE</button>
+        <button class="menu-btn"         id="extra-btn">EXTRA</button>
+        <button class="menu-btn restart" id="restart-btn">RESTART</button>
+      </div>
+
+      <!-- ── EXTRA MENU ── -->
+      <div id="extra-menu" class="menu-panel hidden">
+        <h3 id="extra-title-h3">EXTRA</h3>
+        <button class="menu-btn secondary" id="achievements-btn">ACHIEVEMENTS</button>
+        <button class="menu-btn secondary" id="settings-btn">SETTINGS</button>
+        <button class="menu-btn secondary" id="help-btn">HELP</button>
+        <button class="menu-btn secondary" id="changelog-btn">CHANGELOG</button>
+        <button class="menu-btn"           id="extra-back-btn">BACK</button>
+      </div>
+
+      <!-- ── ACHIEVEMENTS MENU  (v1.2.0) ── -->
+      <div id="achievements-menu" class="menu-panel hidden scrollable">
+        <h3 id="achievements-title-h3">ACHIEVEMENTS</h3>
+        <div id="achievements-container">
+          <!-- Populated by JS -->
+        </div>
+        <button class="menu-btn" id="achievements-back-btn">BACK</button>
+      </div>
+
+      <!-- ── SETTINGS MENU ── -->
+      <div id="settings-menu" class="menu-panel hidden scrollable">
+        <h3 id="settings-title-h3">SETTINGS</h3>
+
+        <!-- Graphics -->
+        <div class="settings-section">
+          <h4 id="settings-graphics-title">Graphics</h4>
+
+          <!-- High / Low graphics cube toggle  (v1.2.0) -->
+          <div class="setting-item column-item">
+            <span id="settings-graphics-mode-label">Graphics Mode</span>
+            <div class="cube-toggle" id="graphics-mode-toggle">
+              <div class="cube-slider"></div>
+              <span class="cube-label left active" id="gfx-label-high">HIGH</span>
+              <span class="cube-label right"       id="gfx-label-low">LOW</span>
+            </div>
+          </div>
+
+          <!-- UI Effects  (v1.2.0) -->
+          <div class="setting-item">
+            <span id="settings-ui-effects-label">UI Effects</span>
+            <label class="toggle">
+              <input type="checkbox" id="ui-effects-toggle" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <!-- Visual Effects -->
+          <div class="setting-item">
+            <span id="settings-visual-effects">Visual Effects</span>
+            <label class="toggle">
+              <input type="checkbox" id="effects-toggle" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Difficulty -->
+        <div class="settings-section">
+          <h4 id="settings-difficulty-title">Difficulty</h4>
+          <div class="setting-item">
+            <span id="settings-game-difficulty">Game Difficulty</span>
+            <select id="difficulty-select" class="styled-select">
+              <option value="easy">Easy</option>
+              <option value="medium" selected>Medium</option>
+              <option value="hard">Hard</option>
+              <option value="impossible">Impossible</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Audio link -->
+        <div class="settings-section">
+          <h4 id="settings-audio-title">Audio</h4>
+          <button class="menu-btn secondary" id="audio-settings-btn">Audio Settings</button>
+        </div>
+
+        <!-- Customization link  (v1.2.0) -->
+        <div class="settings-section">
+          <h4 id="settings-custom-title">Customization</h4>
+          <button class="menu-btn secondary" id="custom-colors-btn">Colors &amp; Theme</button>
+        </div>
+
+        <!-- Language -->
+        <div class="settings-section">
+          <h4 id="settings-language-title">Language</h4>
+          <div class="setting-item">
+            <span id="settings-language-label">Language</span>
+            <select id="language-select" class="styled-select">
+              <option value="en">🇬🇧 English</option>
+              <option value="da">🇩🇰 Dansk</option>
+              <option value="de">🇩🇪 Deutsch</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Data / Reset  (v1.2.0) -->
+        <div class="settings-section">
+          <h4 id="settings-data-title">Data</h4>
+          <button class="btn-danger wide" id="reset-data-btn">⚠ RESET ALL DATA</button>
+        </div>
+
+        <button class="menu-btn" id="settings-back-btn">BACK</button>
+      </div>
+
+      <!-- ── AUDIO SETTINGS MENU ── -->
+      <div id="audio-menu" class="menu-panel hidden scrollable">
+        <h3 id="audio-settings-title">AUDIO SETTINGS</h3>
+
+        <!-- Global music ON/OFF  (v1.2.0) -->
+        <div class="master-row">
+          <span id="audio-global-music-label">Global Music</span>
+          <label class="toggle">
+            <input type="checkbox" id="audio-global-music" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- Master volume  (v1.2.0) -->
+        <div class="master-volume-block">
+          <label id="audio-master-vol-label">Master Volume</label>
+          <div class="vol-row-inner">
+            <input type="range" id="master-volume" min="0" max="100" value="100">
+            <span class="vol-num" id="master-vol-display">100</span><span class="vol-pct">%</span>
+          </div>
+        </div>
+
+        <!-- ALL ON / ALL OFF  (v1.2.0) -->
+        <div class="section-label" id="audio-sounds-header">SOUNDS</div>
+        <div class="all-toggle-row">
+          <button class="btn-all-on"  id="sounds-all-on">✓ ALL ON</button>
+          <button class="btn-all-off" id="sounds-all-off">✗ ALL OFF</button>
+        </div>
+
+        <!-- Individual sounds with volume slider -->
+        <div class="vol-row">
+          <label class="toggle"><input type="checkbox" id="audio-respawn" checked><span class="slider"></span></label>
+          <span id="audio-respawn-label">Respawn Sound</span>
+          <input type="range" class="vol-slider" id="vol-respawn" min="0" max="100" value="70">
+          <span class="vol-num" id="vol-respawn-val">70%</span>
+        </div>
+
+        <div class="vol-row">
+          <label class="toggle"><input type="checkbox" id="audio-lava" checked><span class="slider"></span></label>
+          <span id="audio-lava-label">Lava Death Sound</span>
+          <input type="range" class="vol-slider" id="vol-lava-die" min="0" max="100" value="60">
+          <span class="vol-num" id="vol-lava-die-val">60%</span>
+        </div>
+
+        <div class="vol-row">
+          <label class="toggle"><input type="checkbox" id="audio-jump" checked><span class="slider"></span></label>
+          <span id="audio-jump-label">Jump Sound</span>
+          <input type="range" class="vol-slider" id="vol-jump" min="0" max="100" value="40">
+          <span class="vol-num" id="vol-jump-val">40%</span>
+        </div>
+
+        <div class="vol-row">
+          <label class="toggle"><input type="checkbox" id="audio-walking" checked><span class="slider"></span></label>
+          <span id="audio-walking-label">Walking Sound</span>
+          <input type="range" class="vol-slider" id="vol-walking" min="0" max="100" value="70">
+          <span class="vol-num" id="vol-walking-val">70%</span>
+        </div>
+
+        <div class="vol-row">
+          <label class="toggle"><input type="checkbox" id="audio-brick" checked><span class="slider"></span></label>
+          <span id="audio-brick-label">Kill Brick Sound</span>
+          <input type="range" class="vol-slider" id="vol-brick" min="0" max="100" value="80">
+          <span class="vol-num" id="vol-brick-val">80%</span>
+        </div>
+
+        <div class="vol-row">
+          <label class="toggle"><input type="checkbox" id="audio-ambient" checked><span class="slider"></span></label>
+          <span id="audio-ambient-label">Lava Ambient Sound</span>
+          <input type="range" class="vol-slider" id="vol-lava-amb" min="0" max="100" value="40">
+          <span class="vol-num" id="vol-lava-amb-val">40%</span>
+        </div>
+
+        <!-- Achievement sound  (v1.2.0) -->
+        <div class="vol-row">
+          <label class="toggle"><input type="checkbox" id="audio-achievement" checked><span class="slider"></span></label>
+          <span id="audio-achievement-label">Achievement Sound</span>
+          <input type="range" class="vol-slider" id="vol-achievement" min="0" max="100" value="80">
+          <span class="vol-num" id="vol-achievement-val">80%</span>
+        </div>
+
+        <button class="menu-btn" id="audio-back-btn">BACK</button>
+      </div>
+
+      <!-- ── COLORS & THEME MENU  (v1.2.0) ── -->
+      <div id="custom-menu" class="menu-panel hidden scrollable">
+        <h3 id="custom-title-h3">COLORS &amp; THEME</h3>
+
+        <!-- Default / Custom cube toggle -->
+        <div class="cube-toggle wide-toggle" id="color-mode-toggle">
+          <div class="cube-slider"></div>
+          <span class="cube-label left active" id="cm-label-default">DEFAULT</span>
+          <span class="cube-label right"       id="cm-label-custom">CUSTOM</span>
+        </div>
+
+        <!-- Color pickers — shown only in custom mode -->
+        <div id="color-pickers-wrap" class="hidden">
+          <div class="color-grid">
+
+            <div class="color-pick-item">
+              <label id="cp-label-btn">Button Color</label>
+              <input type="color" id="cp-btn-color" value="#38bdf8">
+              <div class="color-preview" id="cp-btn-preview"></div>
+            </div>
+
+            <div class="color-pick-item">
+              <label id="cp-label-text">Text Color</label>
+              <input type="color" id="cp-text-color" value="#38bdf8">
+              <div class="color-preview" id="cp-text-preview"></div>
+            </div>
+
+            <div class="color-pick-item">
+              <label id="cp-label-hud">HUD Color</label>
+              <input type="color" id="cp-hud-color" value="#38bdf8">
+              <div class="color-preview" id="cp-hud-preview"></div>
+            </div>
+
+            <div class="color-pick-item">
+              <label id="cp-label-accent">Accent Color</label>
+              <input type="color" id="cp-accent-color" value="#22c55e">
+              <div class="color-preview" id="cp-accent-preview"></div>
+            </div>
+
+          </div><!-- /.color-grid -->
+
+          <button class="btn-warning wide" id="reset-colors-btn">↺ Reset to Default Colors</button>
+        </div><!-- /#color-pickers-wrap -->
+
+        <button class="menu-btn" id="custom-back-btn">BACK</button>
+      </div>
+
+      <!-- ── HELP MENU ── -->
+      <div id="help-menu" class="menu-panel hidden scrollable">
+        <h3 id="help-title-h3">HELP</h3>
+        <p>🟢 <strong class="help-green">Green:</strong>      <span class="help-green-desc">Safe platform</span></p>
+        <p>🔴 <strong class="help-red">Red:</strong>          <span class="help-red-desc">Die when landing on it</span></p>
+        <p>🔵 <strong class="help-blue">Blue:</strong>        <span class="help-blue-desc">Disappears after 1 second</span></p>
+        <p>🟠 <strong class="help-orange">Orange:</strong>    <span class="help-orange-desc">Moving platform</span></p>
+        <p>⚪ <strong class="help-white">White/gray:</strong> <span class="help-white-desc">Platform you can jump through and land on</span></p>
+        <p><strong class="help-controls">Controls:</strong>   <span class="help-controls-desc">W/A/D/SPACE and Arrow Keys + you have double jump</span></p>
+        <p><strong class="help-avoid">Avoid the Lava!</strong></p>
+        <p><strong class="help-pause">ESC to pause</strong></p>
+        <button class="menu-btn" id="help-back-btn">BACK</button>
+      </div>
+
+      <!-- ── CHANGELOG MENU  (v1.2.0) ── -->
+      <div id="changelog-menu" class="menu-panel hidden scrollable">
+        <h3 id="changelog-title-h3">CHANGELOG</h3>
+
+        <div class="changelog-entry">
+          <div class="cl-version">v1.2.0</div>
+          <div class="cl-date" id="cl-date-120">2025 — Latest</div>
+          <div class="cl-item" id="cl-achievements">Achievements system (250 / 500 / 1000 per mode)</div>
+          <div class="cl-item" id="cl-ach-sound">Achievement unlock sound &amp; toast notification</div>
+          <div class="cl-item" id="cl-vol-sliders">Per-sound volume sliders</div>
+          <div class="cl-item" id="cl-master-vol">Master volume + Global music ON/OFF</div>
+          <div class="cl-item" id="cl-all-toggle">ALL ON / ALL OFF sound buttons</div>
+          <div class="cl-item" id="cl-colors">Button &amp; text color customization (RGB picker)</div>
+          <div class="cl-item" id="cl-reset-colors">Reset to Default Colors button</div>
+          <div class="cl-item" id="cl-reset-data">Reset All Data button</div>
+          <div class="cl-item" id="cl-gfx-mode">High / Low graphics mode cube toggle</div>
+          <div class="cl-item" id="cl-ui-effects">UI Effects toggle (separate)</div>
+          <div class="cl-item" id="cl-extra-help">Fixed Extra Help menu styling</div>
+          <div class="cl-item" id="cl-low-gfx">Fixed Low Graphics mode UI quality</div>
+          <div class="cl-item" id="cl-translations">Full translation coverage (EN / DA / DE)</div>
+          <div class="cl-item" id="cl-loader">Added loader.html for GitHub CDN loading</div>
+          <div class="cl-item" id="cl-version-tag">Version tag displayed in-game</div>
+        </div>
+
+        <div class="changelog-entry">
+          <div class="cl-version">v1.1.0</div>
+          <div class="cl-date" id="cl-date-110">2025</div>
+          <div class="cl-item">Multi-language support (EN, DA, DE)</div>
+          <div class="cl-item">Pause menu with sub-menus</div>
+          <div class="cl-item">Difficulty system (Easy → Impossible)</div>
+          <div class="cl-item">Audio settings per sound</div>
+          <div class="cl-item">Visual effects toggle</div>
+          <div class="cl-item">localStorage persistence</div>
+        </div>
+
+        <div class="changelog-entry">
+          <div class="cl-version">v1.0.0</div>
+          <div class="cl-date" id="cl-date-100">2025</div>
+          <div class="cl-item">Initial release</div>
+          <div class="cl-item">5 platform types (Green, Red, Blue, Orange, White)</div>
+          <div class="cl-item">Double jump mechanic</div>
+          <div class="cl-item">Rising lava with speed scaling</div>
+          <div class="cl-item">Top height tracking per difficulty</div>
+        </div>
+
+        <button class="menu-btn" id="changelog-back-btn">BACK</button>
+      </div>
+
+    </div><!-- /.menu-content -->
+  </div><!-- /#pause-menu -->
+
+  <!-- ================================================
+       DEATH SCREEN
+  ================================================ -->
+  <div id="death-screen">
+    <div class="death-content">
+      <h1 id="death-title">YOU DIED</h1>
+      <p  id="death-subtitle">Click/Space to Respawn</p>
+    </div>
+  </div>
+
+  <!-- ================================================
+       SCRIPTS
+  ================================================ -->
+  <script src="app.js"></script>
+
+</body>
+</html>
