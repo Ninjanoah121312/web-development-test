@@ -1,9 +1,5 @@
 
 const VERSION = '1.2.0';
-
-// ============================================================
-// CONSTANTS
-// ============================================================
 const LAVA_START_SPEED = 0.10;
 const LAVA_SPEED_INCREASE_RATE = 0.08;
 const LAVA_HEIGHT_BOOST_FACTOR = 0.05;
@@ -37,10 +33,6 @@ const DEFAULT_CUBE   = { r: 56,  g: 189, b: 248 };
 
 const ACH_THRESHOLDS = [250, 500, 1000];
 const ACH_MODES      = ['easy', 'medium', 'hard', 'impossible'];
-
-// ============================================================
-// DOM REFERENCES
-// ============================================================
 const playerEl       = document.getElementById('player');
 const curEl          = document.getElementById('current');
 const maxEl          = document.getElementById('max');
@@ -144,10 +136,6 @@ const walkingSound     = document.getElementById('walking-sound');
 const killBrickSound   = document.getElementById('kill-brick-sound');
 const lavaSound        = document.getElementById('lava-sound');
 const achievementSound = document.getElementById('achievement-sound');
-
-// ============================================================
-// TRANSLATIONS
-// ============================================================
 const translations = {
   en: {
     height: 'HEIGHT', topHeight: 'TOP HEIGHT', difficulty: 'DIFFICULTY',
@@ -271,9 +259,6 @@ const translations = {
   }
 };
 
-// ============================================================
-// STATE
-// ============================================================
 let x, y, velY, jumpsLeft, lowestPlatformY;
 let currentHeight = 0, globalDifficulty = 0;
 let lavaY, lavaSpeed;
@@ -347,9 +332,7 @@ let colors = {
 // Achievement state
 let achievementState = {};
 
-// ============================================================
-// ACHIEVEMENT SYSTEM
-// ============================================================
+
 function loadAchievements() {
   try {
     const saved = localStorage.getItem('achievements');
@@ -446,9 +429,7 @@ function renderAchievements() {
   }
 }
 
-// ============================================================
-// AUDIO SYSTEM
-// ============================================================
+
 function effectiveVol(base) {
   if (!vol.masterOn) return 0;
   return vol.master * base;
@@ -585,9 +566,6 @@ function stopLavaSound() {
   lavaInView = false;
 }
 
-// ============================================================
-// COLOR SYSTEM
-// ============================================================
 function applyAccentColor(r, g, b) {
   const root = document.documentElement;
   root.style.setProperty('--ac',     `rgb(${r},${g},${b})`);
@@ -654,9 +632,6 @@ function hookSwatchLive(rEl, gEl, bEl, swatchEl) {
   bEl.addEventListener('input', update);
 }
 
-// ============================================================
-// SETTINGS
-// ============================================================
 function toggleEffects(enabled) {
   effectsEnabled = enabled;
   localStorage.setItem('effectsEnabled', enabled);
@@ -719,9 +694,7 @@ function resetAllData() {
   resetGame();
 }
 
-// ============================================================
-// LANGUAGE
-// ============================================================
+
 function updateLanguage(lang) {
   currentLanguage = lang;
   localStorage.setItem('language', lang);
@@ -820,9 +793,6 @@ function updateLanguage(lang) {
   langOpts[2].textContent = `🇩🇪 ${t.langGerman}`;
 }
 
-// ============================================================
-// MENU NAVIGATION HELPERS
-// ============================================================
 const ALL_SUBMENUS = [extraMenu, settingsMenu, audioMenu, colorMenu, customMenu, achievementsMenu, changelogMenu, helpMenu];
 
 function closeAllSubMenus() {
@@ -842,9 +812,7 @@ function showMain() {
   pauseTitle.textContent = translations[currentLanguage].paused;
 }
 
-// ============================================================
-// PAUSE
-// ============================================================
+
 function togglePause() {
   paused = !paused;
   if (paused) {
@@ -860,9 +828,7 @@ function togglePause() {
   }
 }
 
-// ============================================================
-// DEATH
-// ============================================================
+
 function die(fromLava = false) {
   isDead = true;
   diedFromLava = fromLava;
@@ -874,9 +840,7 @@ function die(fromLava = false) {
   deathScreen.classList.add('active');
 }
 
-// ============================================================
-// GAME RESET
-// ============================================================
+
 function resetGame() {
   if (animationId) cancelAnimationFrame(animationId);
   stopWalkingSound();
@@ -924,9 +888,7 @@ function resetGame() {
   update();
 }
 
-// ============================================================
-// PLATFORM CREATION
-// ============================================================
+
 function createPlatform(px, py, width, type = 'green') {
   let p;
   if (platformPool.length > 0) {
@@ -1032,9 +994,7 @@ function recyclePlatforms() {
   }
 }
 
-// ============================================================
-// MAIN GAME LOOP
-// ============================================================
+
 function update(currentTime = 0) {
   if (paused || isDead) return;
 
@@ -1195,9 +1155,7 @@ function update(currentTime = 0) {
   animationId = requestAnimationFrame(update);
 }
 
-// ============================================================
-// EVENT LISTENERS
-// ============================================================
+
 
 // Keyboard
 document.addEventListener('keydown', e => {
@@ -1319,9 +1277,7 @@ hookSwatchLive(accentR, accentG, accentB, accentSwatch);
 hookSwatchLive(textR,   textG,   textB,   textSwatch);
 hookSwatchLive(cubeR,   cubeG,   cubeB,   cubeSwatch);
 
-// ============================================================
-// INIT
-// ============================================================
+
 loadAchievements();
 applyAllVolumes();
 syncVolumeUI();
