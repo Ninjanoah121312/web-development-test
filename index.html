@@ -2,17 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>BLOCK JUMP v1.2.0</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BLOCK JUMP</title>
   <link rel="stylesheet" href="test.css">
 </head>
 <body>
 
-  <audio id="respawn-sound" src="sounds/music/respawn.mp3" preload="auto"></audio>
-  <audio id="lava-die-sound" src="sounds/music/lava_die.mp3" preload="auto"></audio>
-  <audio id="jump-sound" src="sounds/music/jump.mp3" preload="auto"></audio>
-  <audio id="walking-sound" src="sounds/music/walking.mp3" preload="auto" loop></audio>
-  <audio id="kill-brick-sound" src="sounds/music/kill_brick.mp3" preload="auto"></audio>
-  <audio id="lava-sound" src="sounds/music/lava.mp3" preload="auto" loop></audio>
+  <audio id="respawn-sound"     src="sounds/music/respawn.mp3"     preload="auto"></audio>
+  <audio id="lava-die-sound"    src="sounds/music/lava_die.mp3"    preload="auto"></audio>
+  <audio id="jump-sound"        src="sounds/music/jump.mp3"        preload="auto"></audio>
+  <audio id="walking-sound"     src="sounds/music/walking.mp3"     preload="auto" loop></audio>
+  <audio id="kill-brick-sound"  src="sounds/music/kill_brick.mp3"  preload="auto"></audio>
+  <audio id="lava-sound"        src="sounds/music/lava.mp3"        preload="auto" loop></audio>
   <audio id="achievement-sound" src="sounds/music/achievement.mp3" preload="auto"></audio>
 
   <div id="hud">
@@ -23,39 +24,77 @@
 
   <div id="hp-display">Double Jump = true</div>
   <div id="pause-hint">Press ESC to pause</div>
-
-  <div id="achievement-popup" class="achievement-popup"></div>
+  <div id="version-tag">v1.2.0</div>
 
   <div id="lava"></div>
   <div id="player"></div>
 
+  <div id="achievement-toast">
+    <div class="toast-icon" id="toast-icon">🏆</div>
+    <div class="toast-body">
+      <div class="toast-label" id="toast-label">ACHIEVEMENT UNLOCKED</div>
+      <div class="toast-title" id="toast-title">—</div>
+      <div class="toast-desc"  id="toast-desc">—</div>
+    </div>
+  </div>
+
+  <div id="confirm-modal">
+    <div class="modal-box">
+      <h3 id="confirm-title">⚠ RESET ALL DATA?</h3>
+      <p  id="confirm-body">This will permanently erase all scores, achievements, and settings. This cannot be undone.</p>
+      <div class="modal-btns">
+        <button id="confirm-yes">RESET</button>
+        <button id="confirm-no">CANCEL</button>
+      </div>
+    </div>
+  </div>
+
   <div id="pause-menu">
     <div class="menu-content">
+
       <h2 id="pause-title">PAUSED</h2>
 
-      <!-- MAIN MENU -->
-      <div class="menu-buttons" id="main-menu">
-        <button class="menu-btn" id="continue-btn">CONTINUE</button>
-        <button class="menu-btn" id="extra-btn">EXTRA</button>
+      <div id="main-menu" class="menu-panel">
+        <button class="menu-btn"         id="continue-btn">CONTINUE</button>
+        <button class="menu-btn"         id="extra-btn">EXTRA</button>
         <button class="menu-btn restart" id="restart-btn">RESTART</button>
       </div>
 
-      <!-- EXTRA MENU -->
-      <div class="help-section" id="extra-menu">
-        <h3 id="extra-title">EXTRA</h3>
-        <button class="menu-btn secondary" id="settings-btn">SETTINGS</button>
+      <div id="extra-menu" class="menu-panel hidden">
+        <h3 id="extra-title-h3">EXTRA</h3>
         <button class="menu-btn secondary" id="achievements-btn">ACHIEVEMENTS</button>
+        <button class="menu-btn secondary" id="settings-btn">SETTINGS</button>
         <button class="menu-btn secondary" id="help-btn">HELP</button>
-        <button class="menu-btn restart secondary" id="reset-data-btn">RESET DATA</button>
-        <button class="menu-btn" id="extra-back-btn">BACK</button>
+        <button class="menu-btn secondary" id="changelog-btn">CHANGELOG</button>
+        <button class="menu-btn"           id="extra-back-btn">BACK</button>
       </div>
 
-      <!-- SETTINGS MENU -->
-      <div class="help-section" id="settings-menu">
-        <h3 id="settings-title">SETTINGS</h3>
+      <div id="achievements-menu" class="menu-panel hidden scrollable">
+        <h3 id="achievements-title-h3">ACHIEVEMENTS</h3>
+        <div id="achievements-container"></div>
+        <button class="menu-btn" id="achievements-back-btn">BACK</button>
+      </div>
+
+      <div id="settings-menu" class="menu-panel hidden scrollable">
+        <h3 id="settings-title-h3">SETTINGS</h3>
 
         <div class="settings-section">
           <h4 id="settings-graphics-title">Graphics</h4>
+          <div class="setting-item column-item">
+            <span id="settings-graphics-mode-label">Graphics Mode</span>
+            <div class="cube-toggle" id="graphics-mode-toggle">
+              <div class="cube-slider"></div>
+              <span class="cube-label left active" id="gfx-label-high">HIGH</span>
+              <span class="cube-label right"       id="gfx-label-low">LOW</span>
+            </div>
+          </div>
+          <div class="setting-item">
+            <span id="settings-ui-effects-label">UI Effects</span>
+            <label class="toggle">
+              <input type="checkbox" id="ui-effects-toggle" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
           <div class="setting-item">
             <span id="settings-visual-effects">Visual Effects</span>
             <label class="toggle">
@@ -63,20 +102,13 @@
               <span class="slider"></span>
             </label>
           </div>
-          <div class="setting-item">
-            <span id="settings-graphics-quality-label">Graphics Quality</span>
-            <select id="graphics-quality-select" class="difficulty-dropdown">
-              <option value="high" selected>High</option>
-              <option value="low">Low</option>
-            </select>
-          </div>
         </div>
 
         <div class="settings-section">
           <h4 id="settings-difficulty-title">Difficulty</h4>
           <div class="setting-item">
             <span id="settings-game-difficulty">Game Difficulty</span>
-            <select id="difficulty-select" class="difficulty-dropdown">
+            <select id="difficulty-select" class="styled-select">
               <option value="easy">Easy</option>
               <option value="medium" selected>Medium</option>
               <option value="hard">Hard</option>
@@ -91,15 +123,15 @@
         </div>
 
         <div class="settings-section">
-          <h4 id="settings-ui-title">UI Customization</h4>
-          <button class="menu-btn secondary" id="ui-settings-btn">UI Settings</button>
+          <h4 id="settings-custom-title">Customization</h4>
+          <button class="menu-btn secondary" id="custom-colors-btn">Colors &amp; Theme</button>
         </div>
 
         <div class="settings-section">
           <h4 id="settings-language-title">Language</h4>
           <div class="setting-item">
             <span id="settings-language-label">Language</span>
-            <select id="language-select" class="language-dropdown">
+            <select id="language-select" class="styled-select">
               <option value="en">🇬🇧 English</option>
               <option value="da">🇩🇰 Dansk</option>
               <option value="de">🇩🇪 Deutsch</option>
@@ -107,233 +139,173 @@
           </div>
         </div>
 
-        <button class="menu-btn secondary" id="settings-reset-btn">Reset to Default</button>
+        <div class="settings-section">
+          <h4 id="settings-data-title">Data</h4>
+          <button class="btn-danger wide" id="reset-data-btn">⚠ RESET ALL DATA</button>
+        </div>
+
         <button class="menu-btn" id="settings-back-btn">BACK</button>
       </div>
 
-      <!-- AUDIO SETTINGS MENU -->
-      <div class="help-section" id="audio-menu">
+      <div id="audio-menu" class="menu-panel hidden scrollable">
         <h3 id="audio-settings-title">AUDIO SETTINGS</h3>
 
-        <div class="settings-section">
-          <h4 id="audio-master-title">Master</h4>
-          <div class="setting-item">
-            <span id="audio-master-label">Master Volume</span>
-            <input type="range" id="master-volume-slider" class="volume-slider" min="0" max="100" value="100">
-            <span id="master-volume-value" class="volume-value">100%</span>
-          </div>
-          <div class="setting-item">
-            <span id="audio-music-toggle-label">Music</span>
-            <label class="toggle">
-              <input type="checkbox" id="music-toggle" checked>
-              <span class="slider"></span>
-            </label>
+        <div class="master-row">
+          <span id="audio-global-music-label">Global Music</span>
+          <label class="toggle">
+            <input type="checkbox" id="audio-global-music" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="master-volume-block">
+          <label id="audio-master-vol-label">Master Volume</label>
+          <div class="vol-row-inner">
+            <input type="range" id="master-volume" min="0" max="100" value="100">
+            <span class="vol-num" id="master-vol-display">100</span><span class="vol-pct">%</span>
           </div>
         </div>
 
-        <div class="settings-section">
-          <h4 id="audio-sounds-title">Sound Effects</h4>
+        <div class="section-label" id="audio-sounds-header">SOUNDS</div>
+        <div class="all-toggle-row">
+          <button class="btn-all-on"  id="sounds-all-on">✓ ALL ON</button>
+          <button class="btn-all-off" id="sounds-all-off">✗ ALL OFF</button>
+        </div>
 
-          <div class="setting-item">
-            <span id="audio-respawn-label">Respawn Sound</span>
-            <label class="toggle">
-              <input type="checkbox" id="audio-respawn" checked>
-              <span class="slider"></span>
-            </label>
-            <input type="range" id="respawn-volume-slider" class="volume-slider" min="0" max="100" value="70">
-            <span class="volume-value" id="respawn-volume-value">70%</span>
-          </div>
-
-          <div class="setting-item">
-            <span id="audio-lava-label">Lava Death Sound</span>
-            <label class="toggle">
-              <input type="checkbox" id="audio-lava" checked>
-              <span class="slider"></span>
-            </label>
-            <input type="range" id="lava-die-volume-slider" class="volume-slider" min="0" max="100" value="60">
-            <span class="volume-value" id="lava-die-volume-value">60%</span>
-          </div>
-
-          <div class="setting-item">
-            <span id="audio-jump-label">Jump Sound</span>
-            <label class="toggle">
-              <input type="checkbox" id="audio-jump" checked>
-              <span class="slider"></span>
-            </label>
-            <input type="range" id="jump-volume-slider" class="volume-slider" min="0" max="100" value="40">
-            <span class="volume-value" id="jump-volume-value">40%</span>
-          </div>
-
-          <div class="setting-item">
-            <span id="audio-walking-label">Walking Sound</span>
-            <label class="toggle">
-              <input type="checkbox" id="audio-walking" checked>
-              <span class="slider"></span>
-            </label>
-            <input type="range" id="walking-volume-slider" class="volume-slider" min="0" max="100" value="70">
-            <span class="volume-value" id="walking-volume-value">70%</span>
-          </div>
-
-          <div class="setting-item">
-            <span id="audio-brick-label">Kill Brick Sound</span>
-            <label class="toggle">
-              <input type="checkbox" id="audio-brick" checked>
-              <span class="slider"></span>
-            </label>
-            <input type="range" id="brick-volume-slider" class="volume-slider" min="0" max="100" value="80">
-            <span class="volume-value" id="brick-volume-value">80%</span>
-          </div>
-
-          <div class="setting-item">
-            <span id="audio-ambient-label">Lava Ambient Sound</span>
-            <label class="toggle">
-              <input type="checkbox" id="audio-ambient" checked>
-              <span class="slider"></span>
-            </label>
-            <input type="range" id="lava-volume-slider" class="volume-slider" min="0" max="100" value="40">
-            <span class="volume-value" id="lava-volume-value">40%</span>
-          </div>
-
-          <div class="setting-item">
-            <span id="audio-achievement-label">Achievement Sound</span>
-            <label class="toggle">
-              <input type="checkbox" id="audio-achievement" checked>
-              <span class="slider"></span>
-            </label>
-            <input type="range" id="achievement-volume-slider" class="volume-slider" min="0" max="100" value="80">
-            <span class="volume-value" id="achievement-volume-value">80%</span>
-          </div>
+        <div class="vol-row">
+          <label class="toggle"><input type="checkbox" id="audio-respawn" checked><span class="slider"></span></label>
+          <span id="audio-respawn-label">Respawn Sound</span>
+          <input type="range" class="vol-slider" id="vol-respawn" min="0" max="100" value="70">
+          <span class="vol-num" id="vol-respawn-val">70%</span>
+        </div>
+        <div class="vol-row">
+          <label class="toggle"><input type="checkbox" id="audio-lava" checked><span class="slider"></span></label>
+          <span id="audio-lava-label">Lava Death Sound</span>
+          <input type="range" class="vol-slider" id="vol-lava-die" min="0" max="100" value="60">
+          <span class="vol-num" id="vol-lava-die-val">60%</span>
+        </div>
+        <div class="vol-row">
+          <label class="toggle"><input type="checkbox" id="audio-jump" checked><span class="slider"></span></label>
+          <span id="audio-jump-label">Jump Sound</span>
+          <input type="range" class="vol-slider" id="vol-jump" min="0" max="100" value="40">
+          <span class="vol-num" id="vol-jump-val">40%</span>
+        </div>
+        <div class="vol-row">
+          <label class="toggle"><input type="checkbox" id="audio-walking" checked><span class="slider"></span></label>
+          <span id="audio-walking-label">Walking Sound</span>
+          <input type="range" class="vol-slider" id="vol-walking" min="0" max="100" value="70">
+          <span class="vol-num" id="vol-walking-val">70%</span>
+        </div>
+        <div class="vol-row">
+          <label class="toggle"><input type="checkbox" id="audio-brick" checked><span class="slider"></span></label>
+          <span id="audio-brick-label">Kill Brick Sound</span>
+          <input type="range" class="vol-slider" id="vol-brick" min="0" max="100" value="80">
+          <span class="vol-num" id="vol-brick-val">80%</span>
+        </div>
+        <div class="vol-row">
+          <label class="toggle"><input type="checkbox" id="audio-ambient" checked><span class="slider"></span></label>
+          <span id="audio-ambient-label">Lava Ambient Sound</span>
+          <input type="range" class="vol-slider" id="vol-lava-amb" min="0" max="100" value="40">
+          <span class="vol-num" id="vol-lava-amb-val">40%</span>
+        </div>
+        <div class="vol-row">
+          <label class="toggle"><input type="checkbox" id="audio-achievement" checked><span class="slider"></span></label>
+          <span id="audio-achievement-label">Achievement Sound</span>
+          <input type="range" class="vol-slider" id="vol-achievement" min="0" max="100" value="80">
+          <span class="vol-num" id="vol-achievement-val">80%</span>
         </div>
 
         <button class="menu-btn" id="audio-back-btn">BACK</button>
       </div>
 
-      <!-- UI SETTINGS MENU -->
-      <div class="help-section" id="ui-menu">
-        <h3 id="ui-settings-title">UI SETTINGS</h3>
+      <div id="custom-menu" class="menu-panel hidden scrollable">
+        <h3 id="custom-title-h3">COLORS &amp; THEME</h3>
 
-        <div class="settings-section">
-          <h4 id="ui-toggle-title">Toggle UI Elements</h4>
-          <div class="setting-item">
-            <span id="ui-show-height-label">Show Height</span>
-            <label class="toggle">
-              <input type="checkbox" id="ui-show-height" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div class="setting-item">
-            <span id="ui-show-top-label">Show Top Height</span>
-            <label class="toggle">
-              <input type="checkbox" id="ui-show-top" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div class="setting-item">
-            <span id="ui-show-difficulty-label">Show Difficulty</span>
-            <label class="toggle">
-              <input type="checkbox" id="ui-show-difficulty" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div class="setting-item">
-            <span id="ui-show-doublejump-label">Show Double Jump</span>
-            <label class="toggle">
-              <input type="checkbox" id="ui-show-doublejump" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div class="setting-item">
-            <span id="ui-show-hint-label">Show Pause Hint</span>
-            <label class="toggle">
-              <input type="checkbox" id="ui-show-hint" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-          <button class="menu-btn secondary" id="ui-toggle-all-btn">Toggle All</button>
+        <div class="cube-toggle wide-toggle" id="color-mode-toggle">
+          <div class="cube-slider"></div>
+          <span class="cube-label left active" id="cm-label-default">DEFAULT</span>
+          <span class="cube-label right"       id="cm-label-custom">CUSTOM</span>
         </div>
 
-        <div class="settings-section">
-          <h4 id="ui-colors-title">Custom Colors</h4>
-          <div class="setting-item">
-            <span id="ui-btn-color-label">Button Color</span>
-            <input type="color" id="ui-btn-color" value="#38bdf8" class="color-picker">
-            <button class="menu-btn secondary small-btn" id="ui-btn-color-reset">Reset</button>
+        <div id="color-pickers-wrap" class="hidden">
+          <div class="color-grid">
+            <div class="color-pick-item">
+              <label id="cp-label-btn">Button Color</label>
+              <input type="color" id="cp-btn-color" value="#38bdf8">
+              <div class="color-preview" id="cp-btn-preview"></div>
+            </div>
+            <div class="color-pick-item">
+              <label id="cp-label-text">Text Color</label>
+              <input type="color" id="cp-text-color" value="#38bdf8">
+              <div class="color-preview" id="cp-text-preview"></div>
+            </div>
+            <div class="color-pick-item">
+              <label id="cp-label-hud">HUD Color</label>
+              <input type="color" id="cp-hud-color" value="#38bdf8">
+              <div class="color-preview" id="cp-hud-preview"></div>
+            </div>
+            <div class="color-pick-item">
+              <label id="cp-label-accent">Accent Color</label>
+              <input type="color" id="cp-accent-color" value="#22c55e">
+              <div class="color-preview" id="cp-accent-preview"></div>
+            </div>
           </div>
-          <div class="setting-item">
-            <span id="ui-text-color-label">Text Color</span>
-            <input type="color" id="ui-text-color" value="#38bdf8" class="color-picker">
-            <button class="menu-btn secondary small-btn" id="ui-text-color-reset">Reset</button>
-          </div>
-          <div class="setting-item">
-            <span id="ui-cube-label">Cube Color</span>
-            <input type="color" id="ui-cube-color" value="#38bdf8" class="color-picker">
-            <button class="menu-btn secondary small-btn" id="ui-cube-color-reset">Reset</button>
-          </div>
+          <button class="btn-warning wide" id="reset-colors-btn">↺ Reset to Default Colors</button>
         </div>
 
-        <button class="menu-btn" id="ui-back-btn">BACK</button>
+        <button class="menu-btn" id="custom-back-btn">BACK</button>
       </div>
 
-      <!-- ACHIEVEMENTS MENU -->
-      <div class="help-section" id="achievements-menu">
-        <h3 id="achievements-title">ACHIEVEMENTS</h3>
-        <div id="achievements-list"></div>
-        <button class="menu-btn" id="achievements-back-btn">BACK</button>
-      </div>
-
-      <!-- HELP MENU -->
-      <div class="help-section" id="help-menu">
-        <h3 id="help-title">HELP</h3>
-        <p>🟢 <strong class="help-green">Green:</strong> <span class="help-green-desc">Safe platform</span></p>
-        <p>🔴 <strong class="help-red">Red:</strong> <span class="help-red-desc">Die when landing on it</span></p>
-        <p>🔵 <strong class="help-blue">Blue:</strong> <span class="help-blue-desc">Disappears after 1 second</span></p>
-        <p>🟠 <strong class="help-orange">Orange:</strong> <span class="help-orange-desc">Moving platform</span></p>
+      <div id="help-menu" class="menu-panel hidden scrollable">
+        <h3 id="help-title-h3">HELP</h3>
+        <p>🟢 <strong class="help-green">Green:</strong>      <span class="help-green-desc">Safe platform</span></p>
+        <p>🔴 <strong class="help-red">Red:</strong>          <span class="help-red-desc">Die when landing on it</span></p>
+        <p>🔵 <strong class="help-blue">Blue:</strong>        <span class="help-blue-desc">Disappears after 1 second</span></p>
+        <p>🟠 <strong class="help-orange">Orange:</strong>    <span class="help-orange-desc">Moving platform</span></p>
         <p>⚪ <strong class="help-white">White/gray:</strong> <span class="help-white-desc">Platform you can jump through and land on</span></p>
-        <p><strong class="help-controls">Controls:</strong> <span class="help-controls-desc">W/A/D/SPACE and Arrow Keys + you have double jump</span></p>
+        <p><strong class="help-controls">Controls:</strong>   <span class="help-controls-desc">W/A/D/SPACE and Arrow Keys + you have double jump</span></p>
         <p><strong class="help-avoid">Avoid the Lava!</strong></p>
         <p><strong class="help-pause">ESC to pause</strong></p>
         <button class="menu-btn" id="help-back-btn">BACK</button>
       </div>
 
-      <!-- CHANGELOG MENU -->
-      <div class="help-section" id="changelog-menu">
-        <h3 id="changelog-title">CHANGELOG</h3>
+      <div id="changelog-menu" class="menu-panel hidden scrollable">
+        <h3 id="changelog-title-h3">CHANGELOG</h3>
         <div class="changelog-entry">
-          <div class="changelog-version">v1.2.0</div>
-          <ul class="changelog-list">
-            <li>Achievements system with height milestones (250, 500, 1000) per difficulty</li>
-            <li>Achievement unlock timestamps stored in localStorage</li>
-            <li>Achievement sound (achievement.mp3) on unlock</li>
-            <li>Per-sound volume sliders + master volume</li>
-            <li>Music ON/OFF toggle</li>
-            <li>Graphics quality setting (High / Low)</li>
-            <li>UI customization: button color, text color, cube color (RGB)</li>
-            <li>Toggle individual UI elements + Toggle All button</li>
-            <li>Reset Data clears all localStorage</li>
-            <li>Reset to Default button in settings</li>
-            <li>Unified Help menu styling across all menus</li>
-            <li>Full translation fixes for all buttons and labels</li>
-            <li>Version display added to title</li>
-            <li>Changelog menu added</li>
-          </ul>
+          <div class="cl-version">v1.2.0</div>
+          <div class="cl-date" id="cl-date-120">2025 — Latest</div>
+          <div class="cl-item" id="cl-achievements">Achievements system (250 / 500 / 1000 per mode)</div>
+          <div class="cl-item" id="cl-ach-sound">Achievement unlock sound &amp; toast notification</div>
+          <div class="cl-item" id="cl-vol-sliders">Per-sound volume sliders</div>
+          <div class="cl-item" id="cl-master-vol">Master volume + Global music ON/OFF</div>
+          <div class="cl-item" id="cl-all-toggle">ALL ON / ALL OFF sound buttons</div>
+          <div class="cl-item" id="cl-colors">Button &amp; text color customization</div>
+          <div class="cl-item" id="cl-reset-colors">Reset to Default Colors button</div>
+          <div class="cl-item" id="cl-reset-data">Reset All Data button</div>
+          <div class="cl-item" id="cl-gfx-mode">High / Low graphics mode toggle</div>
+          <div class="cl-item" id="cl-ui-effects">UI Effects toggle</div>
+          <div class="cl-item" id="cl-translations">Full translation coverage (EN / DA / DE)</div>
+          <div class="cl-item" id="cl-loader">Loader with GitHub CDN loading</div>
+          <div class="cl-item" id="cl-version-tag">Version tag displayed in-game</div>
         </div>
         <div class="changelog-entry">
-          <div class="changelog-version">v1.1.0</div>
-          <ul class="changelog-list">
-            <li>Added pause menu with settings</li>
-            <li>Added difficulty system</li>
-            <li>Added language support (EN, DA, DE)</li>
-            <li>Added lava ambient sound</li>
-            <li>Added platform types: red, blue, orange, white</li>
-          </ul>
+          <div class="cl-version">v1.1.0</div>
+          <div class="cl-date" id="cl-date-110">2025</div>
+          <div class="cl-item">Multi-language support (EN, DA, DE)</div>
+          <div class="cl-item">Pause menu with sub-menus</div>
+          <div class="cl-item">Difficulty system (Easy → Impossible)</div>
+          <div class="cl-item">Audio settings per sound</div>
+          <div class="cl-item">Visual effects toggle</div>
+          <div class="cl-item">localStorage persistence</div>
         </div>
         <div class="changelog-entry">
-          <div class="changelog-version">v1.0.0</div>
-          <ul class="changelog-list">
-            <li>Initial release</li>
-            <li>Basic platformer mechanics</li>
-            <li>Green platforms only</li>
-          </ul>
+          <div class="cl-version">v1.0.0</div>
+          <div class="cl-date" id="cl-date-100">2025</div>
+          <div class="cl-item">Initial release</div>
+          <div class="cl-item">5 platform types</div>
+          <div class="cl-item">Double jump mechanic</div>
+          <div class="cl-item">Rising lava with speed scaling</div>
+          <div class="cl-item">Top height tracking per difficulty</div>
         </div>
         <button class="menu-btn" id="changelog-back-btn">BACK</button>
       </div>
@@ -344,11 +316,10 @@
   <div id="death-screen">
     <div class="death-content">
       <h1 id="death-title">YOU DIED</h1>
-      <p id="death-subtitle">Click/Space to Respawn</p>
+      <p  id="death-subtitle">Click/Space to Respawn</p>
     </div>
   </div>
 
   <script src="app.js"></script>
-
 </body>
 </html>
