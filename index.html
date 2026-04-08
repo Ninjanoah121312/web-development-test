@@ -2,20 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BLOCK JUMP</title>
+  <title>BLOCK JUMP v1.2.0</title>
   <link rel="stylesheet" href="test.css">
 </head>
 <body>
 
-  <audio id="respawn-sound"     src="sounds/music/respawn.mp3"     preload="auto"></audio>
-  <audio id="lava-die-sound"    src="sounds/music/lava_die.mp3"    preload="auto"></audio>
-  <audio id="jump-sound"        src="sounds/music/jump.mp3"        preload="auto"></audio>
-  <audio id="walking-sound"     src="sounds/music/walking.mp3"     preload="auto" loop></audio>
-  <audio id="kill-brick-sound"  src="sounds/music/kill_brick.mp3"  preload="auto"></audio>
-  <audio id="lava-sound"        src="sounds/music/lava.mp3"        preload="auto" loop></audio>
-  <audio id="achievement-sound" src="sounds/music/achievement.mp3" preload="auto"></audio>
+  <!-- AUDIO ELEMENTS -->
+  <audio id="respawn-sound" src="sounds/Music/respawn.mp3" preload="auto"></audio>
+  <audio id="lava-die-sound" src="sounds/Music/lava_die.mp3" preload="auto"></audio>
+  <audio id="jump-sound" src="sounds/Music/jump.mp3" preload="auto"></audio>
+  <audio id="walking-sound" src="sounds/Music/walking.mp3" preload="auto" loop></audio>
+  <audio id="kill-brick-sound" src="sounds/Music/kill_brick.mp3" preload="auto"></audio>
+  <audio id="lava-sound" src="sounds/Music/lava.mp3" preload="auto" loop></audio>
+  <audio id="achievement-sound" src="sounds/Music/achievement.mp3" preload="auto"></audio>
 
+  <!-- HUD -->
   <div id="hud">
     <span id="current">HEIGHT: 0</span>
     <span id="max">TOP HEIGHT: 0</span>
@@ -24,81 +25,74 @@
 
   <div id="hp-display">Double Jump = true</div>
   <div id="pause-hint">Press ESC to pause</div>
-  <div id="version-tag">v1.2.0</div>
+  <div id="version-badge">v1.2.0</div>
+
+  <!-- ACHIEVEMENT TOAST -->
+  <div id="achievement-toast">
+    <div id="achievement-toast-icon">🏆</div>
+    <div id="achievement-toast-text">
+      <div id="achievement-toast-title">Achievement Unlocked!</div>
+      <div id="achievement-toast-name"></div>
+    </div>
+  </div>
 
   <div id="lava"></div>
   <div id="player"></div>
 
-  <div id="achievement-toast">
-    <div class="toast-icon" id="toast-icon">🏆</div>
-    <div class="toast-body">
-      <div class="toast-label" id="toast-label">ACHIEVEMENT UNLOCKED</div>
-      <div class="toast-title" id="toast-title">—</div>
-      <div class="toast-desc"  id="toast-desc">—</div>
-    </div>
-  </div>
-
-  <div id="confirm-modal">
-    <div class="modal-box">
-      <h3 id="confirm-title">⚠ RESET ALL DATA?</h3>
-      <p  id="confirm-body">This will permanently erase all scores, achievements, and settings. This cannot be undone.</p>
-      <div class="modal-btns">
-        <button id="confirm-yes">RESET</button>
-        <button id="confirm-no">CANCEL</button>
-      </div>
-    </div>
-  </div>
-
+  <!-- PAUSE MENU -->
   <div id="pause-menu">
     <div class="menu-content">
-
       <h2 id="pause-title">PAUSED</h2>
 
-      <div id="main-menu" class="menu-panel">
-        <button class="menu-btn"         id="continue-btn">CONTINUE</button>
-        <button class="menu-btn"         id="extra-btn">EXTRA</button>
+      <!-- MAIN MENU -->
+      <div class="menu-buttons" id="main-menu">
+        <button class="menu-btn" id="continue-btn">CONTINUE</button>
+        <button class="menu-btn" id="extra-btn">EXTRA</button>
         <button class="menu-btn restart" id="restart-btn">RESTART</button>
       </div>
 
-      <div id="extra-menu" class="menu-panel hidden">
-        <h3 id="extra-title-h3">EXTRA</h3>
-        <button class="menu-btn secondary" id="achievements-btn">ACHIEVEMENTS</button>
+      <!-- EXTRA MENU -->
+      <div class="help-section" id="extra-menu">
+        <h3 id="extra-menu-title">EXTRA</h3>
         <button class="menu-btn secondary" id="settings-btn">SETTINGS</button>
-        <button class="menu-btn secondary" id="help-btn">HELP</button>
+        <button class="menu-btn secondary" id="achievements-btn">ACHIEVEMENTS</button>
         <button class="menu-btn secondary" id="changelog-btn">CHANGELOG</button>
-        <button class="menu-btn"           id="extra-back-btn">BACK</button>
+        <button class="menu-btn secondary" id="help-btn">HELP</button>
+        <button class="menu-btn danger" id="reset-data-btn">RESET DATA</button>
+        <button class="menu-btn" id="extra-back-btn">BACK</button>
       </div>
 
-      <div id="achievements-menu" class="menu-panel hidden scrollable">
-        <h3 id="achievements-title-h3">ACHIEVEMENTS</h3>
-        <div id="achievements-container"></div>
-        <button class="menu-btn" id="achievements-back-btn">BACK</button>
-      </div>
-
-      <div id="settings-menu" class="menu-panel hidden scrollable">
-        <h3 id="settings-title-h3">SETTINGS</h3>
+      <!-- SETTINGS MENU -->
+      <div class="help-section" id="settings-menu">
+        <h3 id="settings-menu-title">SETTINGS</h3>
 
         <div class="settings-section">
           <h4 id="settings-graphics-title">Graphics</h4>
-          <div class="setting-item column-item">
-            <span id="settings-graphics-mode-label">Graphics Mode</span>
-            <div class="cube-toggle" id="graphics-mode-toggle">
-              <div class="cube-slider"></div>
-              <span class="cube-label left active" id="gfx-label-high">HIGH</span>
-              <span class="cube-label right"       id="gfx-label-low">LOW</span>
-            </div>
-          </div>
-          <div class="setting-item">
-            <span id="settings-ui-effects-label">UI Effects</span>
-            <label class="toggle">
-              <input type="checkbox" id="ui-effects-toggle" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
           <div class="setting-item">
             <span id="settings-visual-effects">Visual Effects</span>
             <label class="toggle">
               <input type="checkbox" id="effects-toggle" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <span id="settings-graphics-mode-label">Graphics Mode</span>
+            <select id="graphics-mode-select" class="difficulty-dropdown">
+              <option value="high">High Quality</option>
+              <option value="low">Low Quality</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <span id="settings-gui-toggle-label">All GUI Elements</span>
+            <label class="toggle">
+              <input type="checkbox" id="gui-toggle" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <span id="settings-cube-btn-label">Cube Button (ESC)</span>
+            <label class="toggle">
+              <input type="checkbox" id="cube-btn-toggle" checked>
               <span class="slider"></span>
             </label>
           </div>
@@ -108,7 +102,7 @@
           <h4 id="settings-difficulty-title">Difficulty</h4>
           <div class="setting-item">
             <span id="settings-game-difficulty">Game Difficulty</span>
-            <select id="difficulty-select" class="styled-select">
+            <select id="difficulty-select" class="difficulty-dropdown">
               <option value="easy">Easy</option>
               <option value="medium" selected>Medium</option>
               <option value="hard">Hard</option>
@@ -123,15 +117,15 @@
         </div>
 
         <div class="settings-section">
-          <h4 id="settings-custom-title">Customization</h4>
-          <button class="menu-btn secondary" id="custom-colors-btn">Colors &amp; Theme</button>
+          <h4 id="settings-colors-title">Colors</h4>
+          <button class="menu-btn secondary" id="color-settings-btn">Color Settings</button>
         </div>
 
         <div class="settings-section">
           <h4 id="settings-language-title">Language</h4>
           <div class="setting-item">
             <span id="settings-language-label">Language</span>
-            <select id="language-select" class="styled-select">
+            <select id="language-select" class="language-dropdown">
               <option value="en">🇬🇧 English</option>
               <option value="da">🇩🇰 Dansk</option>
               <option value="de">🇩🇪 Deutsch</option>
@@ -139,187 +133,1360 @@
           </div>
         </div>
 
-        <div class="settings-section">
-          <h4 id="settings-data-title">Data</h4>
-          <button class="btn-danger wide" id="reset-data-btn">⚠ RESET ALL DATA</button>
-        </div>
-
         <button class="menu-btn" id="settings-back-btn">BACK</button>
       </div>
 
-      <div id="audio-menu" class="menu-panel hidden scrollable">
+      <!-- AUDIO SETTINGS MENU -->
+      <div class="help-section" id="audio-menu">
         <h3 id="audio-settings-title">AUDIO SETTINGS</h3>
 
-        <div class="master-row">
-          <span id="audio-global-music-label">Global Music</span>
-          <label class="toggle">
-            <input type="checkbox" id="audio-global-music" checked>
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div class="master-volume-block">
-          <label id="audio-master-vol-label">Master Volume</label>
-          <div class="vol-row-inner">
-            <input type="range" id="master-volume" min="0" max="100" value="100">
-            <span class="vol-num" id="master-vol-display">100</span><span class="vol-pct">%</span>
+        <div class="settings-section">
+          <h4 id="audio-global-title">Global Controls</h4>
+          <div class="setting-item">
+            <span id="audio-music-label">Music ON/OFF</span>
+            <label class="toggle">
+              <input type="checkbox" id="audio-music-toggle" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <span id="audio-sfx-label">Sound Effects ON/OFF</span>
+            <label class="toggle">
+              <input type="checkbox" id="audio-sfx-toggle" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <span id="audio-master-label">Master Volume</span>
+            <input type="range" id="audio-master-slider" class="volume-slider" min="0" max="100" value="100">
+            <span id="audio-master-value" class="volume-value">100%</span>
           </div>
         </div>
 
-        <div class="section-label" id="audio-sounds-header">SOUNDS</div>
-        <div class="all-toggle-row">
-          <button class="btn-all-on"  id="sounds-all-on">✓ ALL ON</button>
-          <button class="btn-all-off" id="sounds-all-off">✗ ALL OFF</button>
-        </div>
-
-        <div class="vol-row">
-          <label class="toggle"><input type="checkbox" id="audio-respawn" checked><span class="slider"></span></label>
-          <span id="audio-respawn-label">Respawn Sound</span>
-          <input type="range" class="vol-slider" id="vol-respawn" min="0" max="100" value="70">
-          <span class="vol-num" id="vol-respawn-val">70%</span>
-        </div>
-        <div class="vol-row">
-          <label class="toggle"><input type="checkbox" id="audio-lava" checked><span class="slider"></span></label>
-          <span id="audio-lava-label">Lava Death Sound</span>
-          <input type="range" class="vol-slider" id="vol-lava-die" min="0" max="100" value="60">
-          <span class="vol-num" id="vol-lava-die-val">60%</span>
-        </div>
-        <div class="vol-row">
-          <label class="toggle"><input type="checkbox" id="audio-jump" checked><span class="slider"></span></label>
-          <span id="audio-jump-label">Jump Sound</span>
-          <input type="range" class="vol-slider" id="vol-jump" min="0" max="100" value="40">
-          <span class="vol-num" id="vol-jump-val">40%</span>
-        </div>
-        <div class="vol-row">
-          <label class="toggle"><input type="checkbox" id="audio-walking" checked><span class="slider"></span></label>
-          <span id="audio-walking-label">Walking Sound</span>
-          <input type="range" class="vol-slider" id="vol-walking" min="0" max="100" value="70">
-          <span class="vol-num" id="vol-walking-val">70%</span>
-        </div>
-        <div class="vol-row">
-          <label class="toggle"><input type="checkbox" id="audio-brick" checked><span class="slider"></span></label>
-          <span id="audio-brick-label">Kill Brick Sound</span>
-          <input type="range" class="vol-slider" id="vol-brick" min="0" max="100" value="80">
-          <span class="vol-num" id="vol-brick-val">80%</span>
-        </div>
-        <div class="vol-row">
-          <label class="toggle"><input type="checkbox" id="audio-ambient" checked><span class="slider"></span></label>
-          <span id="audio-ambient-label">Lava Ambient Sound</span>
-          <input type="range" class="vol-slider" id="vol-lava-amb" min="0" max="100" value="40">
-          <span class="vol-num" id="vol-lava-amb-val">40%</span>
-        </div>
-        <div class="vol-row">
-          <label class="toggle"><input type="checkbox" id="audio-achievement" checked><span class="slider"></span></label>
-          <span id="audio-achievement-label">Achievement Sound</span>
-          <input type="range" class="vol-slider" id="vol-achievement" min="0" max="100" value="80">
-          <span class="vol-num" id="vol-achievement-val">80%</span>
+        <div class="settings-section">
+          <h4 id="audio-individual-title">Individual Volumes</h4>
+          <div class="setting-item">
+            <span id="audio-respawn-label">Respawn Sound</span>
+            <label class="toggle"><input type="checkbox" id="audio-respawn" checked><span class="slider"></span></label>
+            <input type="range" id="vol-respawn" class="volume-slider" min="0" max="100" value="70">
+            <span id="vol-respawn-val" class="volume-value">70%</span>
+          </div>
+          <div class="setting-item">
+            <span id="audio-lava-label">Lava Death Sound</span>
+            <label class="toggle"><input type="checkbox" id="audio-lava" checked><span class="slider"></span></label>
+            <input type="range" id="vol-lava-die" class="volume-slider" min="0" max="100" value="60">
+            <span id="vol-lava-die-val" class="volume-value">60%</span>
+          </div>
+          <div class="setting-item">
+            <span id="audio-jump-label">Jump Sound</span>
+            <label class="toggle"><input type="checkbox" id="audio-jump" checked><span class="slider"></span></label>
+            <input type="range" id="vol-jump" class="volume-slider" min="0" max="100" value="40">
+            <span id="vol-jump-val" class="volume-value">40%</span>
+          </div>
+          <div class="setting-item">
+            <span id="audio-walking-label">Walking Sound</span>
+            <label class="toggle"><input type="checkbox" id="audio-walking" checked><span class="slider"></span></label>
+            <input type="range" id="vol-walking" class="volume-slider" min="0" max="100" value="70">
+            <span id="vol-walking-val" class="volume-value">70%</span>
+          </div>
+          <div class="setting-item">
+            <span id="audio-brick-label">Kill Brick Sound</span>
+            <label class="toggle"><input type="checkbox" id="audio-brick" checked><span class="slider"></span></label>
+            <input type="range" id="vol-brick" class="volume-slider" min="0" max="100" value="80">
+            <span id="vol-brick-val" class="volume-value">80%</span>
+          </div>
+          <div class="setting-item">
+            <span id="audio-ambient-label">Lava Ambient Sound</span>
+            <label class="toggle"><input type="checkbox" id="audio-ambient" checked><span class="slider"></span></label>
+            <input type="range" id="vol-ambient" class="volume-slider" min="0" max="100" value="40">
+            <span id="vol-ambient-val" class="volume-value">40%</span>
+          </div>
+          <div class="setting-item">
+            <span id="audio-achievement-label">Achievement Sound</span>
+            <label class="toggle"><input type="checkbox" id="audio-achievement" checked><span class="slider"></span></label>
+            <input type="range" id="vol-achievement" class="volume-slider" min="0" max="100" value="80">
+            <span id="vol-achievement-val" class="volume-value">80%</span>
+          </div>
         </div>
 
         <button class="menu-btn" id="audio-back-btn">BACK</button>
       </div>
 
-      <div id="custom-menu" class="menu-panel hidden scrollable">
-        <h3 id="custom-title-h3">COLORS &amp; THEME</h3>
-
-        <div class="cube-toggle wide-toggle" id="color-mode-toggle">
-          <div class="cube-slider"></div>
-          <span class="cube-label left active" id="cm-label-default">DEFAULT</span>
-          <span class="cube-label right"       id="cm-label-custom">CUSTOM</span>
-        </div>
-
-        <div id="color-pickers-wrap" class="hidden">
-          <div class="color-grid">
-            <div class="color-pick-item">
-              <label id="cp-label-btn">Button Color</label>
-              <input type="color" id="cp-btn-color" value="#38bdf8">
-              <div class="color-preview" id="cp-btn-preview"></div>
-            </div>
-            <div class="color-pick-item">
-              <label id="cp-label-text">Text Color</label>
-              <input type="color" id="cp-text-color" value="#38bdf8">
-              <div class="color-preview" id="cp-text-preview"></div>
-            </div>
-            <div class="color-pick-item">
-              <label id="cp-label-hud">HUD Color</label>
-              <input type="color" id="cp-hud-color" value="#38bdf8">
-              <div class="color-preview" id="cp-hud-preview"></div>
-            </div>
-            <div class="color-pick-item">
-              <label id="cp-label-accent">Accent Color</label>
-              <input type="color" id="cp-accent-color" value="#22c55e">
-              <div class="color-preview" id="cp-accent-preview"></div>
-            </div>
+      <!-- COLOR SETTINGS MENU -->
+      <div class="help-section" id="color-menu">
+        <h3 id="color-settings-title">COLOR SETTINGS</h3>
+        <div class="settings-section">
+          <h4>Button Color</h4>
+          <div class="setting-item">
+            <span>Button Color (Default: #38bdf8)</span>
+            <input type="color" id="color-btn" value="#38bdf8" class="color-picker">
           </div>
-          <button class="btn-warning wide" id="reset-colors-btn">↺ Reset to Default Colors</button>
+          <div class="setting-item">
+            <span>Text Color (Default: #38bdf8)</span>
+            <input type="color" id="color-text" value="#38bdf8" class="color-picker">
+          </div>
+          <div class="setting-item">
+            <span>Accent Color (Default: #22c55e)</span>
+            <input type="color" id="color-accent" value="#22c55e" class="color-picker">
+          </div>
         </div>
-
-        <button class="menu-btn" id="custom-back-btn">BACK</button>
+        <button class="menu-btn secondary" id="color-reset-btn">Reset to Default</button>
+        <button class="menu-btn" id="color-back-btn">BACK</button>
       </div>
 
-      <div id="help-menu" class="menu-panel hidden scrollable">
-        <h3 id="help-title-h3">HELP</h3>
-        <p>🟢 <strong class="help-green">Green:</strong>      <span class="help-green-desc">Safe platform</span></p>
-        <p>🔴 <strong class="help-red">Red:</strong>          <span class="help-red-desc">Die when landing on it</span></p>
-        <p>🔵 <strong class="help-blue">Blue:</strong>        <span class="help-blue-desc">Disappears after 1 second</span></p>
-        <p>🟠 <strong class="help-orange">Orange:</strong>    <span class="help-orange-desc">Moving platform</span></p>
-        <p>⚪ <strong class="help-white">White/gray:</strong> <span class="help-white-desc">Platform you can jump through and land on</span></p>
-        <p><strong class="help-controls">Controls:</strong>   <span class="help-controls-desc">W/A/D/SPACE and Arrow Keys + you have double jump</span></p>
-        <p><strong class="help-avoid">Avoid the Lava!</strong></p>
-        <p><strong class="help-pause">ESC to pause</strong></p>
-        <button class="menu-btn" id="help-back-btn">BACK</button>
+      <!-- ACHIEVEMENTS MENU -->
+      <div class="help-section" id="achievements-menu">
+        <h3 id="achievements-title">ACHIEVEMENTS</h3>
+        <div id="achievements-list"></div>
+        <button class="menu-btn" id="achievements-back-btn">BACK</button>
       </div>
 
-      <div id="changelog-menu" class="menu-panel hidden scrollable">
-        <h3 id="changelog-title-h3">CHANGELOG</h3>
+      <!-- CHANGELOG MENU -->
+      <div class="help-section" id="changelog-menu">
+        <h3>CHANGELOG</h3>
         <div class="changelog-entry">
-          <div class="cl-version">v1.2.0</div>
-          <div class="cl-date" id="cl-date-120">2025 — Latest</div>
-          <div class="cl-item" id="cl-achievements">Achievements system (250 / 500 / 1000 per mode)</div>
-          <div class="cl-item" id="cl-ach-sound">Achievement unlock sound &amp; toast notification</div>
-          <div class="cl-item" id="cl-vol-sliders">Per-sound volume sliders</div>
-          <div class="cl-item" id="cl-master-vol">Master volume + Global music ON/OFF</div>
-          <div class="cl-item" id="cl-all-toggle">ALL ON / ALL OFF sound buttons</div>
-          <div class="cl-item" id="cl-colors">Button &amp; text color customization</div>
-          <div class="cl-item" id="cl-reset-colors">Reset to Default Colors button</div>
-          <div class="cl-item" id="cl-reset-data">Reset All Data button</div>
-          <div class="cl-item" id="cl-gfx-mode">High / Low graphics mode toggle</div>
-          <div class="cl-item" id="cl-ui-effects">UI Effects toggle</div>
-          <div class="cl-item" id="cl-translations">Full translation coverage (EN / DA / DE)</div>
-          <div class="cl-item" id="cl-loader">Loader with GitHub CDN loading</div>
-          <div class="cl-item" id="cl-version-tag">Version tag displayed in-game</div>
+          <h4>v1.2.0 — Current</h4>
+          <ul>
+            <li>Added full Achievements System (250/500/1000 per mode)</li>
+            <li>Achievement unlock sound + timestamp display</li>
+            <li>Achievements saved in localStorage, reset with Reset Data</li>
+            <li>All sounds moved to sounds/Music/ folder</li>
+            <li>Per-sound volume sliders added</li>
+            <li>Global Music ON/OFF + Sound Effects ON/OFF toggles</li>
+            <li>Master volume slider</li>
+            <li>Achievement sound added</li>
+            <li>Fixed Extra Help Menu to match Pause Help Menu layout</li>
+            <li>Low Graphics Mode now affects all UI elements</li>
+            <li>High/Low graphics toggle in settings</li>
+            <li>Toggle ALL GUI features ON/OFF button added</li>
+            <li>Button and text color customization (RGB picker)</li>
+            <li>Reset to Default colors button</li>
+            <li>Cube Button toggle (default ON)</li>
+            <li>All settings saved to localStorage</li>
+            <li>Reset Data resets all settings, achievements, colors, audio</li>
+            <li>All translations fixed and consistent across UI</li>
+            <li>Settings and Extra menu layout improved</li>
+            <li>Version badge added to HUD</li>
+          </ul>
         </div>
         <div class="changelog-entry">
-          <div class="cl-version">v1.1.0</div>
-          <div class="cl-date" id="cl-date-110">2025</div>
-          <div class="cl-item">Multi-language support (EN, DA, DE)</div>
-          <div class="cl-item">Pause menu with sub-menus</div>
-          <div class="cl-item">Difficulty system (Easy → Impossible)</div>
-          <div class="cl-item">Audio settings per sound</div>
-          <div class="cl-item">Visual effects toggle</div>
-          <div class="cl-item">localStorage persistence</div>
+          <h4>v1.1.0</h4>
+          <ul>
+            <li>Added language support (English, Danish, German)</li>
+            <li>Added difficulty settings (Easy/Medium/Hard/Impossible)</li>
+            <li>Added audio settings with individual toggles</li>
+            <li>Added visual effects toggle</li>
+            <li>Platform pool system for performance</li>
+            <li>Lava ambient sound with distance-based volume</li>
+          </ul>
         </div>
         <div class="changelog-entry">
-          <div class="cl-version">v1.0.0</div>
-          <div class="cl-date" id="cl-date-100">2025</div>
-          <div class="cl-item">Initial release</div>
-          <div class="cl-item">5 platform types</div>
-          <div class="cl-item">Double jump mechanic</div>
-          <div class="cl-item">Rising lava with speed scaling</div>
-          <div class="cl-item">Top height tracking per difficulty</div>
+          <h4>v1.0.0</h4>
+          <ul>
+            <li>Initial release</li>
+            <li>5 platform types: Green, Red, Blue, Orange, White</li>
+            <li>Double jump mechanic</li>
+            <li>Rising lava with speed scaling</li>
+            <li>Height tracking and best score per difficulty</li>
+          </ul>
         </div>
         <button class="menu-btn" id="changelog-back-btn">BACK</button>
       </div>
 
+      <!-- HELP MENU -->
+      <div class="help-section" id="help-menu">
+        <h3 id="help-title">HELP</h3>
+        <p>🟢 <strong class="help-green">Green:</strong> <span class="help-green-desc">Safe platform</span></p>
+        <p>🔴 <strong class="help-red">Red:</strong> <span class="help-red-desc">Die when landing on it</span></p>
+        <p>🔵 <strong class="help-blue">Blue:</strong> <span class="help-blue-desc">Disappears after 1 second</span></p>
+        <p>🟠 <strong class="help-orange">Orange:</strong> <span class="help-orange-desc">Moving platform</span></p>
+        <p>⚪ <strong class="help-white">White/gray:</strong> <span class="help-white-desc">Platform you can jump through and land on</span></p>
+        <p><strong class="help-controls">Controls:</strong> <span class="help-controls-desc">W/A/D/SPACE and Arrow Keys + you have double jump</span></p>
+        <p><strong class="help-avoid">Avoid the Lava!</strong></p>
+        <p><strong class="help-pause">ESC to pause</strong></p>
+        <button class="menu-btn" id="help-back-btn">BACK</button>
+      </div>
     </div>
   </div>
 
+  <!-- DEATH SCREEN -->
   <div id="death-screen">
     <div class="death-content">
       <h1 id="death-title">YOU DIED</h1>
-      <p  id="death-subtitle">Click/Space to Respawn</p>
+      <p id="death-subtitle">Click/Space to Respawn</p>
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script>
+  // ============================================
+  // VERSION
+  // ============================================
+  const GAME_VERSION = "1.2.0";
+
+  // ============================================
+  // DEFAULT VOLUMES
+  // ============================================
+  const DEFAULT_VOLUMES = {
+    respawn: 0.7, lavaDie: 0.6, jump: 0.4,
+    walking: 0.7, killBrick: 0.8, lava: 0.4, achievement: 0.8
+  };
+
+  const START_TIME_RESPAWN = 0;
+  const START_TIME_LAVA_DIE = 0.1;
+  const START_TIME_JUMP = 0;
+  const START_TIME_WALKING = 0;
+  const START_TIME_KILL_BRICK = 0.5;
+  const START_TIME_LAVA = 0;
+  const START_TIME_ACHIEVEMENT = 0;
+
+  const LAVA_START_SPEED = 0.10;
+  const LAVA_SPEED_INCREASE_RATE = 0.08;
+  const LAVA_HEIGHT_BOOST_FACTOR = 0.05;
+
+  const DIFFICULTY_SETTINGS = {
+    easy: { maxSpeed: 1.25, name: 'Easy' },
+    medium: { maxSpeed: 1.75, name: 'Medium' },
+    hard: { maxSpeed: 2.25, name: 'Hard' },
+    impossible: { maxSpeed: 3, name: 'Impossible' }
+  };
+
+  const PLATFORM_DISTANCE_X_MIN = 300;
+  const PLATFORM_DISTANCE_X_MAX = 350;
+  const PLATFORM_DISTANCE_Y_MIN = 100;
+  const PLATFORM_DISTANCE_Y_MAX = 160;
+  const PLATFORM_WIDTH = 250;
+  const PLATFORM_MOVE_SPEED = 1.7;
+  const PLATFORM_MOVE_RANGE = 175;
+  const LAVA_HITBOX_OFFSET = 50;
+
+  // ============================================
+  // ACHIEVEMENT DEFINITIONS
+  // ============================================
+  const ACHIEVEMENT_DEFS = [];
+  ['easy','medium','hard','impossible'].forEach(mode => {
+    [250, 500, 1000].forEach(score => {
+      ACHIEVEMENT_DEFS.push({
+        id: `${mode}_${score}`,
+        mode,
+        score,
+        label: () => {
+          const modeNames = { easy:'Easy', medium:'Medium', hard:'Hard', impossible:'Impossible' };
+          return `${modeNames[mode]} ${score}`;
+        },
+        desc: () => `Reach height ${score} in ${DIFFICULTY_SETTINGS[mode].name} mode`
+      });
+    });
+  });
+
+  // ============================================
+  // DOM ELEMENTS
+  // ============================================
+  const player = document.getElementById("player");
+  const curEl = document.getElementById("current");
+  const maxEl = document.getElementById("max");
+  const difficultyEl = document.getElementById("difficulty-display");
+  const lavaEl = document.getElementById("lava");
+  const pauseMenu = document.getElementById("pause-menu");
+  const continueBtn = document.getElementById("continue-btn");
+  const restartBtn = document.getElementById("restart-btn");
+  const extraBtn = document.getElementById("extra-btn");
+  const extraBackBtn = document.getElementById("extra-back-btn");
+  const helpBtn = document.getElementById("help-btn");
+  const settingsBtn = document.getElementById("settings-btn");
+  const helpBackBtn = document.getElementById("help-back-btn");
+  const settingsBackBtn = document.getElementById("settings-back-btn");
+  const audioSettingsBtn = document.getElementById("audio-settings-btn");
+  const audioBackBtn = document.getElementById("audio-back-btn");
+  const colorSettingsBtn = document.getElementById("color-settings-btn");
+  const colorBackBtn = document.getElementById("color-back-btn");
+  const colorResetBtn = document.getElementById("color-reset-btn");
+  const achievementsBtn = document.getElementById("achievements-btn");
+  const achievementsBackBtn = document.getElementById("achievements-back-btn");
+  const changelogBtn = document.getElementById("changelog-btn");
+  const changelogBackBtn = document.getElementById("changelog-back-btn");
+  const resetDataBtn = document.getElementById("reset-data-btn");
+  const deathScreen = document.getElementById("death-screen");
+  const mainMenu = document.getElementById("main-menu");
+  const extraMenu = document.getElementById("extra-menu");
+  const helpMenu = document.getElementById("help-menu");
+  const settingsMenu = document.getElementById("settings-menu");
+  const audioMenu = document.getElementById("audio-menu");
+  const colorMenu = document.getElementById("color-menu");
+  const achievementsMenu = document.getElementById("achievements-menu");
+  const changelogMenu = document.getElementById("changelog-menu");
+  const pauseTitle = document.getElementById("pause-title");
+  const achievementToast = document.getElementById("achievement-toast");
+  const achievementToastName = document.getElementById("achievement-toast-name");
+
+  const respawnSound = document.getElementById("respawn-sound");
+  const lavaDieSound = document.getElementById("lava-die-sound");
+  const jumpSound = document.getElementById("jump-sound");
+  const walkingSound = document.getElementById("walking-sound");
+  const killBrickSound = document.getElementById("kill-brick-sound");
+  const lavaSound = document.getElementById("lava-sound");
+  const achievementSound = document.getElementById("achievement-sound");
+
+  const effectsToggle = document.getElementById("effects-toggle");
+  const graphicsModeSelect = document.getElementById("graphics-mode-select");
+  const guiToggle = document.getElementById("gui-toggle");
+  const cubeBtnToggle = document.getElementById("cube-btn-toggle");
+  const languageSelect = document.getElementById("language-select");
+  const difficultySelect = document.getElementById("difficulty-select");
+  const audioRespawn = document.getElementById("audio-respawn");
+  const audioLava = document.getElementById("audio-lava");
+  const audioJump = document.getElementById("audio-jump");
+  const audioWalking = document.getElementById("audio-walking");
+  const audioBrick = document.getElementById("audio-brick");
+  const audioAmbient = document.getElementById("audio-ambient");
+  const audioAchievement = document.getElementById("audio-achievement");
+  const audioMusicToggle = document.getElementById("audio-music-toggle");
+  const audioSfxToggle = document.getElementById("audio-sfx-toggle");
+  const masterSlider = document.getElementById("audio-master-slider");
+  const masterValue = document.getElementById("audio-master-value");
+
+  const volSliders = {
+    respawn: document.getElementById("vol-respawn"),
+    lavaDie: document.getElementById("vol-lava-die"),
+    jump: document.getElementById("vol-jump"),
+    walking: document.getElementById("vol-walking"),
+    killBrick: document.getElementById("vol-brick"),
+    lava: document.getElementById("vol-ambient"),
+    achievement: document.getElementById("vol-achievement")
+  };
+  const volValues = {
+    respawn: document.getElementById("vol-respawn-val"),
+    lavaDie: document.getElementById("vol-lava-die-val"),
+    jump: document.getElementById("vol-jump-val"),
+    walking: document.getElementById("vol-walking-val"),
+    killBrick: document.getElementById("vol-brick-val"),
+    lava: document.getElementById("vol-ambient-val"),
+    achievement: document.getElementById("vol-achievement-val")
+  };
+
+  const colorBtnPicker = document.getElementById("color-btn");
+  const colorTextPicker = document.getElementById("color-text");
+  const colorAccentPicker = document.getElementById("color-accent");
+
+  const PLAYER_SIZE = 40;
+
+  let x, y, velY, jumpsLeft, lowestPlatformY;
+  let currentHeight, globalDifficulty, lavaY, lavaSpeed;
+  let startingY = 0;
+  let paused = false;
+  let isDead = false;
+  let animationId = null;
+  let wasOnBluePlatform = false;
+  let isWalking = false;
+  let diedFromLava = false;
+  let lavaInView = false;
+
+  // ============================================
+  // LOAD SETTINGS FROM LOCALSTORAGE
+  // ============================================
+  function lsGet(key, def) {
+    const v = localStorage.getItem(key);
+    if (v === null) return def;
+    if (v === 'true') return true;
+    if (v === 'false') return false;
+    return v;
+  }
+
+  let effectsEnabled = lsGet('effectsEnabled', true);
+  let graphicsMode = lsGet('graphicsMode', 'high');
+  let guiEnabled = lsGet('guiEnabled', true);
+  let cubeBtnEnabled = lsGet('cubeBtnEnabled', true);
+  let currentLanguage = lsGet('language', 'en');
+  let currentDifficulty = lsGet('difficulty', 'medium');
+  let musicOn = lsGet('musicOn', true);
+  let sfxOn = lsGet('sfxOn', true);
+  let masterVol = parseInt(lsGet('masterVol', '100'));
+
+  let audioSettings = {
+    respawn: lsGet('audioRespawn', true),
+    lava: lsGet('audioLava', true),
+    jump: lsGet('audioJump', true),
+    walking: lsGet('audioWalking', true),
+    brick: lsGet('audioBrick', true),
+    ambient: lsGet('audioAmbient', true),
+    achievement: lsGet('audioAchievement', true)
+  };
+
+  let volSettings = {
+    respawn: parseInt(lsGet('volRespawn', '70')),
+    lavaDie: parseInt(lsGet('volLavaDie', '60')),
+    jump: parseInt(lsGet('volJump', '40')),
+    walking: parseInt(lsGet('volWalking', '70')),
+    killBrick: parseInt(lsGet('volKillBrick', '80')),
+    lava: parseInt(lsGet('volLava', '40')),
+    achievement: parseInt(lsGet('volAchievement', '80'))
+  };
+
+  let colorSettings = {
+    btn: lsGet('colorBtn', '#38bdf8'),
+    text: lsGet('colorText', '#38bdf8'),
+    accent: lsGet('colorAccent', '#22c55e')
+  };
+
+  // Load achievements
+  let achievements = {};
+  try {
+    achievements = JSON.parse(localStorage.getItem('achievements') || '{}');
+  } catch(e) { achievements = {}; }
+
+  let lastFrameTime = 0;
+  const TARGET_FPS = 60;
+  const FRAME_TIME = 1000 / TARGET_FPS;
+
+  let maxHeights = {
+    easy: parseInt(lsGet('obbyTopHeightEasy', '0')),
+    medium: parseInt(lsGet('obbyTopHeightMedium', '0')),
+    hard: parseInt(lsGet('obbyTopHeightHard', '0')),
+    impossible: parseInt(lsGet('obbyTopHeightImpossible', '0'))
+  };
+
+  const gravity = 0.9;
+  const jumpPower = 16;
+  const speed = 6;
+  const keys = {};
+  let platforms = [];
+  let platformPool = [];
+  const LEFT_WALL = 0;
+  const RIGHT_WALL = window.innerWidth;
+
+  // ============================================
+  // TRANSLATIONS
+  // ============================================
+  const translations = {
+    en: {
+      height: 'HEIGHT', topHeight: 'TOP HEIGHT', difficulty: 'DIFFICULTY',
+      doubleJump: 'Double Jump = true', pauseHint: 'Press ESC to pause',
+      paused: 'PAUSED', continue: 'CONTINUE', extra: 'EXTRA',
+      settings: 'SETTINGS', help: 'HELP', restart: 'RESTART', back: 'BACK',
+      youDied: 'YOU DIED', respawn: 'Click/Space to Respawn',
+      achievements: 'ACHIEVEMENTS', changelog: 'CHANGELOG', resetData: 'RESET DATA',
+      helpGreen: 'Green:', helpGreenDesc: 'Safe platform',
+      helpRed: 'Red:', helpRedDesc: 'Die when landing on it',
+      helpBlue: 'Blue:', helpBlueDesc: 'Disappears after 1 second',
+      helpOrange: 'Orange:', helpOrangeDesc: 'Moving platform',
+      helpWhite: 'White/gray:', helpWhiteDesc: 'Platform you can jump through and land on',
+      helpControls: 'Controls:', helpControlsDesc: 'W/A/D/SPACE and Arrow Keys + you have double jump',
+      helpAvoid: 'Avoid the Lava!', helpPause: 'ESC to pause',
+      settingsGraphics: 'Graphics', settingsVisualEffects: 'Visual Effects',
+      settingsGraphicsMode: 'Graphics Mode', settingsGuiToggle: 'All GUI Elements',
+      settingsCubeBtn: 'Cube Button (ESC)',
+      settingsDifficulty: 'Difficulty', settingsGameDifficulty: 'Game Difficulty',
+      settingsAudio: 'Audio', settingsAudioSettings: 'Audio Settings',
+      settingsColors: 'Colors', settingsColorSettings: 'Color Settings',
+      settingsLanguage: 'Language', settingsLanguageLabel: 'Language',
+      audioRespawn: 'Respawn Sound', audioLava: 'Lava Death Sound',
+      audioJump: 'Jump Sound', audioWalking: 'Walking Sound',
+      audioBrick: 'Kill Brick Sound', audioAmbient: 'Lava Ambient Sound',
+      audioAchievement: 'Achievement Sound',
+      audioMusic: 'Music ON/OFF', audioSfx: 'Sound Effects ON/OFF',
+      audioMaster: 'Master Volume', audioGlobal: 'Global Controls',
+      audioIndividual: 'Individual Volumes',
+      colorBtn: 'Button Color (Default: #38bdf8)',
+      colorText: 'Text Color (Default: #38bdf8)',
+      colorAccent: 'Accent Color (Default: #22c55e)',
+      colorReset: 'Reset to Default',
+      achievementUnlocked: 'Achievement Unlocked!',
+      noAchievements: 'No achievements yet. Keep playing!',
+      langEnglish: 'English', langDanish: 'Danish', langGerman: 'German'
+    },
+    da: {
+      height: 'HØJDE', topHeight: 'TOP HØJDE', difficulty: 'SVÆRHEDSGRAD',
+      doubleJump: 'Dobbelt Hop = sand', pauseHint: 'Tryk ESC for pause',
+      paused: 'PAUSE', continue: 'FORTSÆT', extra: 'EKSTRA',
+      settings: 'INDSTILLINGER', help: 'HJÆLP', restart: 'GENSTART', back: 'TILBAGE',
+      youDied: 'DU DØDE', respawn: 'Klik/Mellemrum for Genstart',
+      achievements: 'PRÆSTATIONER', changelog: 'ÆNDRINGSLOG', resetData: 'NULSTIL DATA',
+      helpGreen: 'Grøn:', helpGreenDesc: 'Sikker platform',
+      helpRed: 'Rød:', helpRedDesc: 'Dør ved at lande på den',
+      helpBlue: 'Blå:', helpBlueDesc: 'Forsvinder efter 1 sekund',
+      helpOrange: 'Orange:', helpOrangeDesc: 'Bevæger sig',
+      helpWhite: 'Hvid/grålig:', helpWhiteDesc: 'Platform man kan hoppe igennem og lande på',
+      helpControls: 'Kontroller:', helpControlsDesc: 'W/A/D/MELLEMRUM og Piletaster + dobbelt hop',
+      helpAvoid: 'Undgå Lavaen!', helpPause: 'ESC for pause',
+      settingsGraphics: 'Grafik', settingsVisualEffects: 'Visuelle Effekter',
+      settingsGraphicsMode: 'Grafikstilstand', settingsGuiToggle: 'Alle GUI-elementer',
+      settingsCubeBtn: 'Terningknap (ESC)',
+      settingsDifficulty: 'Sværhedsgrad', settingsGameDifficulty: 'Spil Sværhedsgrad',
+      settingsAudio: 'Lyd', settingsAudioSettings: 'Lydindstillinger',
+      settingsColors: 'Farver', settingsColorSettings: 'Farveindstillinger',
+      settingsLanguage: 'Sprog', settingsLanguageLabel: 'Sprog',
+      audioRespawn: 'Genstart Lyd', audioLava: 'Lava Døds Lyd',
+      audioJump: 'Hop Lyd', audioWalking: 'Gå Lyd',
+      audioBrick: 'Dræb Klods Lyd', audioAmbient: 'Lava Ambiente Lyd',
+      audioAchievement: 'Præstationslyd',
+      audioMusic: 'Musik TIL/FRA', audioSfx: 'Lydeffekter TIL/FRA',
+      audioMaster: 'Hovedvolumen', audioGlobal: 'Globale kontroller',
+      audioIndividual: 'Individuelle volumener',
+      colorBtn: 'Knapfarve (Standard: #38bdf8)',
+      colorText: 'Tekstfarve (Standard: #38bdf8)',
+      colorAccent: 'Accentfarve (Standard: #22c55e)',
+      colorReset: 'Nulstil til standard',
+      achievementUnlocked: 'Præstation låst op!',
+      noAchievements: 'Ingen præstationer endnu. Bliv ved med at spille!',
+      langEnglish: 'Engelsk', langDanish: 'Dansk', langGerman: 'Tysk'
+    },
+    de: {
+      height: 'HÖHE', topHeight: 'TOP HÖHE', difficulty: 'SCHWIERIGKEIT',
+      doubleJump: 'Doppelsprung = wahr', pauseHint: 'ESC drücken zum Pausieren',
+      paused: 'PAUSIERT', continue: 'FORTSETZEN', extra: 'EXTRA',
+      settings: 'EINSTELLUNGEN', help: 'HILFE', restart: 'NEUSTART', back: 'ZURÜCK',
+      youDied: 'DU BIST GESTORBEN', respawn: 'Klick/Leertaste zum Neustart',
+      achievements: 'ERRUNGENSCHAFTEN', changelog: 'ÄNDERUNGSPROTOKOLL', resetData: 'DATEN ZURÜCKSETZEN',
+      helpGreen: 'Grün:', helpGreenDesc: 'Sichere Plattform',
+      helpRed: 'Rot:', helpRedDesc: 'Stirb beim Landen darauf',
+      helpBlue: 'Blau:', helpBlueDesc: 'Verschwindet nach 1 Sekunde',
+      helpOrange: 'Orange:', helpOrangeDesc: 'Bewegende Plattform',
+      helpWhite: 'Weiß/grau:', helpWhiteDesc: 'Plattform durch die man springen und landen kann',
+      helpControls: 'Steuerung:', helpControlsDesc: 'W/A/D/LEERTASTE und Pfeiltasten + Doppelsprung',
+      helpAvoid: 'Vermeide die Lava!', helpPause: 'ESC zum Pausieren',
+      settingsGraphics: 'Grafik', settingsVisualEffects: 'Visuelle Effekte',
+      settingsGraphicsMode: 'Grafikmodus', settingsGuiToggle: 'Alle GUI-Elemente',
+      settingsCubeBtn: 'Würfelschaltfläche (ESC)',
+      settingsDifficulty: 'Schwierigkeit', settingsGameDifficulty: 'Spiel Schwierigkeit',
+      settingsAudio: 'Audio', settingsAudioSettings: 'Audioeinstellungen',
+      settingsColors: 'Farben', settingsColorSettings: 'Farbeinstellungen',
+      settingsLanguage: 'Sprache', settingsLanguageLabel: 'Sprache',
+      audioRespawn: 'Neustart Ton', audioLava: 'Lava Tod Ton',
+      audioJump: 'Sprung Ton', audioWalking: 'Lauf Ton',
+      audioBrick: 'Kill Brick Ton', audioAmbient: 'Lava Ambiente Ton',
+      audioAchievement: 'Errungenschaften Ton',
+      audioMusic: 'Musik AN/AUS', audioSfx: 'Soundeffekte AN/AUS',
+      audioMaster: 'Hauptlautstärke', audioGlobal: 'Globale Kontrollen',
+      audioIndividual: 'Individuelle Lautstärken',
+      colorBtn: 'Schaltflächenfarbe (Standard: #38bdf8)',
+      colorText: 'Textfarbe (Standard: #38bdf8)',
+      colorAccent: 'Akzentfarbe (Standard: #22c55e)',
+      colorReset: 'Auf Standard zurücksetzen',
+      achievementUnlocked: 'Errungenschaft freigeschaltet!',
+      noAchievements: 'Noch keine Errungenschaften. Weiterspielen!',
+      langEnglish: 'Englisch', langDanish: 'Dänisch', langGerman: 'Deutsch'
+    }
+  };
+
+  // ============================================
+  // ACHIEVEMENT SYSTEM
+  // ============================================
+  let toastQueue = [];
+  let toastActive = false;
+
+  function checkAchievements() {
+    const heightScore = Math.floor(currentHeight / 10);
+    ACHIEVEMENT_DEFS.forEach(def => {
+      if (def.mode !== currentDifficulty) return;
+      if (achievements[def.id]) return;
+      if (heightScore >= def.score) {
+        unlockAchievement(def);
+      }
+    });
+  }
+
+  function unlockAchievement(def) {
+    const now = new Date();
+    const timestamp = now.toLocaleString();
+    achievements[def.id] = { unlocked: true, timestamp };
+    localStorage.setItem('achievements', JSON.stringify(achievements));
+    toastQueue.push({ name: def.label(), timestamp });
+    if (!toastActive) showNextToast();
+  }
+
+  function showNextToast() {
+    if (toastQueue.length === 0) { toastActive = false; return; }
+    toastActive = true;
+    const item = toastQueue.shift();
+    achievementToastName.textContent = item.name + ' — ' + item.timestamp;
+    document.getElementById('achievement-toast-title').textContent = translations[currentLanguage].achievementUnlocked;
+    achievementToast.classList.add('show');
+    playAchievementSound();
+    setTimeout(() => {
+      achievementToast.classList.remove('show');
+      setTimeout(showNextToast, 400);
+    }, 3500);
+  }
+
+  function renderAchievements() {
+    const list = document.getElementById('achievements-list');
+    const t = translations[currentLanguage];
+    let html = '';
+    let any = false;
+    ACHIEVEMENT_DEFS.forEach(def => {
+      const a = achievements[def.id];
+      html += `<div class="achievement-item ${a ? 'unlocked' : 'locked'}">
+        <div class="achievement-icon">${a ? '🏆' : '🔒'}</div>
+        <div class="achievement-info">
+          <div class="achievement-name">${def.label()}</div>
+          <div class="achievement-desc">${def.desc()}</div>
+          ${a ? `<div class="achievement-time">${a.timestamp}</div>` : ''}
+        </div>
+      </div>`;
+      if (a) any = true;
+    });
+    if (!any && Object.keys(achievements).length === 0) {
+      html = `<p class="no-achievements">${t.noAchievements}</p>`;
+    }
+    list.innerHTML = html;
+  }
+
+  // ============================================
+  // SETTINGS FUNCTIONS
+  // ============================================
+  function updateLanguage(lang) {
+    currentLanguage = lang;
+    localStorage.setItem('language', lang);
+    const t = translations[lang];
+
+    curEl.textContent = `${t.height}: ${Math.floor(currentHeight/10)}`;
+    maxEl.textContent = `${t.topHeight}: ${Math.floor(maxHeights[currentDifficulty]/10)}`;
+    difficultyEl.textContent = `${t.difficulty}: ${DIFFICULTY_SETTINGS[currentDifficulty].name.toUpperCase()}`;
+    document.getElementById('hp-display').textContent = t.doubleJump;
+    document.getElementById('pause-hint').textContent = t.pauseHint;
+
+    document.getElementById('continue-btn').textContent = t.continue;
+    document.getElementById('extra-btn').textContent = t.extra;
+    document.getElementById('settings-btn').textContent = t.settings;
+    document.getElementById('achievements-btn').textContent = t.achievements;
+    document.getElementById('changelog-btn').textContent = t.changelog;
+    document.getElementById('reset-data-btn').textContent = t.resetData;
+    document.getElementById('help-btn').textContent = t.help;
+    document.getElementById('restart-btn').textContent = t.restart;
+    document.getElementById('help-back-btn').textContent = t.back;
+    document.getElementById('settings-back-btn').textContent = t.back;
+    document.getElementById('audio-back-btn').textContent = t.back;
+    document.getElementById('color-back-btn').textContent = t.back;
+    document.getElementById('extra-back-btn').textContent = t.back;
+    document.getElementById('achievements-back-btn').textContent = t.back;
+    document.getElementById('changelog-back-btn').textContent = t.back;
+    document.getElementById('color-reset-btn').textContent = t.colorReset;
+
+    document.getElementById('death-title').textContent = t.youDied;
+    document.getElementById('death-subtitle').textContent = t.respawn;
+
+    document.querySelector('.help-green').textContent = t.helpGreen;
+    document.querySelector('.help-green-desc').textContent = t.helpGreenDesc;
+    document.querySelector('.help-red').textContent = t.helpRed;
+    document.querySelector('.help-red-desc').textContent = t.helpRedDesc;
+    document.querySelector('.help-blue').textContent = t.helpBlue;
+    document.querySelector('.help-blue-desc').textContent = t.helpBlueDesc;
+    document.querySelector('.help-orange').textContent = t.helpOrange;
+    document.querySelector('.help-orange-desc').textContent = t.helpOrangeDesc;
+    document.querySelector('.help-white').textContent = t.helpWhite;
+    document.querySelector('.help-white-desc').textContent = t.helpWhiteDesc;
+    document.querySelector('.help-controls').textContent = t.helpControls;
+    document.querySelector('.help-controls-desc').textContent = t.helpControlsDesc;
+    document.querySelector('.help-avoid').textContent = t.helpAvoid;
+    document.querySelector('.help-pause').textContent = t.helpPause;
+
+    document.getElementById('audio-respawn-label').textContent = t.audioRespawn;
+    document.getElementById('audio-lava-label').textContent = t.audioLava;
+    document.getElementById('audio-jump-label').textContent = t.audioJump;
+    document.getElementById('audio-walking-label').textContent = t.audioWalking;
+    document.getElementById('audio-brick-label').textContent = t.audioBrick;
+    document.getElementById('audio-ambient-label').textContent = t.audioAmbient;
+    document.getElementById('audio-achievement-label').textContent = t.audioAchievement;
+    document.getElementById('audio-music-label').textContent = t.audioMusic;
+    document.getElementById('audio-sfx-label').textContent = t.audioSfx;
+    document.getElementById('audio-master-label').textContent = t.audioMaster;
+    document.getElementById('audio-global-title').textContent = t.audioGlobal;
+    document.getElementById('audio-individual-title').textContent = t.audioIndividual;
+
+    document.getElementById('audio-settings-btn').textContent = t.settingsAudioSettings;
+    document.getElementById('audio-settings-title').textContent = t.settingsAudioSettings;
+    document.getElementById('color-settings-btn').textContent = t.settingsColorSettings;
+    document.getElementById('color-settings-title').textContent = t.settingsColorSettings;
+    document.getElementById('settings-graphics-title').textContent = t.settingsGraphics;
+    document.getElementById('settings-visual-effects').textContent = t.settingsVisualEffects;
+    document.getElementById('settings-graphics-mode-label').textContent = t.settingsGraphicsMode;
+    document.getElementById('settings-gui-toggle-label').textContent = t.settingsGuiToggle;
+    document.getElementById('settings-cube-btn-label').textContent = t.settingsCubeBtn;
+    document.getElementById('settings-difficulty-title').textContent = t.settingsDifficulty;
+    document.getElementById('settings-game-difficulty').textContent = t.settingsGameDifficulty;
+    document.getElementById('settings-audio-title').textContent = t.settingsAudio;
+    document.getElementById('settings-colors-title').textContent = t.settingsColors;
+    document.getElementById('settings-language-title').textContent = t.settingsLanguage;
+    document.getElementById('settings-language-label').textContent = t.settingsLanguageLabel;
+
+    const langOptions = document.querySelectorAll('#language-select option');
+    langOptions[0].textContent = `🇬🇧 ${t.langEnglish}`;
+    langOptions[1].textContent = `🇩🇰 ${t.langDanish}`;
+    langOptions[2].textContent = `🇩🇪 ${t.langGerman}`;
+  }
+
+  function toggleEffects(enabled) {
+    effectsEnabled = enabled;
+    localStorage.setItem('effectsEnabled', enabled);
+    document.body.classList.toggle('no-effects', !enabled);
+  }
+
+  function applyGraphicsMode(mode) {
+    graphicsMode = mode;
+    localStorage.setItem('graphicsMode', mode);
+    document.body.classList.toggle('low-graphics', mode === 'low');
+  }
+
+  function applyGuiToggle(enabled) {
+    guiEnabled = enabled;
+    localStorage.setItem('guiEnabled', enabled);
+    document.getElementById('hud').style.display = enabled ? '' : 'none';
+    document.getElementById('hp-display').style.display = enabled ? '' : 'none';
+    const ph = document.getElementById('pause-hint');
+    if (ph) ph.style.display = enabled ? '' : 'none';
+    document.getElementById('version-badge').style.display = enabled ? '' : 'none';
+  }
+
+  function applyCubeBtnToggle(enabled) {
+    cubeBtnEnabled = enabled;
+    localStorage.setItem('cubeBtnEnabled', enabled);
+    document.getElementById('player').style.borderRadius = enabled ? '10px' : '0px';
+  }
+
+  function changeDifficulty(difficulty) {
+    if (currentDifficulty !== difficulty) {
+      currentDifficulty = difficulty;
+      localStorage.setItem('difficulty', difficulty);
+      updateLanguage(currentLanguage);
+      if (!isDead && !paused) die(false);
+    }
+  }
+
+  function applyColors() {
+    const r = document.documentElement;
+    r.style.setProperty('--color-btn', colorSettings.btn);
+    r.style.setProperty('--color-text', colorSettings.text);
+    r.style.setProperty('--color-accent', colorSettings.accent);
+    localStorage.setItem('colorBtn', colorSettings.btn);
+    localStorage.setItem('colorText', colorSettings.text);
+    localStorage.setItem('colorAccent', colorSettings.accent);
+  }
+
+  // ============================================
+  // AUDIO FUNCTIONS
+  // ============================================
+  function getEffectiveVol(base) {
+    return (base / 100) * (masterVol / 100);
+  }
+
+  function initializeVolumes() {
+    Object.keys(volSliders).forEach(k => {
+      volSliders[k].value = volSettings[k];
+      volValues[k].textContent = volSettings[k] + '%';
+    });
+    masterSlider.value = masterVol;
+    masterValue.textContent = masterVol + '%';
+    audioMusicToggle.checked = musicOn;
+    audioSfxToggle.checked = sfxOn;
+    audioRespawn.checked = audioSettings.respawn;
+    audioLava.checked = audioSettings.lava;
+    audioJump.checked = audioSettings.jump;
+    audioWalking.checked = audioSettings.walking;
+    audioBrick.checked = audioSettings.brick;
+    audioAmbient.checked = audioSettings.ambient;
+    audioAchievement.checked = audioSettings.achievement;
+    applyAllVolumes();
+  }
+
+  function applyAllVolumes() {
+    respawnSound.volume = getEffectiveVol(volSettings.respawn);
+    lavaDieSound.volume = getEffectiveVol(volSettings.lavaDie);
+    jumpSound.volume = getEffectiveVol(volSettings.jump);
+    walkingSound.volume = getEffectiveVol(volSettings.walking);
+    killBrickSound.volume = getEffectiveVol(volSettings.killBrick);
+    lavaSound.volume = getEffectiveVol(volSettings.lava);
+    achievementSound.volume = getEffectiveVol(volSettings.achievement);
+  }
+
+  function saveAudioSettings() {
+    localStorage.setItem('audioRespawn', audioRespawn.checked);
+    localStorage.setItem('audioLava', audioLava.checked);
+    localStorage.setItem('audioJump', audioJump.checked);
+    localStorage.setItem('audioWalking', audioWalking.checked);
+    localStorage.setItem('audioBrick', audioBrick.checked);
+    localStorage.setItem('audioAmbient', audioAmbient.checked);
+    localStorage.setItem('audioAchievement', audioAchievement.checked);
+    localStorage.setItem('musicOn', musicOn);
+    localStorage.setItem('sfxOn', sfxOn);
+    localStorage.setItem('masterVol', masterVol);
+    Object.keys(volSettings).forEach(k => {
+      localStorage.setItem('vol' + k.charAt(0).toUpperCase() + k.slice(1), volSettings[k]);
+    });
+    applyAllVolumes();
+  }
+
+  function canPlaySfx() { return sfxOn; }
+  function canPlayMusic() { return musicOn; }
+
+  function playRespawnSound() {
+    if (!audioSettings.respawn || !canPlaySfx()) return;
+    respawnSound.currentTime = START_TIME_RESPAWN;
+    respawnSound.play().catch(()=>{});
+  }
+  function playLavaDieSound() {
+    if (!audioSettings.lava || !canPlaySfx()) return;
+    lavaDieSound.currentTime = START_TIME_LAVA_DIE;
+    lavaDieSound.play().catch(()=>{});
+  }
+  function playJumpSound() {
+    if (!audioSettings.jump || !canPlaySfx()) return;
+    jumpSound.currentTime = START_TIME_JUMP;
+    jumpSound.play().catch(()=>{});
+  }
+  function playWalkingSound() {
+    if (!audioSettings.walking || !canPlaySfx()) return;
+    if (walkingSound.paused) {
+      walkingSound.currentTime = START_TIME_WALKING;
+      walkingSound.play().catch(()=>{});
+    }
+  }
+  function stopWalkingSound() {
+    walkingSound.pause();
+    walkingSound.currentTime = START_TIME_WALKING;
+  }
+  function playKillBrickSound() {
+    if (!audioSettings.brick || !canPlaySfx()) return;
+    killBrickSound.currentTime = START_TIME_KILL_BRICK;
+    killBrickSound.play().catch(()=>{});
+  }
+  function playAchievementSound() {
+    if (!audioSettings.achievement || !canPlaySfx()) return;
+    achievementSound.currentTime = START_TIME_ACHIEVEMENT;
+    achievementSound.play().catch(()=>{});
+  }
+
+  function updateLavaSound() {
+    if (!audioSettings.ambient || !canPlayMusic()) { stopLavaSound(); return; }
+    const isLavaVisible = lavaY < window.innerHeight;
+    if (isLavaVisible && !lavaInView) {
+      lavaInView = true;
+      lavaSound.currentTime = START_TIME_LAVA;
+      lavaSound.play().catch(()=>{});
+    } else if (!isLavaVisible && lavaInView) {
+      lavaInView = false;
+      lavaSound.pause();
+      lavaSound.currentTime = START_TIME_LAVA;
+    }
+    if (isLavaVisible) {
+      const dist = lavaY - (y + PLAYER_SIZE);
+      const maxDist = window.innerHeight;
+      const mult = Math.max(0, Math.min(1, 1 - (dist / maxDist)));
+      lavaSound.volume = getEffectiveVol(volSettings.lava) * mult;
+    }
+  }
+  function stopLavaSound() {
+    lavaSound.pause();
+    lavaSound.currentTime = START_TIME_LAVA;
+    lavaInView = false;
+  }
+
+  // ============================================
+  // MENU NAVIGATION HELPERS
+  // ============================================
+  const allMenus = [mainMenu, extraMenu, helpMenu, settingsMenu, audioMenu, colorMenu, achievementsMenu, changelogMenu];
+
+  function showMenu(menu, title) {
+    allMenus.forEach(m => m.style.display = 'none');
+    menu.style.display = 'block';
+    pauseTitle.textContent = title;
+  }
+
+  // ============================================
+  // EVENT LISTENERS
+  // ============================================
+  document.addEventListener("keydown", e => {
+    if (isDead) return;
+    keys[e.key] = true;
+    if (e.key === "Escape") togglePause();
+  });
+  document.addEventListener("keyup", e => { keys[e.key] = false; });
+
+  continueBtn.addEventListener("click", togglePause);
+
+  extraBtn.addEventListener("click", () => {
+    showMenu(extraMenu, translations[currentLanguage].extra);
+  });
+  extraBackBtn.addEventListener("click", () => {
+    showMenu(mainMenu, translations[currentLanguage].paused);
+  });
+
+  settingsBtn.addEventListener("click", () => {
+    showMenu(settingsMenu, translations[currentLanguage].settings);
+  });
+  settingsBackBtn.addEventListener("click", () => {
+    showMenu(extraMenu, translations[currentLanguage].extra);
+  });
+
+  audioSettingsBtn.addEventListener("click", () => {
+    showMenu(audioMenu, translations[currentLanguage].settingsAudioSettings);
+  });
+  audioBackBtn.addEventListener("click", () => {
+    showMenu(settingsMenu, translations[currentLanguage].settings);
+  });
+
+  colorSettingsBtn.addEventListener("click", () => {
+    showMenu(colorMenu, translations[currentLanguage].settingsColorSettings);
+  });
+  colorBackBtn.addEventListener("click", () => {
+    showMenu(settingsMenu, translations[currentLanguage].settings);
+  });
+
+  achievementsBtn.addEventListener("click", () => {
+    renderAchievements();
+    showMenu(achievementsMenu, translations[currentLanguage].achievements);
+  });
+  achievementsBackBtn.addEventListener("click", () => {
+    showMenu(extraMenu, translations[currentLanguage].extra);
+  });
+
+  changelogBtn.addEventListener("click", () => {
+    showMenu(changelogMenu, 'CHANGELOG');
+  });
+  changelogBackBtn.addEventListener("click", () => {
+    showMenu(extraMenu, translations[currentLanguage].extra);
+  });
+
+  helpBtn.addEventListener("click", () => {
+    showMenu(helpMenu, translations[currentLanguage].help);
+  });
+  helpBackBtn.addEventListener("click", () => {
+    showMenu(extraMenu, translations[currentLanguage].extra);
+  });
+
+  restartBtn.addEventListener("click", () => {
+    pauseMenu.classList.remove("active");
+    showMenu(mainMenu, translations[currentLanguage].paused);
+    saveMaxHeight();
+    resetGame();
+  });
+
+  resetDataBtn.addEventListener("click", () => {
+    if (!confirm('Reset ALL data? This cannot be undone.')) return;
+    const keysToRemove = [
+      'effectsEnabled','graphicsMode','guiEnabled','cubeBtnEnabled',
+      'language','difficulty','musicOn','sfxOn','masterVol',
+      'audioRespawn','audioLava','audioJump','audioWalking','audioBrick','audioAmbient','audioAchievement',
+      'volRespawn','volLavaDie','volJump','volWalking','volKillBrick','volLava','volAchievement',
+      'colorBtn','colorText','colorAccent',
+      'achievements',
+      'obbyTopHeightEasy','obbyTopHeightMedium','obbyTopHeightHard','obbyTopHeightImpossible'
+    ];
+    keysToRemove.forEach(k => localStorage.removeItem(k));
+    location.reload();
+  });
+
+  effectsToggle.addEventListener("change", e => toggleEffects(e.target.checked));
+
+  graphicsModeSelect.addEventListener("change", e => applyGraphicsMode(e.target.value));
+
+  guiToggle.addEventListener("change", e => applyGuiToggle(e.target.checked));
+
+  cubeBtnToggle.addEventListener("change", e => applyCubeBtnToggle(e.target.checked));
+
+  languageSelect.addEventListener("change", e => updateLanguage(e.target.value));
+
+  difficultySelect.addEventListener("change", e => changeDifficulty(e.target.value));
+
+  // Audio listeners
+  audioMusicToggle.addEventListener("change", e => { musicOn = e.target.checked; saveAudioSettings(); });
+  audioSfxToggle.addEventListener("change", e => { sfxOn = e.target.checked; saveAudioSettings(); });
+  masterSlider.addEventListener("input", e => {
+    masterVol = parseInt(e.target.value);
+    masterValue.textContent = masterVol + '%';
+    saveAudioSettings();
+  });
+  [audioRespawn, audioLava, audioJump, audioWalking, audioBrick, audioAmbient, audioAchievement].forEach(el => {
+    el.addEventListener("change", saveAudioSettings);
+  });
+
+  Object.keys(volSliders).forEach(k => {
+    volSliders[k].addEventListener("input", e => {
+      volSettings[k] = parseInt(e.target.value);
+      volValues[k].textContent = volSettings[k] + '%';
+      saveAudioSettings();
+    });
+  });
+
+  // Color listeners
+  colorBtnPicker.addEventListener("input", e => {
+    colorSettings.btn = e.target.value;
+    applyColors();
+  });
+  colorTextPicker.addEventListener("input", e => {
+    colorSettings.text = e.target.value;
+    applyColors();
+  });
+  colorAccentPicker.addEventListener("input", e => {
+    colorSettings.accent = e.target.value;
+    applyColors();
+  });
+  colorResetBtn.addEventListener("click", () => {
+    colorSettings = { btn: '#38bdf8', text: '#38bdf8', accent: '#22c55e' };
+    colorBtnPicker.value = colorSettings.btn;
+    colorTextPicker.value = colorSettings.text;
+    colorAccentPicker.value = colorSettings.accent;
+    applyColors();
+  });
+
+  deathScreen.addEventListener("click", () => {
+    deathScreen.classList.remove("active");
+    isDead = false;
+    resetGame();
+  });
+  document.addEventListener("keydown", e => {
+    if (!isDead) return;
+    if (e.key === " " || e.code === "Space") {
+      deathScreen.classList.remove("active");
+      isDead = false;
+      resetGame();
+    }
+  });
+
+  // ============================================
+  // GAME FUNCTIONS
+  // ============================================
+  function saveMaxHeight() {
+    const key = `obbyTopHeight${currentDifficulty.charAt(0).toUpperCase() + currentDifficulty.slice(1)}`;
+    localStorage.setItem(key, maxHeights[currentDifficulty]);
+  }
+
+  function togglePause() {
+    paused = !paused;
+    if (paused) {
+      pauseMenu.classList.add("active");
+      showMenu(mainMenu, translations[currentLanguage].paused);
+      if (animationId) cancelAnimationFrame(animationId);
+      stopWalkingSound();
+      stopLavaSound();
+    } else {
+      pauseMenu.classList.remove("active");
+      lastFrameTime = 0;
+      update();
+    }
+  }
+
+  function die(fromLava = false) {
+    isDead = true;
+    diedFromLava = fromLava;
+    saveMaxHeight();
+    if (animationId) cancelAnimationFrame(animationId);
+    stopWalkingSound();
+    stopLavaSound();
+    if (fromLava) playLavaDieSound();
+    deathScreen.classList.add("active");
+  }
+
+  function resetGame() {
+    if (animationId) cancelAnimationFrame(animationId);
+    stopWalkingSound();
+    stopLavaSound();
+    playRespawnSound();
+    platforms.forEach(p => { p.style.display = 'none'; platformPool.push(p); });
+    platforms = [];
+
+    const centerY = (window.innerHeight - PLAYER_SIZE) / 2;
+    x = (window.innerWidth - PLAYER_SIZE) / 2;
+    y = centerY;
+    startingY = centerY;
+    velY = 0; jumpsLeft = 2; currentHeight = 0; globalDifficulty = 0;
+    lavaY = window.innerHeight + 200; lavaSpeed = LAVA_START_SPEED;
+    isDead = false; paused = false; wasOnBluePlatform = false;
+    isWalking = false; diedFromLava = false; lavaInView = false; lastFrameTime = 0;
+    document.body.style.background = "#020617";
+    Object.keys(keys).forEach(k => keys[k] = false);
+    player.style.left = x + "px";
+    player.style.top = y + "px";
+    lavaEl.style.top = lavaY + "px";
+
+    const t = translations[currentLanguage];
+    curEl.textContent = `${t.height}: 0`;
+    maxEl.textContent = `${t.topHeight}: ${Math.floor(maxHeights[currentDifficulty]/10)}`;
+    difficultyEl.textContent = `${t.difficulty}: ${DIFFICULTY_SETTINGS[currentDifficulty].name.toUpperCase()}`;
+
+    const startPlatformY = centerY + PLAYER_SIZE + 1;
+    createPlatform(window.innerWidth/2 - 200, startPlatformY, 400, "green");
+    lowestPlatformY = startPlatformY;
+    generatePlatforms();
+    update();
+  }
+
+  const maxJumpHeight = (jumpPower*jumpPower)/(2*gravity);
+
+  function createPlatform(px, py, width, type="green") {
+    let p;
+    if (platformPool.length > 0) { p = platformPool.pop(); p.style.display = 'block'; }
+    else { p = document.createElement("div"); p.className = "platform"; document.body.appendChild(p); }
+    p.className = "platform " + type;
+    p.dataset.type = type;
+    p.style.left = px + "px"; p.style.top = py + "px";
+    p.style.width = width + "px"; p.style.opacity = "1";
+    p.dataset.moving = "false"; p.dataset.moveDir = "1";
+    p.dataset.moveSpeed = "0"; p.dataset.blueTimer = "0";
+    p.dataset.disappearing = "false"; p.dataset.respawnTime = "0";
+    platforms.push(p);
+    if (type === "orange") {
+      p.dataset.moving = "true";
+      p.dataset.moveSpeed = String(PLATFORM_MOVE_SPEED);
+      p.dataset.moveDir = String(Math.random() > 0.5 ? 1 : -1);
+      p.dataset.originalLeft = String(px);
+      p.dataset.moveRange = String(PLATFORM_MOVE_RANGE);
+    }
+    return p;
+  }
+
+  function generatePlatforms() {
+    const targetCount = 40;
+    if (platforms.length >= targetCount) return;
+    while (platforms.length < targetCount) {
+      const last = platforms[platforms.length-1];
+      if (!last) break;
+      const lastY = parseFloat(last.style.top);
+      const lastX = parseFloat(last.style.left) + last.offsetWidth/2;
+      globalDifficulty += 0.05;
+      const wasLastRed = last.dataset.type === "red";
+      let gapY, safeGapY, horizontalDist;
+      if (wasLastRed) {
+        gapY = PLATFORM_DISTANCE_Y_MIN * 0.5;
+        safeGapY = Math.min(maxJumpHeight * 0.35, gapY);
+        horizontalDist = PLATFORM_DISTANCE_X_MIN * 0.4;
+      } else {
+        gapY = PLATFORM_DISTANCE_Y_MIN + Math.random() * (PLATFORM_DISTANCE_Y_MAX - PLATFORM_DISTANCE_Y_MIN);
+        safeGapY = Math.min(maxJumpHeight * 0.55, gapY);
+        horizontalDist = PLATFORM_DISTANCE_X_MIN + Math.random() * (PLATFORM_DISTANCE_X_MAX - PLATFORM_DISTANCE_X_MIN);
+      }
+      const offsetX = (Math.random() * 2 - 1) * horizontalDist;
+      const width = PLATFORM_WIDTH;
+      let px = lastX + offsetX - width/2;
+      px = Math.max(LEFT_WALL + 20, Math.min(px, RIGHT_WALL - width - 20));
+      const py = lastY - safeGapY;
+      let type = "green";
+      const rand = Math.random();
+      let redChance, blueChance, orangeChance, whiteChance;
+      if (currentHeight > 8000) { redChance=0.08; blueChance=0.70; orangeChance=0.10; whiteChance=0.05; }
+      else if (currentHeight > 5000) { redChance=0.06; blueChance=0.55; orangeChance=0.15; whiteChance=0.12; }
+      else if (currentHeight > 2500) { redChance=0.08; blueChance=0.45; orangeChance=0.20; whiteChance=0.15; }
+      else {
+        redChance = Math.min(0.03 + globalDifficulty*0.003, 0.12);
+        blueChance = Math.min(0.10 + globalDifficulty*0.010, 0.40);
+        orangeChance = Math.min(0.15 + globalDifficulty*0.006, 0.25);
+        whiteChance = Math.min(0.08 + globalDifficulty*0.004, 0.15);
+      }
+      if (wasLastRed) {
+        const ar = rand / (1 - redChance);
+        if (ar < blueChance/(1-redChance)) type = "blue";
+        else if (ar < (blueChance+orangeChance)/(1-redChance)) type = "orange";
+        else if (ar < (blueChance+orangeChance+whiteChance)/(1-redChance)) type = "white";
+        else type = "green";
+      } else {
+        if (rand < redChance) type = "red";
+        else if (rand < redChance + blueChance) type = "blue";
+        else if (rand < redChance + blueChance + orangeChance) type = "orange";
+        else if (rand < redChance + blueChance + orangeChance + whiteChance) type = "white";
+        else type = "green";
+      }
+      createPlatform(px, py, width, type);
+    }
+  }
+
+  function recyclePlatforms() {
+    const renderDistance = window.innerHeight * 1.2;
+    const topBound = y - renderDistance;
+    const bottomBound = y + renderDistance;
+    for (let i = platforms.length - 1; i >= 0; i--) {
+      const p = platforms[i];
+      const py = parseFloat(p.style.top);
+      if (py > lavaY || py < topBound || py > bottomBound) {
+        p.style.display = 'none';
+        platformPool.push(p);
+        platforms.splice(i, 1);
+      }
+    }
+  }
+
+  function update(currentTime = 0) {
+    if (paused || isDead) return;
+    if (!lastFrameTime) lastFrameTime = currentTime;
+    const deltaTime = currentTime - lastFrameTime;
+    const deltaMultiplier = deltaTime / FRAME_TIME;
+    lastFrameTime = currentTime;
+    const cappedDelta = Math.min(deltaMultiplier, 3);
+    const oldY = y;
+
+    const moveSpeed = speed * cappedDelta;
+    if (keys["a"] || keys["A"] || keys["ArrowLeft"]) x -= moveSpeed;
+    if (keys["d"] || keys["D"] || keys["ArrowRight"]) x += moveSpeed;
+    x = Math.max(LEFT_WALL, Math.min(x, RIGHT_WALL - PLAYER_SIZE));
+
+    if ((keys[" "] || keys["w"] || keys["W"] || keys["ArrowUp"]) && jumpsLeft > 0 && !keys._jumpHeld) {
+      velY = -jumpPower; jumpsLeft--;
+      keys._jumpHeld = true;
+      playJumpSound();
+    }
+    if (!keys[" "] && !keys["w"] && !keys["W"] && !keys["ArrowUp"]) keys._jumpHeld = false;
+
+    velY += gravity * cappedDelta;
+    y += velY * cappedDelta;
+
+    let grounded = false;
+    let onBluePlatform = false;
+
+    if (platforms.length > 0) lowestPlatformY = Math.max(...platforms.map(p => parseFloat(p.style.top)));
+
+    const now = Date.now();
+    platforms.forEach(p => {
+      if (p.dataset.moving === "true") {
+        const pmSpeed = parseFloat(p.dataset.moveSpeed) * cappedDelta;
+        let dir = parseFloat(p.dataset.moveDir);
+        let px = parseFloat(p.style.left) + pmSpeed * dir;
+        const originalLeft = parseFloat(p.dataset.originalLeft);
+        const moveRange = parseFloat(p.dataset.moveRange);
+        if (px < originalLeft - moveRange || px > originalLeft + moveRange) {
+          dir *= -1; p.dataset.moveDir = String(dir);
+          px = Math.max(originalLeft - moveRange, Math.min(px, originalLeft + moveRange));
+        }
+        if (px <= LEFT_WALL || px + p.offsetWidth >= RIGHT_WALL) { dir *= -1; p.dataset.moveDir = String(dir); }
+        p.style.left = px + "px";
+      }
+
+      if (p.dataset.type === "blue") {
+        if (p.dataset.disappearing === "true") {
+          if (now >= parseFloat(p.dataset.respawnTime)) {
+            p.style.opacity = "1"; p.dataset.disappearing = "false"; p.dataset.blueTimer = "0";
+          }
+        } else if (p.dataset.blueTimer !== "0") {
+          const elapsed = (now - parseFloat(p.dataset.blueTimer)) / 1000;
+          if (elapsed >= 1.0) {
+            p.dataset.disappearing = "true";
+            p.dataset.respawnTime = String(now + 5000);
+            p.style.opacity = "0";
+          } else {
+            p.style.opacity = String(Math.max(0.2, 1 - elapsed));
+          }
+        }
+      }
+    });
+
+    for (let i = 0; i < platforms.length; i++) {
+      const p = platforms[i];
+      const px = parseFloat(p.style.left);
+      const py = parseFloat(p.style.top);
+      const pw = p.offsetWidth;
+      const type = p.dataset.type;
+      if (type === "blue" && p.dataset.disappearing === "true") continue;
+      if (x + PLAYER_SIZE > px && x < px + pw) {
+        if (type === "white") {
+          if (oldY + PLAYER_SIZE <= py && y + PLAYER_SIZE >= py) {
+            velY = 0; y = py - PLAYER_SIZE; grounded = true; jumpsLeft = 2;
+          }
+          continue;
+        }
+        if (oldY + PLAYER_SIZE <= py && y + PLAYER_SIZE >= py) {
+          if (type === "red") { playKillBrickSound(); die(false); return; }
+          else if (type === "blue") {
+            onBluePlatform = true;
+            if (p.dataset.blueTimer == "0") p.dataset.blueTimer = String(now);
+            const elapsed = (now - parseFloat(p.dataset.blueTimer)) / 1000;
+            if (elapsed >= 1.0) {
+              p.dataset.disappearing = "true";
+              p.dataset.respawnTime = String(now + 5000);
+              p.style.opacity = "0";
+              wasOnBluePlatform = true;
+            } else {
+              p.style.opacity = String(Math.max(0.2, 1 - elapsed));
+              velY = 0; y = py - PLAYER_SIZE; grounded = true; jumpsLeft = 2;
+            }
+          } else {
+            velY = 0; y = py - PLAYER_SIZE; grounded = true; jumpsLeft = 2;
+          }
+        } else if (oldY >= py + 18 && y < py + 18 && velY < 0) {
+          if (type !== "white") { velY = 0; y = py + 18; }
+        }
+      }
+    }
+
+    if (wasOnBluePlatform && !onBluePlatform && !grounded) wasOnBluePlatform = false;
+
+    const isMovingHorizontally = (keys["a"]||keys["A"]||keys["ArrowLeft"]||keys["d"]||keys["D"]||keys["ArrowRight"]) && grounded;
+    if (isMovingHorizontally && !isWalking) { isWalking = true; playWalkingSound(); }
+    else if (!isMovingHorizontally && isWalking) { isWalking = false; stopWalkingSound(); }
+
+    if ((y > lowestPlatformY + 400 && y > lavaY) || y > window.innerHeight + 500) { die(true); return; }
+
+    const targetY = (window.innerHeight - PLAYER_SIZE) / 2;
+    const offset = targetY - y;
+    platforms.forEach(p => { p.style.top = (parseFloat(p.style.top) + offset) + "px"; });
+    lavaY += offset;
+    lavaEl.style.top = lavaY + "px";
+    lowestPlatformY += offset;
+    startingY += offset;
+    y = targetY;
+
+    currentHeight = Math.max(0, startingY - y);
+    maxHeights[currentDifficulty] = Math.max(maxHeights[currentDifficulty], currentHeight);
+
+    const heightBoost = Math.min(currentHeight / 100000, 1.5);
+    const LAVA_MAX_SPEED = DIFFICULTY_SETTINGS[currentDifficulty].maxSpeed;
+    lavaSpeed = Math.min(
+      LAVA_START_SPEED + globalDifficulty * LAVA_SPEED_INCREASE_RATE + heightBoost * LAVA_HEIGHT_BOOST_FACTOR,
+      LAVA_MAX_SPEED
+    );
+    lavaY -= lavaSpeed * cappedDelta;
+    lavaEl.style.top = lavaY + "px";
+
+    updateLavaSound();
+
+    const heightProgress = Math.min(currentHeight / 15000, 1);
+    const r = Math.floor(2 + heightProgress * 18);
+    const g = Math.floor(6 + heightProgress * 4);
+    const b = Math.floor(23 + heightProgress * 27);
+    document.body.style.background = `rgb(${r}, ${g}, ${b})`;
+
+    if (y + PLAYER_SIZE >= lavaY - LAVA_HITBOX_OFFSET) { die(true); return; }
+
+    const t = translations[currentLanguage];
+    curEl.textContent = `${t.height}: ${Math.floor(currentHeight/10)}`;
+    maxEl.textContent = `${t.topHeight}: ${Math.floor(maxHeights[currentDifficulty]/10)}`;
+
+    checkAchievements();
+    recyclePlatforms();
+    generatePlatforms();
+
+    player.style.left = x + "px";
+    player.style.top = y + "px";
+
+    animationId = requestAnimationFrame(update);
+  }
+
+  // ============================================
+  // INITIALIZE
+  // ============================================
+  function init() {
+    initializeVolumes();
+
+    effectsToggle.checked = effectsEnabled;
+    toggleEffects(effectsEnabled);
+
+    graphicsModeSelect.value = graphicsMode;
+    applyGraphicsMode(graphicsMode);
+
+    guiToggle.checked = guiEnabled;
+    applyGuiToggle(guiEnabled);
+
+    cubeBtnToggle.checked = cubeBtnEnabled;
+    applyCubeBtnToggle(cubeBtnEnabled);
+
+    languageSelect.value = currentLanguage;
+    difficultySelect.value = currentDifficulty;
+    updateLanguage(currentLanguage);
+
+    colorBtnPicker.value = colorSettings.btn;
+    colorTextPicker.value = colorSettings.text;
+    colorAccentPicker.value = colorSettings.accent;
+    applyColors();
+
+    resetGame();
+  }
+
+  init();
+  </script>
 </body>
 </html>
