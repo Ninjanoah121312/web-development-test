@@ -1,7 +1,17 @@
+/* ============================================================
+   BLOCK JUMP  v1.2.0  —  app.js
+   ============================================================ */
+
 'use strict';
 
+// ============================================================
+// VERSION
+// ============================================================
 const GAME_VERSION = '1.2.0';
 
+// ============================================================
+// CONFIGURATION
+// ============================================================
 const LAVA_START_SPEED          = 0.10;
 const LAVA_SPEED_INCREASE_RATE  = 0.08;
 const LAVA_HEIGHT_BOOST_FACTOR  = 0.05;
@@ -60,6 +70,9 @@ const DEFAULT_COLORS = {
   accent: '#22c55e'
 };
 
+// ============================================================
+// ACHIEVEMENT DEFINITIONS
+// ============================================================
 const ACHIEVEMENT_DEFS = [
   { id: 'easy_250',        mode: 'easy',       score: 250,  icon: '🥉', name: 'Bronze Climber', desc: 'Reach 250 in Easy'       },
   { id: 'easy_500',        mode: 'easy',       score: 500,  icon: '🥈', name: 'Silver Climber', desc: 'Reach 500 in Easy'       },
@@ -75,6 +88,9 @@ const ACHIEVEMENT_DEFS = [
   { id: 'impossible_1000', mode: 'impossible', score: 1000, icon: '🏆', name: 'BLOCK MASTER',   desc: 'Reach 1000 in Impossible'}
 ];
 
+// ============================================================
+// TRANSLATIONS
+// ============================================================
 const translations = {
   en: {
     height: 'HEIGHT', topHeight: 'TOP HEIGHT', difficulty: 'DIFFICULTY',
@@ -201,6 +217,9 @@ const translations = {
   }
 };
 
+// ============================================================
+// DOM REFS — GAME
+// ============================================================
 const playerEl        = document.getElementById('player');
 const curEl           = document.getElementById('current');
 const maxEl           = document.getElementById('max');
@@ -279,6 +298,9 @@ const colorModeToggle    = document.getElementById('color-mode-toggle');
 const achievementToast = document.getElementById('achievement-toast');
 const confirmModal     = document.getElementById('confirm-modal');
 
+// ============================================================
+// STATE — SETTINGS
+// ============================================================
 let effectsEnabled    = localStorage.getItem('effectsEnabled')   !== 'false';
 let uiEffectsEnabled  = localStorage.getItem('uiEffectsEnabled') !== 'false';
 let graphicsMode      = localStorage.getItem('graphicsMode')     || 'high';
@@ -329,6 +351,9 @@ let maxHeights = {
   impossible: parseInt(localStorage.getItem('obbyTopHeightImpossible') || '0')
 };
 
+// ============================================================
+// STATE — GAME
+// ============================================================
 let x, y, velY, jumpsLeft, lowestPlatformY;
 let currentHeight, globalDifficulty, lavaY, lavaSpeed;
 let startingY         = 0;
@@ -345,6 +370,9 @@ const keys        = {};
 let platforms     = [];
 let platformPool  = [];
 
+// ============================================================
+// AUDIO — VOLUME HELPERS
+// ============================================================
 function getMasterMult() { return masterVolume / 100; }
 
 function applyAllVolumes() {
@@ -392,6 +420,9 @@ function initializeAudio() {
   applyAllVolumes();
 }
 
+// ============================================================
+// AUDIO — PLAY FUNCTIONS
+// ============================================================
 function canPlay(toggle) { return globalMusicOn && toggle.checked; }
 
 function playRespawnSound()   { if (!canPlay(audioRespawn))  return; respawnSound.currentTime   = START_TIMES.respawn;     respawnSound.play().catch(()=>{}); }
@@ -435,6 +466,9 @@ function stopLavaSound() {
   lavaInView = false;
 }
 
+// ============================================================
+// ACHIEVEMENTS
+// ============================================================
 let toastQueue   = [];
 let toastShowing = false;
 
@@ -498,6 +532,9 @@ function renderAchievementsMenu() {
   container.innerHTML = html;
 }
 
+// ============================================================
+// GRAPHICS / EFFECTS
+// ============================================================
 function applyGraphicsState() {
   const lowGfx = (graphicsMode === 'low');
   document.body.classList.toggle('no-effects',    lowGfx || !effectsEnabled);
@@ -526,6 +563,9 @@ function toggleUIEffects(enabled) {
   applyGraphicsState();
 }
 
+// ============================================================
+// COLOR CUSTOMIZATION
+// ============================================================
 function applyCustomColors() {
   if (colorMode !== 'custom') {
     document.documentElement.style.removeProperty('--color-btn');
@@ -576,6 +616,9 @@ function setColorMode(mode) {
   saveCustomColors();
 }
 
+// ============================================================
+// LANGUAGE
+// ============================================================
 function updateLanguage(lang) {
   currentLanguage = lang;
   localStorage.setItem('language', lang);
@@ -684,6 +727,9 @@ function updateLanguage(lang) {
   langOpts[2].textContent = `🇩🇪 ${t.langGerman}`;
 }
 
+// ============================================================
+// DIFFICULTY
+// ============================================================
 function changeDifficulty(difficulty) {
   if (currentDifficulty === difficulty) return;
   currentDifficulty = difficulty;
@@ -692,6 +738,9 @@ function changeDifficulty(difficulty) {
   if (!isDead && !paused) die(false);
 }
 
+// ============================================================
+// RESET ALL DATA
+// ============================================================
 function resetAllData() {
   localStorage.clear();
   unlockedAchievements = {};
@@ -742,11 +791,17 @@ function resetAllData() {
   resetGame();
 }
 
+// ============================================================
+// PANEL NAVIGATION
+// ============================================================
 function showPanel(panel) {
   ALL_PANELS.forEach(p => p.classList.add('hidden'));
   if (panel) panel.classList.remove('hidden');
 }
 
+// ============================================================
+// EVENT LISTENERS — MENU NAVIGATION
+// ============================================================
 document.getElementById('continue-btn').addEventListener('click', togglePause);
 
 document.getElementById('extra-btn').addEventListener('click', () => {
@@ -814,12 +869,18 @@ document.getElementById('restart-btn').addEventListener('click', () => {
   resetGame();
 });
 
+// ============================================================
+// EVENT LISTENERS — SETTINGS
+// ============================================================
 effectsToggle.addEventListener('change',    e => toggleEffects(e.target.checked));
 uiEffectsToggle.addEventListener('change',  e => toggleUIEffects(e.target.checked));
 languageSelect.addEventListener('change',   e => updateLanguage(e.target.value));
 difficultySelect.addEventListener('change', e => changeDifficulty(e.target.value));
 graphicsModeToggle.addEventListener('click', () => setGraphicsMode(graphicsMode === 'high' ? 'low' : 'high'));
 
+// ============================================================
+// EVENT LISTENERS — AUDIO
+// ============================================================
 globalMusicToggle.addEventListener('change', e => {
   globalMusicOn = e.target.checked;
   saveAudioSettings();
@@ -862,6 +923,9 @@ document.getElementById('sounds-all-off').addEventListener('click', () => {
   stopLavaSound();
 });
 
+// ============================================================
+// EVENT LISTENERS — COLOR CUSTOMIZATION
+// ============================================================
 colorModeToggle.addEventListener('click', () => setColorMode(colorMode === 'default' ? 'custom' : 'default'));
 
 cpBtn.addEventListener('input',    () => { customColors.btn    = cpBtn.value;    document.getElementById('cp-btn-preview').style.background    = cpBtn.value;    saveCustomColors(); });
@@ -870,10 +934,16 @@ cpHud.addEventListener('input',    () => { customColors.hud    = cpHud.value;   
 cpAccent.addEventListener('input', () => { customColors.accent = cpAccent.value; document.getElementById('cp-accent-preview').style.background = cpAccent.value; saveCustomColors(); });
 document.getElementById('reset-colors-btn').addEventListener('click', resetColors);
 
+// ============================================================
+// EVENT LISTENERS — RESET DATA MODAL
+// ============================================================
 document.getElementById('reset-data-btn').addEventListener('click',  () => confirmModal.classList.add('show'));
 document.getElementById('confirm-yes').addEventListener('click',      () => { confirmModal.classList.remove('show'); resetAllData(); });
 document.getElementById('confirm-no').addEventListener('click',       () => confirmModal.classList.remove('show'));
 
+// ============================================================
+// EVENT LISTENERS — KEYBOARD & DEATH SCREEN
+// ============================================================
 document.addEventListener('keydown', e => {
   if (isDead) return;
   keys[e.key] = true;
@@ -887,6 +957,9 @@ document.addEventListener('keydown', e => {
   if (e.key === ' ' || e.code === 'Space') { deathScreen.classList.remove('active'); isDead = false; resetGame(); }
 });
 
+// ============================================================
+// GAME FUNCTIONS
+// ============================================================
 function saveMaxHeight() {
   const key = `obbyTopHeight${currentDifficulty.charAt(0).toUpperCase() + currentDifficulty.slice(1)}`;
   localStorage.setItem(key, maxHeights[currentDifficulty]);
@@ -967,6 +1040,9 @@ function resetGame() {
   update();
 }
 
+// ============================================================
+// PLATFORM SYSTEM
+// ============================================================
 const maxJumpHeight = (jumpPower * jumpPower) / (2 * gravity);
 
 function createPlatform(px, py, width, type = 'green') {
@@ -1085,6 +1161,9 @@ function recyclePlatforms() {
   }
 }
 
+// ============================================================
+// MAIN GAME LOOP
+// ============================================================
 function update(currentTime = 0) {
   if (paused || isDead) return;
 
@@ -1248,6 +1327,9 @@ function update(currentTime = 0) {
   animationId = requestAnimationFrame(update);
 }
 
+// ============================================================
+// INITIALISATION
+// ============================================================
 (function init() {
   effectsToggle.checked   = effectsEnabled;
   uiEffectsToggle.checked = uiEffectsEnabled;
@@ -1268,4 +1350,5 @@ function update(currentTime = 0) {
   initializeAudio();
   updateLanguage(currentLanguage);
   resetGame();
+  togglePause();
 })();
