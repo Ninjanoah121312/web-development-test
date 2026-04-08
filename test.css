@@ -141,8 +141,7 @@ body {
 #lava {
   position: absolute;
   left: 0;
-  /* FIX: start below screen so it's not visible before JS sets the position */
-  top: 200vh;
+  top: 9999px;
   width: 100%;
   height: 100vh;
   background: linear-gradient(to top,
