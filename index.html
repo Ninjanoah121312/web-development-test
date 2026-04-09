@@ -13,8 +13,32 @@
   <audio id="walking-sound" src="sounds/walking.mp3" preload="auto" loop></audio>
   <audio id="kill-brick-sound" src="sounds/kill_brick.mp3" preload="auto"></audio>
   <audio id="lava-sound" src="sounds/lava.mp3" preload="auto" loop></audio>
-  <audio id="achievement-sound" src="sounds/achievement.mp3" preload="auto"></audio>
+  <audio id="achievement-sound" src="sounds/achivement.mp3" preload="auto"></audio>
 
+  <!-- Custom Popup Modal -->
+  <div id="custom-popup" style="display:none;">
+    <div class="custom-popup-overlay"></div>
+    <div class="custom-popup-box">
+      <div class="custom-popup-msg" id="custom-popup-msg"></div>
+      <div class="custom-popup-btns">
+        <button class="custom-popup-ok" id="custom-popup-ok">OK</button>
+        <button class="custom-popup-cancel" id="custom-popup-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Coming Soon Popup -->
+  <div id="coming-soon-popup" style="display:none;">
+    <div class="custom-popup-overlay"></div>
+    <div class="custom-popup-box">
+      <div class="custom-popup-msg">Coming Soon!</div>
+      <div class="custom-popup-btns">
+        <button class="custom-popup-ok" id="coming-soon-close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN MENU -->
   <div id="main-menu-screen">
     <div class="mm-logo">BLOCK JUMP</div>
     <div class="mm-version">v1.2.0</div>
@@ -23,25 +47,156 @@
       <button class="mm-btn" id="mm-settings-btn">SETTINGS</button>
       <button class="mm-btn" id="mm-extra-btn">EXTRA</button>
       <button class="mm-btn" id="mm-achievements-btn">ACHIEVEMENTS</button>
+      <button class="mm-btn" id="mm-leaderboard-btn">LEADERBOARD</button>
     </div>
   </div>
 
+  <!-- PLAY MODE SELECT SCREEN -->
+  <div id="mm-play-select-screen" class="mm-overlay" style="display:none;">
+    <div class="mm-overlay-content">
+      <div class="mm-overlay-title">SELECT MODE</div>
+      <div class="play-mode-row">
+        <button class="mm-btn play-mode-btn" id="mode-multiplayer-btn">MULTIPLAYER</button>
+        <button class="mm-btn play-mode-btn mm-play" id="mode-singleplayer-btn">SINGLEPLAYER</button>
+        <button class="mm-btn play-mode-btn" id="mode-challenge-btn">CHALLENGE</button>
+      </div>
+      <button class="mm-btn" id="mm-play-select-back-btn">BACK</button>
+    </div>
+  </div>
+
+  <!-- SETTINGS SCREEN -->
   <div id="mm-settings-screen" class="mm-overlay" style="display:none;">
     <div class="mm-overlay-content">
       <div class="mm-overlay-title">SETTINGS</div>
 
-      <div class="mm-section">
-        <div class="mm-section-title">Graphics</div>
-        <div class="setting-item">
-          <span>Visual Effects</span>
-          <label class="toggle"><input type="checkbox" id="mm-effects-toggle" checked><span class="slider"></span></label>
-        </div>
-        <div class="setting-item">
-          <span>High Quality</span>
-          <label class="toggle"><input type="checkbox" id="mm-hq-toggle" checked><span class="slider"></span></label>
+      <!-- Section buttons -->
+      <div class="settings-nav-btns">
+        <button class="settings-nav-btn active" id="snav-graphics">Graphics</button>
+        <button class="settings-nav-btn" id="snav-audio">Audio</button>
+        <button class="settings-nav-btn" id="snav-hud">HUD</button>
+      </div>
+
+      <!-- Graphics Panel -->
+      <div class="settings-panel" id="spanel-graphics">
+        <div class="mm-section">
+          <div class="mm-section-title">Graphics</div>
+          <div class="setting-item">
+            <span>Visual Effects</span>
+            <label class="toggle"><input type="checkbox" id="mm-effects-toggle" checked><span class="slider"></span></label>
+          </div>
+          <div class="setting-item">
+            <span>High Quality</span>
+            <label class="toggle"><input type="checkbox" id="mm-hq-toggle" checked><span class="slider"></span></label>
+          </div>
         </div>
       </div>
 
+      <!-- Audio Panel -->
+      <div class="settings-panel" id="spanel-audio" style="display:none;">
+        <div class="mm-section">
+          <div class="mm-section-title">Audio</div>
+          <div class="setting-item">
+            <span>All Sounds</span>
+            <label class="toggle"><input type="checkbox" id="mm-all-sounds" checked><span class="slider"></span></label>
+          </div>
+          <!-- Individual sounds with per-sound volume dropdown -->
+          <div class="audio-sound-row" id="asr-respawn">
+            <div class="audio-sound-header">
+              <span>Respawn Sound</span>
+              <label class="toggle"><input type="checkbox" id="mm-audio-respawn" checked><span class="slider"></span></label>
+            </div>
+            <div class="audio-sound-dropdown" id="adrop-respawn" style="display:none;">
+              <input type="range" class="volume-slider" id="vol-respawn" min="0" max="100" value="70">
+            </div>
+          </div>
+          <div class="audio-sound-row" id="asr-lava">
+            <div class="audio-sound-header">
+              <span>Lava Death Sound</span>
+              <label class="toggle"><input type="checkbox" id="mm-audio-lava" checked><span class="slider"></span></label>
+            </div>
+            <div class="audio-sound-dropdown" id="adrop-lava" style="display:none;">
+              <input type="range" class="volume-slider" id="vol-lava" min="0" max="100" value="60">
+            </div>
+          </div>
+          <div class="audio-sound-row" id="asr-jump">
+            <div class="audio-sound-header">
+              <span>Jump Sound</span>
+              <label class="toggle"><input type="checkbox" id="mm-audio-jump" checked><span class="slider"></span></label>
+            </div>
+            <div class="audio-sound-dropdown" id="adrop-jump" style="display:none;">
+              <input type="range" class="volume-slider" id="vol-jump" min="0" max="100" value="40">
+            </div>
+          </div>
+          <div class="audio-sound-row" id="asr-walking">
+            <div class="audio-sound-header">
+              <span>Walking Sound</span>
+              <label class="toggle"><input type="checkbox" id="mm-audio-walking" checked><span class="slider"></span></label>
+            </div>
+            <div class="audio-sound-dropdown" id="adrop-walking" style="display:none;">
+              <input type="range" class="volume-slider" id="vol-walking" min="0" max="100" value="70">
+            </div>
+          </div>
+          <div class="audio-sound-row" id="asr-brick">
+            <div class="audio-sound-header">
+              <span>Kill Brick Sound</span>
+              <label class="toggle"><input type="checkbox" id="mm-audio-brick" checked><span class="slider"></span></label>
+            </div>
+            <div class="audio-sound-dropdown" id="adrop-brick" style="display:none;">
+              <input type="range" class="volume-slider" id="vol-brick" min="0" max="100" value="80">
+            </div>
+          </div>
+          <div class="audio-sound-row" id="asr-ambient">
+            <div class="audio-sound-header">
+              <span>Lava Ambient Sound</span>
+              <label class="toggle"><input type="checkbox" id="mm-audio-ambient" checked><span class="slider"></span></label>
+            </div>
+            <div class="audio-sound-dropdown" id="adrop-ambient" style="display:none;">
+              <input type="range" class="volume-slider" id="vol-ambient" min="0" max="100" value="40">
+            </div>
+          </div>
+          <div class="audio-sound-row" id="asr-achievement">
+            <div class="audio-sound-header">
+              <span>Achievement Sound</span>
+              <label class="toggle"><input type="checkbox" id="mm-audio-achievement" checked><span class="slider"></span></label>
+            </div>
+            <div class="audio-sound-dropdown" id="adrop-achievement" style="display:none;">
+              <input type="range" class="volume-slider" id="vol-achievement" min="0" max="100" value="90">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HUD Panel -->
+      <div class="settings-panel" id="spanel-hud" style="display:none;">
+        <div class="mm-section">
+          <div class="mm-section-title">HUD</div>
+          <div class="setting-item">
+            <span>Double Jump</span>
+            <label class="toggle"><input type="checkbox" id="mm-feat-double-jump" checked><span class="slider"></span></label>
+          </div>
+          <div class="setting-item">
+            <span>Show Height</span>
+            <label class="toggle"><input type="checkbox" id="mm-feat-show-height" checked><span class="slider"></span></label>
+          </div>
+          <div class="setting-item">
+            <span>Show Top Height</span>
+            <label class="toggle"><input type="checkbox" id="mm-feat-show-top" checked><span class="slider"></span></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Always-visible bottom settings -->
+      <div class="mm-section">
+        <div class="mm-section-title">Language</div>
+        <div class="setting-item">
+          <span>Language</span>
+          <select id="mm-language-select" class="language-dropdown">
+            <option value="en">🇬🇧 English</option>
+            <option value="da">🇩🇰 Dansk</option>
+            <option value="de">🇩🇪 Deutsch</option>
+          </select>
+        </div>
+      </div>
       <div class="mm-section">
         <div class="mm-section-title">Difficulty</div>
         <div class="setting-item">
@@ -54,87 +209,6 @@
           </select>
         </div>
       </div>
-
-      <div class="mm-section">
-        <div class="mm-section-title">Audio</div>
-        <div class="setting-item">
-          <span>All Sounds</span>
-          <label class="toggle"><input type="checkbox" id="mm-all-sounds" checked><span class="slider"></span></label>
-        </div>
-        <div class="setting-item">
-          <span>Master Volume</span>
-          <input type="range" id="mm-master-volume" class="volume-slider" min="0" max="100" value="80">
-        </div>
-        <div class="setting-item">
-          <span>Respawn Sound</span>
-          <label class="toggle"><input type="checkbox" id="mm-audio-respawn" checked><span class="slider"></span></label>
-        </div>
-        <div class="setting-item">
-          <span>Lava Death Sound</span>
-          <label class="toggle"><input type="checkbox" id="mm-audio-lava" checked><span class="slider"></span></label>
-        </div>
-        <div class="setting-item">
-          <span>Jump Sound</span>
-          <label class="toggle"><input type="checkbox" id="mm-audio-jump" checked><span class="slider"></span></label>
-        </div>
-        <div class="setting-item">
-          <span>Walking Sound</span>
-          <label class="toggle"><input type="checkbox" id="mm-audio-walking" checked><span class="slider"></span></label>
-        </div>
-        <div class="setting-item">
-          <span>Kill Brick Sound</span>
-          <label class="toggle"><input type="checkbox" id="mm-audio-brick" checked><span class="slider"></span></label>
-        </div>
-        <div class="setting-item">
-          <span>Lava Ambient Sound</span>
-          <label class="toggle"><input type="checkbox" id="mm-audio-ambient" checked><span class="slider"></span></label>
-        </div>
-        <div class="setting-item">
-          <span>Achievement Sound</span>
-          <label class="toggle"><input type="checkbox" id="mm-audio-achievement" checked><span class="slider"></span></label>
-        </div>
-      </div>
-
-      <div class="mm-section">
-        <div class="mm-section-title">Language</div>
-        <div class="setting-item">
-          <span>Language</span>
-          <select id="mm-language-select" class="language-dropdown">
-            <option value="en">🇬🇧 English</option>
-            <option value="da">🇩🇰 Dansk</option>
-            <option value="de">🇩🇪 Deutsch</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="mm-section">
-        <div class="mm-section-title">Customization</div>
-        <div class="setting-item">
-          <span>Button Color (R G B)</span>
-          <div class="rgb-row">
-            <input type="number" class="rgb-input" id="btn-r" min="0" max="255" value="56">
-            <input type="number" class="rgb-input" id="btn-g" min="0" max="255" value="189">
-            <input type="number" class="rgb-input" id="btn-b" min="0" max="255" value="248">
-          </div>
-        </div>
-        <div class="setting-item">
-          <span>Text Color (R G B)</span>
-          <div class="rgb-row">
-            <input type="number" class="rgb-input" id="txt-r" min="0" max="255" value="56">
-            <input type="number" class="rgb-input" id="txt-g" min="0" max="255" value="189">
-            <input type="number" class="rgb-input" id="txt-b" min="0" max="255" value="248">
-          </div>
-        </div>
-        <div class="setting-item">
-          <span></span>
-          <button class="small-btn" id="apply-colors-btn">Apply</button>
-        </div>
-        <div class="setting-item">
-          <span></span>
-          <button class="small-btn reset-btn" id="reset-colors-btn">Reset Colors</button>
-        </div>
-      </div>
-
       <div class="mm-section">
         <div class="mm-section-title">Data</div>
         <button class="mm-btn danger-btn" id="mm-reset-data-btn">Reset All Data</button>
@@ -144,6 +218,7 @@
     </div>
   </div>
 
+  <!-- EXTRA SCREEN -->
   <div id="mm-extra-screen" class="mm-overlay" style="display:none;">
     <div class="mm-overlay-content">
       <div class="mm-overlay-title">EXTRA</div>
@@ -162,13 +237,26 @@
           <label class="toggle"><input type="checkbox" id="feat-show-top" checked><span class="slider"></span></label>
         </div>
       </div>
+      <div class="mm-section extra-links-section">
+        <button class="mm-btn" id="mm-changelog-btn">CHANGELOG</button>
+        <button class="mm-btn" id="mm-help-btn">HELP</button>
+        <button class="mm-btn" id="mm-community-btn">COMMUNITY</button>
+      </div>
+      <button class="mm-btn" id="mm-extra-back-btn">BACK</button>
+    </div>
+  </div>
+
+  <!-- CHANGELOG SCREEN -->
+  <div id="mm-changelog-screen" class="mm-overlay" style="display:none;">
+    <div class="mm-overlay-content">
+      <div class="mm-overlay-title">CHANGELOG</div>
       <div class="mm-section">
         <div class="mm-section-title">Changelog - v1.2.0</div>
         <div class="changelog-box">
           <div class="changelog-entry"><span class="cl-tag new">NEW</span> Main Menu with Play, Settings, Extra, Achievements</div>
           <div class="changelog-entry"><span class="cl-tag new">NEW</span> Achievements system with unlock notifications</div>
-          <div class="changelog-entry"><span class="cl-tag new">NEW</span> Achievement sound (achievement.mp3)</div>
-          <div class="changelog-entry"><span class="cl-tag new">NEW</span> Master volume slider controlling all sounds</div>
+          <div class="changelog-entry"><span class="cl-tag new">NEW</span> Achievement sound (achivement.mp3)</div>
+          <div class="changelog-entry"><span class="cl-tag new">NEW</span> Per-sound volume sliders with dropdown UI</div>
           <div class="changelog-entry"><span class="cl-tag new">NEW</span> All Sounds ON/OFF toggle</div>
           <div class="changelog-entry"><span class="cl-tag new">NEW</span> RGB color customization for buttons and text</div>
           <div class="changelog-entry"><span class="cl-tag new">NEW</span> High Quality / Low Quality graphics toggle</div>
@@ -180,12 +268,26 @@
           <div class="changelog-entry"><span class="cl-tag fix">FIX</span> All sounds moved to sounds/ folder</div>
           <div class="changelog-entry"><span class="cl-tag fix">FIX</span> Settings and Extra menu layout cleaned up</div>
           <div class="changelog-entry"><span class="cl-tag fix">FIX</span> Low graphics mode affects full UI</div>
+          <div class="changelog-entry"><span class="cl-tag fix">FIX</span> Lava hitbox fixed to match visual lava, not glow</div>
         </div>
       </div>
-      <button class="mm-btn" id="mm-extra-back-btn">BACK</button>
+      <button class="mm-btn" id="mm-changelog-back-btn">BACK</button>
     </div>
   </div>
 
+  <!-- COMMUNITY SCREEN -->
+  <div id="mm-community-screen" class="mm-overlay" style="display:none;">
+    <div class="mm-overlay-content">
+      <div class="mm-overlay-title">COMMUNITY</div>
+      <div class="mm-section">
+        <button class="mm-btn community-link-btn" id="community-discord-btn">🎮 Discord — Coming Soon</button>
+        <button class="mm-btn community-link-btn" id="community-youtube-btn">▶ YouTube — Coming Soon</button>
+      </div>
+      <button class="mm-btn" id="mm-community-back-btn">BACK</button>
+    </div>
+  </div>
+
+  <!-- HELP SCREEN -->
   <div id="mm-help-screen" class="mm-overlay" style="display:none;">
     <div class="mm-overlay-content">
       <div class="mm-overlay-title">HELP</div>
@@ -203,14 +305,27 @@
     </div>
   </div>
 
+  <!-- ACHIEVEMENTS SCREEN -->
   <div id="mm-achievements-screen" class="mm-overlay" style="display:none;">
     <div class="mm-overlay-content">
       <div class="mm-overlay-title">ACHIEVEMENTS</div>
+      <div id="ach-header-bar">
+        <div id="ach-count-display"></div>
+        <div id="ach-controls">
+          <input type="text" id="ach-search" placeholder="Search achievements...">
+          <select id="ach-filter">
+            <option value="all">Show All</option>
+            <option value="completed">Completed</option>
+            <option value="uncompleted">Uncompleted</option>
+          </select>
+        </div>
+      </div>
       <div id="achievements-list"></div>
       <button class="mm-btn" id="mm-achievements-back-btn">BACK</button>
     </div>
   </div>
 
+  <!-- HUD -->
   <div id="hud">
     <span id="current">HEIGHT: 0</span>
     <span id="max">TOP HEIGHT: 0</span>
@@ -223,6 +338,7 @@
   <div id="lava"></div>
   <div id="player"></div>
 
+  <!-- Achievement notification: bottom-right -->
   <div id="achievement-notification">
     <div class="ach-icon">🏆</div>
     <div class="ach-text">
@@ -231,6 +347,7 @@
     </div>
   </div>
 
+  <!-- PAUSE MENU -->
   <div id="pause-menu">
     <div class="menu-content">
       <h2 id="pause-title">PAUSED</h2>
@@ -239,6 +356,7 @@
         <button class="menu-btn" id="continue-btn">CONTINUE</button>
         <button class="menu-btn" id="extra-btn">EXTRA</button>
         <button class="menu-btn restart" id="restart-btn">RESTART</button>
+        <button class="menu-btn danger-btn" id="pause-main-menu-btn">MAIN MENU</button>
       </div>
 
       <div class="help-section" id="extra-menu">
@@ -252,15 +370,118 @@
       <div class="help-section" id="settings-menu">
         <h3>SETTINGS</h3>
 
-        <div class="settings-section">
-          <h4 id="settings-graphics-title">Graphics</h4>
-          <div class="setting-item">
-            <span id="settings-visual-effects">Visual Effects</span>
-            <label class="toggle"><input type="checkbox" id="effects-toggle" checked><span class="slider"></span></label>
+        <!-- Settings nav tabs for pause -->
+        <div class="settings-nav-btns">
+          <button class="settings-nav-btn active" id="psnav-graphics">Graphics</button>
+          <button class="settings-nav-btn" id="psnav-audio">Audio</button>
+          <button class="settings-nav-btn" id="psnav-hud">HUD</button>
+        </div>
+
+        <!-- Graphics panel pause -->
+        <div class="settings-panel" id="pspanel-graphics">
+          <div class="settings-section">
+            <h4 id="settings-graphics-title">Graphics</h4>
+            <div class="setting-item">
+              <span id="settings-visual-effects">Visual Effects</span>
+              <label class="toggle"><input type="checkbox" id="effects-toggle" checked><span class="slider"></span></label>
+            </div>
+            <div class="setting-item">
+              <span>High Quality</span>
+              <label class="toggle"><input type="checkbox" id="hq-toggle" checked><span class="slider"></span></label>
+            </div>
           </div>
-          <div class="setting-item">
-            <span>High Quality</span>
-            <label class="toggle"><input type="checkbox" id="hq-toggle" checked><span class="slider"></span></label>
+        </div>
+
+        <!-- Audio panel pause -->
+        <div class="settings-panel" id="pspanel-audio" style="display:none;">
+          <div class="settings-section">
+            <h4 id="settings-audio-title">Audio</h4>
+            <div class="setting-item">
+              <span>All Sounds</span>
+              <label class="toggle"><input type="checkbox" id="all-sounds-toggle" checked><span class="slider"></span></label>
+            </div>
+            <div class="audio-sound-row" id="pasr-respawn">
+              <div class="audio-sound-header">
+                <span id="audio-respawn-label">Respawn Sound</span>
+                <label class="toggle"><input type="checkbox" id="audio-respawn" checked><span class="slider"></span></label>
+              </div>
+              <div class="audio-sound-dropdown" id="padrop-respawn" style="display:none;">
+                <input type="range" class="volume-slider" id="pvol-respawn" min="0" max="100" value="70">
+              </div>
+            </div>
+            <div class="audio-sound-row" id="pasr-lava">
+              <div class="audio-sound-header">
+                <span id="audio-lava-label">Lava Death Sound</span>
+                <label class="toggle"><input type="checkbox" id="audio-lava" checked><span class="slider"></span></label>
+              </div>
+              <div class="audio-sound-dropdown" id="padrop-lava" style="display:none;">
+                <input type="range" class="volume-slider" id="pvol-lava" min="0" max="100" value="60">
+              </div>
+            </div>
+            <div class="audio-sound-row" id="pasr-jump">
+              <div class="audio-sound-header">
+                <span id="audio-jump-label">Jump Sound</span>
+                <label class="toggle"><input type="checkbox" id="audio-jump" checked><span class="slider"></span></label>
+              </div>
+              <div class="audio-sound-dropdown" id="padrop-jump" style="display:none;">
+                <input type="range" class="volume-slider" id="pvol-jump" min="0" max="100" value="40">
+              </div>
+            </div>
+            <div class="audio-sound-row" id="pasr-walking">
+              <div class="audio-sound-header">
+                <span id="audio-walking-label">Walking Sound</span>
+                <label class="toggle"><input type="checkbox" id="audio-walking" checked><span class="slider"></span></label>
+              </div>
+              <div class="audio-sound-dropdown" id="padrop-walking" style="display:none;">
+                <input type="range" class="volume-slider" id="pvol-walking" min="0" max="100" value="70">
+              </div>
+            </div>
+            <div class="audio-sound-row" id="pasr-brick">
+              <div class="audio-sound-header">
+                <span id="audio-brick-label">Kill Brick Sound</span>
+                <label class="toggle"><input type="checkbox" id="audio-brick" checked><span class="slider"></span></label>
+              </div>
+              <div class="audio-sound-dropdown" id="padrop-brick" style="display:none;">
+                <input type="range" class="volume-slider" id="pvol-brick" min="0" max="100" value="80">
+              </div>
+            </div>
+            <div class="audio-sound-row" id="pasr-ambient">
+              <div class="audio-sound-header">
+                <span id="audio-ambient-label">Lava Ambient Sound</span>
+                <label class="toggle"><input type="checkbox" id="audio-ambient" checked><span class="slider"></span></label>
+              </div>
+              <div class="audio-sound-dropdown" id="padrop-ambient" style="display:none;">
+                <input type="range" class="volume-slider" id="pvol-ambient" min="0" max="100" value="40">
+              </div>
+            </div>
+            <div class="audio-sound-row" id="pasr-achievement">
+              <div class="audio-sound-header">
+                <span>Achievement Sound</span>
+                <label class="toggle"><input type="checkbox" id="audio-achievement" checked><span class="slider"></span></label>
+              </div>
+              <div class="audio-sound-dropdown" id="padrop-achievement" style="display:none;">
+                <input type="range" class="volume-slider" id="pvol-achievement" min="0" max="100" value="90">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HUD panel pause -->
+        <div class="settings-panel" id="pspanel-hud" style="display:none;">
+          <div class="settings-section">
+            <h4>HUD</h4>
+            <div class="setting-item">
+              <span>Double Jump</span>
+              <label class="toggle"><input type="checkbox" id="p-feat-double-jump" checked><span class="slider"></span></label>
+            </div>
+            <div class="setting-item">
+              <span>Show Height</span>
+              <label class="toggle"><input type="checkbox" id="p-feat-show-height" checked><span class="slider"></span></label>
+            </div>
+            <div class="setting-item">
+              <span>Show Top Height</span>
+              <label class="toggle"><input type="checkbox" id="p-feat-show-top" checked><span class="slider"></span></label>
+            </div>
           </div>
         </div>
 
@@ -278,19 +499,6 @@
         </div>
 
         <div class="settings-section">
-          <h4 id="settings-audio-title">Audio</h4>
-          <div class="setting-item">
-            <span>All Sounds</span>
-            <label class="toggle"><input type="checkbox" id="all-sounds-toggle" checked><span class="slider"></span></label>
-          </div>
-          <div class="setting-item">
-            <span>Master Volume</span>
-            <input type="range" id="master-volume" class="volume-slider" min="0" max="100" value="80">
-          </div>
-          <button class="menu-btn secondary" id="audio-settings-btn">Audio Settings</button>
-        </div>
-
-        <div class="settings-section">
           <h4 id="settings-language-title">Language</h4>
           <div class="setting-item">
             <span id="settings-language-label">Language</span>
@@ -303,72 +511,11 @@
         </div>
 
         <div class="settings-section">
-          <h4>Customization</h4>
-          <div class="setting-item">
-            <span>Button Color (R G B)</span>
-            <div class="rgb-row">
-              <input type="number" class="rgb-input" id="p-btn-r" min="0" max="255" value="56">
-              <input type="number" class="rgb-input" id="p-btn-g" min="0" max="255" value="189">
-              <input type="number" class="rgb-input" id="p-btn-b" min="0" max="255" value="248">
-            </div>
-          </div>
-          <div class="setting-item">
-            <span>Text Color (R G B)</span>
-            <div class="rgb-row">
-              <input type="number" class="rgb-input" id="p-txt-r" min="0" max="255" value="56">
-              <input type="number" class="rgb-input" id="p-txt-g" min="0" max="255" value="189">
-              <input type="number" class="rgb-input" id="p-txt-b" min="0" max="255" value="248">
-            </div>
-          </div>
-          <div class="setting-item">
-            <span></span>
-            <button class="small-btn" id="p-apply-colors-btn">Apply</button>
-          </div>
-          <div class="setting-item">
-            <span></span>
-            <button class="small-btn reset-btn" id="p-reset-colors-btn">Reset Colors</button>
-          </div>
-        </div>
-
-        <div class="settings-section">
           <h4>Data</h4>
           <button class="menu-btn restart" id="pause-reset-data-btn">Reset All Data</button>
         </div>
 
         <button class="menu-btn" id="settings-back-btn">BACK</button>
-      </div>
-
-      <div class="help-section" id="audio-menu">
-        <h3 id="audio-settings-title">AUDIO SETTINGS</h3>
-        <div class="setting-item">
-          <span id="audio-respawn-label">Respawn Sound</span>
-          <label class="toggle"><input type="checkbox" id="audio-respawn" checked><span class="slider"></span></label>
-        </div>
-        <div class="setting-item">
-          <span id="audio-lava-label">Lava Death Sound</span>
-          <label class="toggle"><input type="checkbox" id="audio-lava" checked><span class="slider"></span></label>
-        </div>
-        <div class="setting-item">
-          <span id="audio-jump-label">Jump Sound</span>
-          <label class="toggle"><input type="checkbox" id="audio-jump" checked><span class="slider"></span></label>
-        </div>
-        <div class="setting-item">
-          <span id="audio-walking-label">Walking Sound</span>
-          <label class="toggle"><input type="checkbox" id="audio-walking" checked><span class="slider"></span></label>
-        </div>
-        <div class="setting-item">
-          <span id="audio-brick-label">Kill Brick Sound</span>
-          <label class="toggle"><input type="checkbox" id="audio-brick" checked><span class="slider"></span></label>
-        </div>
-        <div class="setting-item">
-          <span id="audio-ambient-label">Lava Ambient Sound</span>
-          <label class="toggle"><input type="checkbox" id="audio-ambient" checked><span class="slider"></span></label>
-        </div>
-        <div class="setting-item">
-          <span>Achievement Sound</span>
-          <label class="toggle"><input type="checkbox" id="audio-achievement" checked><span class="slider"></span></label>
-        </div>
-        <button class="menu-btn" id="audio-back-btn">BACK</button>
       </div>
 
       <div class="help-section" id="help-menu">
@@ -402,14 +549,62 @@
   </div>
 
   <script>
-    const VOLUME_RESPAWN = 0.7;
-    const VOLUME_LAVA_DIE = 0.6;
-    const VOLUME_JUMP = 0.4;
-    const VOLUME_WALKING = 0.7;
-    const VOLUME_KILL_BRICK = 0.8;
-    const VOLUME_LAVA = 0.4;
-    const VOLUME_ACHIEVEMENT = 0.9;
+    // ─── Disable right-click ──────────────────────────────────────────
+    document.addEventListener('contextmenu', e => e.preventDefault());
 
+    // ─── Custom popup ────────────────────────────────────────────────
+    function customConfirm(msg) {
+      return new Promise(resolve => {
+        const popup = document.getElementById('custom-popup');
+        document.getElementById('custom-popup-msg').textContent = msg;
+        const cancelBtn = document.getElementById('custom-popup-cancel');
+        cancelBtn.style.display = '';
+        popup.style.display = 'flex';
+        function ok() { popup.style.display = 'none'; cleanup(); resolve(true); }
+        function cancel() { popup.style.display = 'none'; cleanup(); resolve(false); }
+        function cleanup() {
+          document.getElementById('custom-popup-ok').removeEventListener('click', ok);
+          cancelBtn.removeEventListener('click', cancel);
+        }
+        document.getElementById('custom-popup-ok').addEventListener('click', ok);
+        cancelBtn.addEventListener('click', cancel);
+      });
+    }
+
+    function showComingSoon() {
+      const popup = document.getElementById('coming-soon-popup');
+      popup.style.display = 'flex';
+      const closeBtn = document.getElementById('coming-soon-close');
+      let timer = setTimeout(() => { popup.style.display = 'none'; }, 3000);
+      function close() { clearTimeout(timer); popup.style.display = 'none'; closeBtn.removeEventListener('click', close); }
+      closeBtn.addEventListener('click', close);
+    }
+
+    document.getElementById('coming-soon-close').addEventListener('click', () => {
+      document.getElementById('coming-soon-popup').style.display = 'none';
+    });
+
+    // ─── Audio volumes per sound stored in localStorage ──────────────
+    const SOUND_KEYS = ['respawn','lava','jump','walking','brick','ambient','achievement'];
+    const DEFAULT_VOLS = { respawn:70, lava:60, jump:40, walking:70, brick:80, ambient:40, achievement:90 };
+
+    function loadSoundVols() {
+      const vols = {};
+      SOUND_KEYS.forEach(k => {
+        const stored = localStorage.getItem('soundVol_' + k);
+        vols[k] = stored !== null ? parseInt(stored) : DEFAULT_VOLS[k];
+      });
+      return vols;
+    }
+
+    let soundVols = loadSoundVols();
+
+    function saveSoundVol(key, val) {
+      soundVols[key] = val;
+      localStorage.setItem('soundVol_' + key, val);
+    }
+
+    // ─── Constants ──────────────────────────────────────────────────
     const START_TIME_RESPAWN = 0;
     const START_TIME_LAVA_DIE = 0.1;
     const START_TIME_JUMP = 0;
@@ -436,23 +631,63 @@
     const PLATFORM_WIDTH = 250;
     const PLATFORM_MOVE_SPEED = 1.7;
     const PLATFORM_MOVE_RANGE = 175;
-    const LAVA_HITBOX_OFFSET = 50;
 
+    // Lava hitbox: 0 = exact lava top edge
+    const LAVA_HITBOX_OFFSET = 0;
+
+    // ─── Achievement definitions ─────────────────────────────────────
     const ACHIEVEMENT_DEFS = [
-      { id: 'easy_250',       mode: 'easy',       threshold: 2500,   name: 'Easy 250' },
-      { id: 'easy_500',       mode: 'easy',       threshold: 5000,   name: 'Easy 500' },
-      { id: 'easy_1000',      mode: 'easy',       threshold: 10000,  name: 'Easy 1000' },
-      { id: 'medium_250',     mode: 'medium',     threshold: 2500,   name: 'Medium 250' },
-      { id: 'medium_500',     mode: 'medium',     threshold: 5000,   name: 'Medium 500' },
-      { id: 'medium_1000',    mode: 'medium',     threshold: 10000,  name: 'Medium 1000' },
-      { id: 'hard_250',       mode: 'hard',       threshold: 2500,   name: 'Hard 250' },
-      { id: 'hard_500',       mode: 'hard',       threshold: 5000,   name: 'Hard 500' },
-      { id: 'hard_1000',      mode: 'hard',       threshold: 10000,  name: 'Hard 1000' },
-      { id: 'impossible_250', mode: 'impossible', threshold: 2500,   name: 'Impossible 250' },
-      { id: 'impossible_500', mode: 'impossible', threshold: 5000,   name: 'Impossible 500' },
-      { id: 'impossible_1000',mode: 'impossible', threshold: 10000,  name: 'Impossible 1000' },
+      // Easy
+      { id: 'easy_250',       mode: 'easy',       threshold: 2500,   name: 'Easy 250',       desc: 'Reach height 250 on Easy' },
+      { id: 'easy_500',       mode: 'easy',       threshold: 5000,   name: 'Easy 500',       desc: 'Reach height 500 on Easy' },
+      { id: 'easy_1000',      mode: 'easy',       threshold: 10000,  name: 'Easy 1000',      desc: 'Reach height 1000 on Easy' },
+      { id: 'easy_2500',      mode: 'easy',       threshold: 25000,  name: 'Easy 2500',      desc: 'Reach height 2500 on Easy' },
+      { id: 'easy_5000',      mode: 'easy',       threshold: 50000,  name: 'Easy 5000',      desc: 'Reach height 5000 on Easy' },
+      { id: 'easy_7500',      mode: 'easy',       threshold: 75000,  name: 'Easy 7500',      desc: 'Reach height 7500 on Easy' },
+      { id: 'easy_10000',     mode: 'easy',       threshold: 100000, name: 'Easy 10000',     desc: 'Reach height 10000 on Easy' },
+      { id: 'easy_12500',     mode: 'easy',       threshold: 125000, name: 'Easy 12500',     desc: 'Reach height 12500 on Easy' },
+      { id: 'easy_15000',     mode: 'easy',       threshold: 150000, name: 'Easy 15000',     desc: 'Reach height 15000 on Easy' },
+      { id: 'easy_20000',     mode: 'easy',       threshold: 200000, name: 'Easy 20000',     desc: 'Reach height 20000 on Easy' },
+      { id: 'easy_25000',     mode: 'easy',       threshold: 250000, name: 'Easy 25000',     desc: 'Reach height 25000 on Easy' },
+      // Medium
+      { id: 'medium_250',     mode: 'medium',     threshold: 2500,   name: 'Medium 250',     desc: 'Reach height 250 on Medium' },
+      { id: 'medium_500',     mode: 'medium',     threshold: 5000,   name: 'Medium 500',     desc: 'Reach height 500 on Medium' },
+      { id: 'medium_1000',    mode: 'medium',     threshold: 10000,  name: 'Medium 1000',    desc: 'Reach height 1000 on Medium' },
+      { id: 'medium_2500',    mode: 'medium',     threshold: 25000,  name: 'Medium 2500',    desc: 'Reach height 2500 on Medium' },
+      { id: 'medium_5000',    mode: 'medium',     threshold: 50000,  name: 'Medium 5000',    desc: 'Reach height 5000 on Medium' },
+      { id: 'medium_7500',    mode: 'medium',     threshold: 75000,  name: 'Medium 7500',    desc: 'Reach height 7500 on Medium' },
+      { id: 'medium_10000',   mode: 'medium',     threshold: 100000, name: 'Medium 10000',   desc: 'Reach height 10000 on Medium' },
+      { id: 'medium_12500',   mode: 'medium',     threshold: 125000, name: 'Medium 12500',   desc: 'Reach height 12500 on Medium' },
+      { id: 'medium_15000',   mode: 'medium',     threshold: 150000, name: 'Medium 15000',   desc: 'Reach height 15000 on Medium' },
+      { id: 'medium_20000',   mode: 'medium',     threshold: 200000, name: 'Medium 20000',   desc: 'Reach height 20000 on Medium' },
+      { id: 'medium_25000',   mode: 'medium',     threshold: 250000, name: 'Medium 25000',   desc: 'Reach height 25000 on Medium' },
+      // Hard
+      { id: 'hard_250',       mode: 'hard',       threshold: 2500,   name: 'Hard 250',       desc: 'Reach height 250 on Hard' },
+      { id: 'hard_500',       mode: 'hard',       threshold: 5000,   name: 'Hard 500',       desc: 'Reach height 500 on Hard' },
+      { id: 'hard_1000',      mode: 'hard',       threshold: 10000,  name: 'Hard 1000',      desc: 'Reach height 1000 on Hard' },
+      { id: 'hard_2500',      mode: 'hard',       threshold: 25000,  name: 'Hard 2500',      desc: 'Reach height 2500 on Hard' },
+      { id: 'hard_5000',      mode: 'hard',       threshold: 50000,  name: 'Hard 5000',      desc: 'Reach height 5000 on Hard' },
+      { id: 'hard_7500',      mode: 'hard',       threshold: 75000,  name: 'Hard 7500',      desc: 'Reach height 7500 on Hard' },
+      { id: 'hard_10000',     mode: 'hard',       threshold: 100000, name: 'Hard 10000',     desc: 'Reach height 10000 on Hard' },
+      { id: 'hard_12500',     mode: 'hard',       threshold: 125000, name: 'Hard 12500',     desc: 'Reach height 12500 on Hard' },
+      { id: 'hard_15000',     mode: 'hard',       threshold: 150000, name: 'Hard 15000',     desc: 'Reach height 15000 on Hard' },
+      { id: 'hard_20000',     mode: 'hard',       threshold: 200000, name: 'Hard 20000',     desc: 'Reach height 20000 on Hard' },
+      { id: 'hard_25000',     mode: 'hard',       threshold: 250000, name: 'Hard 25000',     desc: 'Reach height 25000 on Hard' },
+      // Impossible
+      { id: 'impossible_250', mode: 'impossible', threshold: 2500,   name: 'Impossible 250', desc: 'Reach height 250 on Impossible' },
+      { id: 'impossible_500', mode: 'impossible', threshold: 5000,   name: 'Impossible 500', desc: 'Reach height 500 on Impossible' },
+      { id: 'impossible_1000',mode: 'impossible', threshold: 10000,  name: 'Impossible 1000',desc: 'Reach height 1000 on Impossible' },
+      { id: 'impossible_2500',mode: 'impossible', threshold: 25000,  name: 'Impossible 2500',desc: 'Reach height 2500 on Impossible' },
+      { id: 'impossible_5000',mode: 'impossible', threshold: 50000,  name: 'Impossible 5000',desc: 'Reach height 5000 on Impossible' },
+      { id: 'impossible_7500',mode: 'impossible', threshold: 75000,  name: 'Impossible 7500',desc: 'Reach height 7500 on Impossible' },
+      { id: 'impossible_10000',mode:'impossible', threshold: 100000, name: 'Impossible 10000',desc:'Reach height 10000 on Impossible' },
+      { id: 'impossible_12500',mode:'impossible', threshold: 125000, name: 'Impossible 12500',desc:'Reach height 12500 on Impossible' },
+      { id: 'impossible_15000',mode:'impossible', threshold: 150000, name: 'Impossible 15000',desc:'Reach height 15000 on Impossible' },
+      { id: 'impossible_20000',mode:'impossible', threshold: 200000, name: 'Impossible 20000',desc:'Reach height 20000 on Impossible' },
+      { id: 'impossible_25000',mode:'impossible', threshold: 250000, name: 'Impossible 25000',desc:'Reach height 25000 on Impossible' },
     ];
 
+    // ─── DOM refs ─────────────────────────────────────────────────────
     const player = document.getElementById("player");
     const curEl = document.getElementById("current");
     const maxEl = document.getElementById("max");
@@ -467,14 +702,11 @@
     const settingsBtn = document.getElementById("settings-btn");
     const helpBackBtn = document.getElementById("help-back-btn");
     const settingsBackBtn = document.getElementById("settings-back-btn");
-    const audioSettingsBtn = document.getElementById("audio-settings-btn");
-    const audioBackBtn = document.getElementById("audio-back-btn");
     const deathScreen = document.getElementById("death-screen");
     const mainMenuDiv = document.getElementById("main-menu");
     const extraMenu = document.getElementById("extra-menu");
     const helpMenu = document.getElementById("help-menu");
     const settingsMenu = document.getElementById("settings-menu");
-    const audioMenu = document.getElementById("audio-menu");
     const pauseTitle = document.getElementById("pause-title");
     const achievementsBtn = document.getElementById("achievements-btn");
     const achievementsBackBtn = document.getElementById("achievements-back-btn");
@@ -500,7 +732,6 @@
     const audioAmbient = document.getElementById("audio-ambient");
     const audioAchievement = document.getElementById("audio-achievement");
     const allSoundsToggle = document.getElementById("all-sounds-toggle");
-    const masterVolume = document.getElementById("master-volume");
 
     const PLAYER_SIZE = 40;
 
@@ -521,15 +752,9 @@
     let currentLanguage = localStorage.getItem('language') || 'en';
     let currentDifficulty = localStorage.getItem('difficulty') || 'medium';
     let allSoundsEnabled = localStorage.getItem('allSounds') !== 'false';
-    let masterVol = parseInt(localStorage.getItem('masterVolume') || '80');
     let doubleJumpEnabled = localStorage.getItem('featDoubleJump') !== 'false';
     let showHeightEnabled = localStorage.getItem('featShowHeight') !== 'false';
     let showTopEnabled = localStorage.getItem('featShowTop') !== 'false';
-
-    let customColors = {
-      btn: JSON.parse(localStorage.getItem('customBtnColor') || '[56,189,248]'),
-      txt: JSON.parse(localStorage.getItem('customTxtColor') || '[56,189,248]')
-    };
 
     let audioSettings = {
       respawn: localStorage.getItem('audioRespawn') !== 'false',
@@ -552,16 +777,13 @@
       impossible: parseInt(localStorage.getItem('obbyTopHeightImpossible') || '0')
     };
 
+    // ─── Achievements ────────────────────────────────────────────────
     function loadAchievements() {
       const raw = localStorage.getItem('achievements');
       if (!raw) return {};
       try { return JSON.parse(raw); } catch(e) { return {}; }
     }
-
-    function saveAchievements(obj) {
-      localStorage.setItem('achievements', JSON.stringify(obj));
-    }
-
+    function saveAchievements(obj) { localStorage.setItem('achievements', JSON.stringify(obj)); }
     let unlockedAchievements = loadAchievements();
     let achNotifQueue = [];
     let achNotifShowing = false;
@@ -572,10 +794,7 @@
         const h = maxHeights[def.mode];
         if (h >= def.threshold) {
           const now = new Date();
-          unlockedAchievements[def.id] = {
-            name: def.name,
-            time: now.toLocaleString()
-          };
+          unlockedAchievements[def.id] = { name: def.name, time: now.toLocaleString() };
           saveAchievements(unlockedAchievements);
           achNotifQueue.push(def.name);
           processAchievementQueue();
@@ -597,43 +816,246 @@
       playAchievementSound();
       setTimeout(() => {
         notif.classList.remove('show');
-        setTimeout(() => {
-          achNotifShowing = false;
-          processAchievementQueue();
-        }, 600);
+        setTimeout(() => { achNotifShowing = false; processAchievementQueue(); }, 600);
       }, 3500);
     }
 
-    function renderAchievementsList(containerId) {
+    function renderAchievementsList(containerId, searchTerm, filterMode) {
       const container = document.getElementById(containerId);
       if (!container) return;
       container.innerHTML = '';
-      ACHIEVEMENT_DEFS.forEach(def => {
+      const total = ACHIEVEMENT_DEFS.length;
+      const completed = ACHIEVEMENT_DEFS.filter(d => unlockedAchievements[d.id]).length;
+
+      // Update count display if in main achievements screen
+      const countEl = document.getElementById('ach-count-display');
+      if (countEl && containerId === 'achievements-list') {
+        countEl.textContent = `${completed} / ${total} Achievements`;
+      }
+
+      let defs = ACHIEVEMENT_DEFS;
+      if (searchTerm) {
+        const s = searchTerm.toLowerCase();
+        defs = defs.filter(d => d.name.toLowerCase().includes(s) || d.desc.toLowerCase().includes(s));
+      }
+      if (filterMode === 'completed') defs = defs.filter(d => unlockedAchievements[d.id]);
+      else if (filterMode === 'uncompleted') defs = defs.filter(d => !unlockedAchievements[d.id]);
+
+      defs.forEach(def => {
         const unlocked = unlockedAchievements[def.id];
         const div = document.createElement('div');
         div.className = 'ach-item' + (unlocked ? ' ach-unlocked' : ' ach-locked');
         div.innerHTML = `
-          <div class="ach-item-icon">${unlocked ? '🏆' : '🔒'}</div>
-          <div class="ach-item-info">
-            <div class="ach-item-name">${def.name}</div>
-            <div class="ach-item-status">${unlocked ? 'Unlocked: ' + unlocked.time : 'Locked'}</div>
+          <div class="ach-item-header">
+            <div class="ach-item-icon">${unlocked ? '🏆' : '🔒'}</div>
+            <div class="ach-item-info">
+              <div class="ach-item-name">${def.name}</div>
+              <div class="ach-item-status">${unlocked ? 'Unlocked: ' + unlocked.time : 'Locked'}</div>
+            </div>
+          </div>
+          <div class="ach-item-dropdown" style="display:none;">
+            <div class="ach-item-desc">${def.desc}</div>
+            ${unlocked ? '<div class="ach-item-got">✅ You got this!</div>' : ''}
           </div>
         `;
+        div.querySelector('.ach-item-header').addEventListener('click', () => {
+          const drop = div.querySelector('.ach-item-dropdown');
+          drop.style.display = drop.style.display === 'none' ? 'block' : 'none';
+        });
         container.appendChild(div);
       });
     }
 
-    const gravity = 0.9;
-    const jumpPower = 16;
-    const speed = 6;
-    const keys = {};
+    // ─── Audio / Volume ──────────────────────────────────────────────
+    function getSoundVol(key) { return soundVols[key] / 100; }
 
-    let platforms = [];
-    let platformPool = [];
+    function updateAllVolumes() {
+      const f = allSoundsEnabled ? 1 : 0;
+      respawnSound.volume = (audioSettings.respawn ? getSoundVol('respawn') : 0) * f;
+      lavaDieSound.volume = (audioSettings.lava ? getSoundVol('lava') : 0) * f;
+      jumpSound.volume = (audioSettings.jump ? getSoundVol('jump') : 0) * f;
+      walkingSound.volume = (audioSettings.walking ? getSoundVol('walking') : 0) * f;
+      killBrickSound.volume = (audioSettings.brick ? getSoundVol('brick') : 0) * f;
+      achievementSound.volume = (audioSettings.achievement ? getSoundVol('achievement') : 0) * f;
+    }
 
-    const LEFT_WALL = 0;
-    const RIGHT_WALL = window.innerWidth;
+    function updateLavaVolume() {
+      if (!allSoundsEnabled || !audioSettings.ambient) { lavaSound.volume = 0; return; }
+      if (lavaInView) {
+        const distanceToLava = lavaY - (y + PLAYER_SIZE);
+        const maxDistance = window.innerHeight;
+        const vm = Math.max(0, Math.min(1, 1 - (distanceToLava / maxDistance)));
+        lavaSound.volume = getSoundVol('ambient') * vm;
+      } else {
+        lavaSound.volume = 0;
+      }
+    }
 
+    function initializeVolumes() {
+      updateAllVolumes();
+      syncAllAudioUI();
+    }
+
+    function syncAllAudioUI() {
+      // Sync checkboxes
+      audioRespawn.checked = audioSettings.respawn;
+      audioLava.checked = audioSettings.lava;
+      audioJump.checked = audioSettings.jump;
+      audioWalking.checked = audioSettings.walking;
+      audioBrick.checked = audioSettings.brick;
+      audioAmbient.checked = audioSettings.ambient;
+      audioAchievement.checked = audioSettings.achievement;
+      allSoundsToggle.checked = allSoundsEnabled;
+
+      const mmMirrors = {
+        'mm-audio-respawn': 'respawn', 'mm-audio-lava': 'lava', 'mm-audio-jump': 'jump',
+        'mm-audio-walking': 'walking', 'mm-audio-brick': 'brick', 'mm-audio-ambient': 'ambient',
+        'mm-audio-achievement': 'achievement'
+      };
+      Object.entries(mmMirrors).forEach(([id, key]) => {
+        const el = document.getElementById(id);
+        if (el) el.checked = audioSettings[key];
+      });
+      const mmAll = document.getElementById('mm-all-sounds');
+      if (mmAll) mmAll.checked = allSoundsEnabled;
+
+      // Sync per-sound volume sliders
+      SOUND_KEYS.forEach(k => {
+        const v = soundVols[k];
+        ['vol-' + k, 'pvol-' + k].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = v;
+        });
+      });
+
+      // Update audio row highlight
+      updateAudioRowHighlights();
+    }
+
+    function updateAudioRowHighlights() {
+      const map = { respawn:'asr-respawn', lava:'asr-lava', jump:'asr-jump', walking:'asr-walking', brick:'asr-brick', ambient:'asr-ambient', achievement:'asr-achievement' };
+      const pmap = { respawn:'pasr-respawn', lava:'pasr-lava', jump:'pasr-jump', walking:'pasr-walking', brick:'pasr-brick', ambient:'pasr-ambient', achievement:'pasr-achievement' };
+      Object.entries(map).forEach(([key, id]) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('audio-row-on', !!audioSettings[key]);
+        const pel = document.getElementById(pmap[key]);
+        if (pel) pel.classList.toggle('audio-row-on', !!audioSettings[key]);
+      });
+    }
+
+    function playRespawnSound() {
+      if (!allSoundsEnabled || !audioSettings.respawn) return;
+      respawnSound.currentTime = START_TIME_RESPAWN;
+      respawnSound.play().catch(() => {});
+    }
+    function playLavaDieSound() {
+      if (!allSoundsEnabled || !audioSettings.lava) return;
+      lavaDieSound.currentTime = START_TIME_LAVA_DIE;
+      lavaDieSound.play().catch(() => {});
+    }
+    function playJumpSound() {
+      if (!allSoundsEnabled || !audioSettings.jump) return;
+      jumpSound.currentTime = START_TIME_JUMP;
+      jumpSound.play().catch(() => {});
+    }
+    function playWalkingSound() {
+      if (!allSoundsEnabled || !audioSettings.walking) return;
+      if (walkingSound.paused) { walkingSound.currentTime = START_TIME_WALKING; walkingSound.play().catch(() => {}); }
+    }
+    function stopWalkingSound() { walkingSound.pause(); walkingSound.currentTime = START_TIME_WALKING; }
+    function playKillBrickSound() {
+      if (!allSoundsEnabled || !audioSettings.brick) return;
+      killBrickSound.currentTime = START_TIME_KILL_BRICK;
+      killBrickSound.play().catch(() => {});
+    }
+    function playAchievementSound() {
+      if (!allSoundsEnabled || !audioSettings.achievement) return;
+      achievementSound.currentTime = START_TIME_ACHIEVEMENT;
+      achievementSound.play().catch(() => {});
+    }
+    function updateLavaSound() {
+      if (!allSoundsEnabled || !audioSettings.ambient) { stopLavaSound(); return; }
+      const isLavaVisible = lavaY < window.innerHeight;
+      if (isLavaVisible && !lavaInView) {
+        lavaInView = true;
+        lavaSound.currentTime = START_TIME_LAVA;
+        lavaSound.play().catch(() => {});
+      } else if (!isLavaVisible && lavaInView) {
+        lavaInView = false;
+        lavaSound.pause();
+        lavaSound.currentTime = START_TIME_LAVA;
+      }
+      if (isLavaVisible) updateLavaVolume();
+    }
+    function stopLavaSound() { lavaSound.pause(); lavaSound.currentTime = START_TIME_LAVA; lavaInView = false; }
+
+    function saveAudioSettings() {
+      audioSettings.respawn = audioRespawn.checked;
+      audioSettings.lava = audioLava.checked;
+      audioSettings.jump = audioJump.checked;
+      audioSettings.walking = audioWalking.checked;
+      audioSettings.brick = audioBrick.checked;
+      audioSettings.ambient = audioAmbient.checked;
+      audioSettings.achievement = audioAchievement.checked;
+      Object.keys(audioSettings).forEach(k => localStorage.setItem('audio' + k.charAt(0).toUpperCase() + k.slice(1), audioSettings[k]));
+      syncAllAudioUI();
+      updateAllVolumes();
+    }
+
+    // ─── Colors ──────────────────────────────────────────────────────
+    let customColors = {
+      btn: JSON.parse(localStorage.getItem('customBtnColor') || '[56,189,248]'),
+      txt: JSON.parse(localStorage.getItem('customTxtColor') || '[56,189,248]')
+    };
+    function applyColors() {
+      document.documentElement.style.setProperty('--btn-color', customColors.btn.join(','));
+      document.documentElement.style.setProperty('--text-color', customColors.txt.join(','));
+    }
+    function saveColors() {
+      localStorage.setItem('customBtnColor', JSON.stringify(customColors.btn));
+      localStorage.setItem('customTxtColor', JSON.stringify(customColors.txt));
+    }
+
+    // ─── Graphics / effects ──────────────────────────────────────────
+    function toggleEffects(enabled) {
+      effectsEnabled = enabled;
+      localStorage.setItem('effectsEnabled', enabled);
+      document.body.classList.toggle('no-effects', !enabled);
+    }
+    function toggleHQ(enabled) {
+      hqEnabled = enabled;
+      localStorage.setItem('hqEnabled', enabled);
+      document.body.classList.toggle('low-quality', !enabled);
+    }
+
+    // ─── Difficulty ──────────────────────────────────────────────────
+    function changeDifficulty(difficulty) {
+      if (currentDifficulty !== difficulty) {
+        currentDifficulty = difficulty;
+        localStorage.setItem('difficulty', difficulty);
+        updateLanguage(currentLanguage);
+        if (!isDead && gameStarted) die(false);
+      }
+    }
+
+    // ─── Reset all data ──────────────────────────────────────────────
+    async function resetAllData() {
+      const ok = await customConfirm('Reset ALL data? This cannot be undone.');
+      if (!ok) return;
+      const keys_to_clear = [
+        'effectsEnabled','hqEnabled','language','difficulty','allSounds',
+        'featDoubleJump','featShowHeight','featShowTop',
+        'customBtnColor','customTxtColor',
+        'audioRespawn','audioLava','audioJump','audioWalking','audioBrick','audioAmbient','audioAchievement',
+        'obbyTopHeightEasy','obbyTopHeightMedium','obbyTopHeightHard','obbyTopHeightImpossible',
+        'achievements'
+      ];
+      SOUND_KEYS.forEach(k => keys_to_clear.push('soundVol_' + k));
+      keys_to_clear.forEach(k => localStorage.removeItem(k));
+      location.reload();
+    }
+
+    // ─── Translations ────────────────────────────────────────────────
     const translations = {
       en: {
         height: 'HEIGHT', topHeight: 'TOP HEIGHT', difficulty: 'DIFFICULTY',
@@ -703,237 +1125,6 @@
       }
     };
 
-    function applyColors() {
-      const bc = customColors.btn.join(',');
-      const tc = customColors.txt.join(',');
-      document.documentElement.style.setProperty('--btn-color', bc);
-      document.documentElement.style.setProperty('--text-color', tc);
-    }
-
-    function saveColors() {
-      localStorage.setItem('customBtnColor', JSON.stringify(customColors.btn));
-      localStorage.setItem('customTxtColor', JSON.stringify(customColors.txt));
-    }
-
-    function resetColors() {
-      customColors = { btn: [56, 189, 248], txt: [56, 189, 248] };
-      saveColors();
-      applyColors();
-      syncColorInputs();
-    }
-
-    function syncColorInputs() {
-      const fields = [
-        ['btn-r','btn-g','btn-b','p-btn-r','p-btn-g','p-btn-b'],
-        ['txt-r','txt-g','txt-b','p-txt-r','p-txt-g','p-txt-b']
-      ];
-      ['btn','txt'].forEach((type, ti) => {
-        ['r','g','b'].forEach((ch, ci) => {
-          fields[ti].filter((_, i) => i % 3 === ci).forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.value = customColors[type][ci];
-          });
-        });
-      });
-    }
-
-    function readColorInputs(prefix) {
-      const r = parseInt(document.getElementById(prefix+'r').value) || 0;
-      const g = parseInt(document.getElementById(prefix+'g').value) || 0;
-      const b = parseInt(document.getElementById(prefix+'b').value) || 0;
-      return [Math.min(255,Math.max(0,r)), Math.min(255,Math.max(0,g)), Math.min(255,Math.max(0,b))];
-    }
-
-    function getVolumeFactor() {
-      if (!allSoundsEnabled) return 0;
-      return masterVol / 100;
-    }
-
-    function updateAllVolumes() {
-      const f = getVolumeFactor();
-      respawnSound.volume = VOLUME_RESPAWN * f;
-      lavaDieSound.volume = VOLUME_LAVA_DIE * f;
-      jumpSound.volume = VOLUME_JUMP * f;
-      walkingSound.volume = VOLUME_WALKING * f;
-      killBrickSound.volume = VOLUME_KILL_BRICK * f;
-      achievementSound.volume = VOLUME_ACHIEVEMENT * f;
-      if (lavaInView) {
-        const distanceToLava = lavaY - (y + PLAYER_SIZE);
-        const maxDistance = window.innerHeight;
-        const vm = Math.max(0, Math.min(1, 1 - (distanceToLava / maxDistance)));
-        lavaSound.volume = VOLUME_LAVA * vm * f;
-      } else {
-        lavaSound.volume = 0;
-      }
-    }
-
-    function initializeVolumes() {
-      updateAllVolumes();
-      audioRespawn.checked = audioSettings.respawn;
-      audioLava.checked = audioSettings.lava;
-      audioJump.checked = audioSettings.jump;
-      audioWalking.checked = audioSettings.walking;
-      audioBrick.checked = audioSettings.brick;
-      audioAmbient.checked = audioSettings.ambient;
-      audioAchievement.checked = audioSettings.achievement;
-    }
-
-    function playRespawnSound() {
-      if (!allSoundsEnabled || !audioSettings.respawn) return;
-      respawnSound.currentTime = START_TIME_RESPAWN;
-      respawnSound.play().catch(() => {});
-    }
-
-    function playLavaDieSound() {
-      if (!allSoundsEnabled || !audioSettings.lava) return;
-      lavaDieSound.currentTime = START_TIME_LAVA_DIE;
-      lavaDieSound.play().catch(() => {});
-    }
-
-    function playJumpSound() {
-      if (!allSoundsEnabled || !audioSettings.jump) return;
-      jumpSound.currentTime = START_TIME_JUMP;
-      jumpSound.play().catch(() => {});
-    }
-
-    function playWalkingSound() {
-      if (!allSoundsEnabled || !audioSettings.walking) return;
-      if (walkingSound.paused) {
-        walkingSound.currentTime = START_TIME_WALKING;
-        walkingSound.play().catch(() => {});
-      }
-    }
-
-    function stopWalkingSound() {
-      walkingSound.pause();
-      walkingSound.currentTime = START_TIME_WALKING;
-    }
-
-    function playKillBrickSound() {
-      if (!allSoundsEnabled || !audioSettings.brick) return;
-      killBrickSound.currentTime = START_TIME_KILL_BRICK;
-      killBrickSound.play().catch(() => {});
-    }
-
-    function playAchievementSound() {
-      if (!allSoundsEnabled || !audioSettings.achievement) return;
-      achievementSound.currentTime = START_TIME_ACHIEVEMENT;
-      achievementSound.play().catch(() => {});
-    }
-
-    function updateLavaSound() {
-      if (!allSoundsEnabled || !audioSettings.ambient) {
-        stopLavaSound();
-        return;
-      }
-      const isLavaVisible = lavaY < window.innerHeight;
-      if (isLavaVisible && !lavaInView) {
-        lavaInView = true;
-        lavaSound.currentTime = START_TIME_LAVA;
-        lavaSound.play().catch(() => {});
-      } else if (!isLavaVisible && lavaInView) {
-        lavaInView = false;
-        lavaSound.pause();
-        lavaSound.currentTime = START_TIME_LAVA;
-      }
-      if (isLavaVisible) {
-        const distanceToLava = lavaY - (y + PLAYER_SIZE);
-        const maxDistance = window.innerHeight;
-        const vm = Math.max(0, Math.min(1, 1 - (distanceToLava / maxDistance)));
-        lavaSound.volume = VOLUME_LAVA * vm * getVolumeFactor();
-      }
-    }
-
-    function stopLavaSound() {
-      lavaSound.pause();
-      lavaSound.currentTime = START_TIME_LAVA;
-      lavaInView = false;
-    }
-
-    function saveAudioSettings() {
-      audioSettings.respawn = audioRespawn.checked;
-      audioSettings.lava = audioLava.checked;
-      audioSettings.jump = audioJump.checked;
-      audioSettings.walking = audioWalking.checked;
-      audioSettings.brick = audioBrick.checked;
-      audioSettings.ambient = audioAmbient.checked;
-      audioSettings.achievement = audioAchievement.checked;
-      localStorage.setItem('audioRespawn', audioSettings.respawn);
-      localStorage.setItem('audioLava', audioSettings.lava);
-      localStorage.setItem('audioJump', audioSettings.jump);
-      localStorage.setItem('audioWalking', audioSettings.walking);
-      localStorage.setItem('audioBrick', audioSettings.brick);
-      localStorage.setItem('audioAmbient', audioSettings.ambient);
-      localStorage.setItem('audioAchievement', audioSettings.achievement);
-
-      const mmAudioRespawn = document.getElementById('mm-audio-respawn');
-      const mmAudioLava = document.getElementById('mm-audio-lava');
-      const mmAudioJump = document.getElementById('mm-audio-jump');
-      const mmAudioWalking = document.getElementById('mm-audio-walking');
-      const mmAudioBrick = document.getElementById('mm-audio-brick');
-      const mmAudioAmbient = document.getElementById('mm-audio-ambient');
-      const mmAudioAchievement = document.getElementById('mm-audio-achievement');
-      if (mmAudioRespawn) mmAudioRespawn.checked = audioSettings.respawn;
-      if (mmAudioLava) mmAudioLava.checked = audioSettings.lava;
-      if (mmAudioJump) mmAudioJump.checked = audioSettings.jump;
-      if (mmAudioWalking) mmAudioWalking.checked = audioSettings.walking;
-      if (mmAudioBrick) mmAudioBrick.checked = audioSettings.brick;
-      if (mmAudioAmbient) mmAudioAmbient.checked = audioSettings.ambient;
-      if (mmAudioAchievement) mmAudioAchievement.checked = audioSettings.achievement;
-    }
-
-    function syncAudioSettingsFromMainMenu() {
-      audioSettings.respawn = document.getElementById('mm-audio-respawn').checked;
-      audioSettings.lava = document.getElementById('mm-audio-lava').checked;
-      audioSettings.jump = document.getElementById('mm-audio-jump').checked;
-      audioSettings.walking = document.getElementById('mm-audio-walking').checked;
-      audioSettings.brick = document.getElementById('mm-audio-brick').checked;
-      audioSettings.ambient = document.getElementById('mm-audio-ambient').checked;
-      audioSettings.achievement = document.getElementById('mm-audio-achievement').checked;
-      audioRespawn.checked = audioSettings.respawn;
-      audioLava.checked = audioSettings.lava;
-      audioJump.checked = audioSettings.jump;
-      audioWalking.checked = audioSettings.walking;
-      audioBrick.checked = audioSettings.brick;
-      audioAmbient.checked = audioSettings.ambient;
-      audioAchievement.checked = audioSettings.achievement;
-      Object.keys(audioSettings).forEach(k => localStorage.setItem('audio' + k.charAt(0).toUpperCase() + k.slice(1), audioSettings[k]));
-    }
-
-    function toggleEffects(enabled) {
-      effectsEnabled = enabled;
-      localStorage.setItem('effectsEnabled', enabled);
-      document.body.classList.toggle('no-effects', !enabled);
-    }
-
-    function toggleHQ(enabled) {
-      hqEnabled = enabled;
-      localStorage.setItem('hqEnabled', enabled);
-      document.body.classList.toggle('low-quality', !enabled);
-    }
-
-    function changeDifficulty(difficulty) {
-      if (currentDifficulty !== difficulty) {
-        currentDifficulty = difficulty;
-        localStorage.setItem('difficulty', difficulty);
-        updateLanguage(currentLanguage);
-        if (!isDead && gameStarted) die(false);
-      }
-    }
-
-    function resetAllData() {
-      const keys_to_clear = [
-        'effectsEnabled','hqEnabled','language','difficulty','allSounds','masterVolume',
-        'featDoubleJump','featShowHeight','featShowTop',
-        'customBtnColor','customTxtColor',
-        'audioRespawn','audioLava','audioJump','audioWalking','audioBrick','audioAmbient','audioAchievement',
-        'obbyTopHeightEasy','obbyTopHeightMedium','obbyTopHeightHard','obbyTopHeightImpossible',
-        'achievements'
-      ];
-      keys_to_clear.forEach(k => localStorage.removeItem(k));
-      location.reload();
-    }
-
     function updateLanguage(lang) {
       currentLanguage = lang;
       localStorage.setItem('language', lang);
@@ -941,18 +1132,10 @@
       const h = Math.floor(currentHeight / 10);
       const mh = Math.floor(maxHeights[currentDifficulty] / 10);
 
-      if (showHeightEnabled) {
-        curEl.textContent = `${t.height}: ${h}`;
-        curEl.style.display = '';
-      } else {
-        curEl.style.display = 'none';
-      }
-      if (showTopEnabled) {
-        maxEl.textContent = `${t.topHeight}: ${mh}`;
-        maxEl.style.display = '';
-      } else {
-        maxEl.style.display = 'none';
-      }
+      if (showHeightEnabled) { curEl.textContent = `${t.height}: ${h}`; curEl.style.display = ''; }
+      else { curEl.style.display = 'none'; }
+      if (showTopEnabled) { maxEl.textContent = `${t.topHeight}: ${mh}`; maxEl.style.display = ''; }
+      else { maxEl.style.display = 'none'; }
 
       difficultyEl.textContent = `${t.difficulty}: ${DIFFICULTY_SETTINGS[currentDifficulty].name.toUpperCase()}`;
       document.getElementById('hp-display').textContent = doubleJumpEnabled ? t.doubleJump : 'Double Jump = false';
@@ -965,7 +1148,6 @@
       document.getElementById('restart-btn').textContent = t.restart;
       document.getElementById('help-back-btn').textContent = t.back;
       document.getElementById('settings-back-btn').textContent = t.back;
-      document.getElementById('audio-back-btn').textContent = t.back;
       document.getElementById('extra-back-btn').textContent = t.back;
       document.getElementById('achievements-back-btn').textContent = t.back;
 
@@ -973,7 +1155,6 @@
       document.getElementById('death-subtitle').textContent = t.respawn;
 
       const selAll = (cls) => document.querySelectorAll(cls);
-
       selAll('.help-green').forEach(el => el.textContent = t.helpGreen);
       selAll('.help-green-desc').forEach(el => el.textContent = t.helpGreenDesc);
       selAll('.help-red').forEach(el => el.textContent = t.helpRed);
@@ -995,8 +1176,6 @@
       document.getElementById('audio-walking-label').textContent = t.audioWalking;
       document.getElementById('audio-brick-label').textContent = t.audioBrick;
       document.getElementById('audio-ambient-label').textContent = t.audioAmbient;
-      document.getElementById('audio-settings-btn').textContent = t.settingsAudioSettings;
-      document.getElementById('audio-settings-title').textContent = t.settingsAudioSettings;
       document.getElementById('settings-graphics-title').textContent = t.settingsGraphics;
       document.getElementById('settings-visual-effects').textContent = t.settingsVisualEffects;
       document.getElementById('settings-difficulty-title').textContent = t.settingsDifficulty;
@@ -1009,7 +1188,6 @@
       if (langOptions[0]) langOptions[0].textContent = `🇬🇧 ${t.langEnglish}`;
       if (langOptions[1]) langOptions[1].textContent = `🇩🇰 ${t.langDanish}`;
       if (langOptions[2]) langOptions[2].textContent = `🇩🇪 ${t.langGerman}`;
-
       const mmLangOptions = document.querySelectorAll('#mm-language-select option');
       if (mmLangOptions[0]) mmLangOptions[0].textContent = `🇬🇧 ${t.langEnglish}`;
       if (mmLangOptions[1]) mmLangOptions[1].textContent = `🇩🇰 ${t.langDanish}`;
@@ -1021,17 +1199,21 @@
       localStorage.setItem(key, maxHeights[currentDifficulty]);
     }
 
+    // ─── Pause ───────────────────────────────────────────────────────
+    function showPauseMain() {
+      helpMenu.style.display = "none";
+      settingsMenu.style.display = "none";
+      extraMenu.style.display = "none";
+      achievementsPauseMenu.style.display = "none";
+      mainMenuDiv.style.display = "block";
+      pauseTitle.textContent = translations[currentLanguage].paused;
+    }
+
     function togglePause() {
       paused = !paused;
       if (paused) {
         pauseMenu.classList.add("active");
-        helpMenu.style.display = "none";
-        settingsMenu.style.display = "none";
-        audioMenu.style.display = "none";
-        extraMenu.style.display = "none";
-        achievementsPauseMenu.style.display = "none";
-        mainMenuDiv.style.display = "block";
-        pauseTitle.textContent = translations[currentLanguage].paused;
+        showPauseMain();
         if (animationId) cancelAnimationFrame(animationId);
         stopWalkingSound();
         stopLavaSound();
@@ -1042,6 +1224,7 @@
       }
     }
 
+    // ─── Death ───────────────────────────────────────────────────────
     function die(fromLava = false) {
       isDead = true;
       diedFromLava = fromLava;
@@ -1054,16 +1237,14 @@
       deathScreen.classList.add("active");
     }
 
+    // ─── Game reset ──────────────────────────────────────────────────
     function resetGame() {
       if (animationId) cancelAnimationFrame(animationId);
       stopWalkingSound();
       stopLavaSound();
       playRespawnSound();
 
-      platforms.forEach(p => {
-        p.style.display = 'none';
-        platformPool.push(p);
-      });
+      platforms.forEach(p => { p.style.display = 'none'; platformPool.push(p); });
       platforms = [];
 
       const centerY = (window.innerHeight - PLAYER_SIZE) / 2;
@@ -1104,6 +1285,17 @@
       generatePlatforms();
       update();
     }
+
+    const gravity = 0.9;
+    const jumpPower = 16;
+    const speed = 6;
+    const keys = {};
+
+    let platforms = [];
+    let platformPool = [];
+
+    const LEFT_WALL = 0;
+    const RIGHT_WALL = window.innerWidth;
 
     const maxJumpHeight = (jumpPower * jumpPower) / (2 * gravity);
 
@@ -1343,9 +1535,7 @@
       }
       const targetY = (window.innerHeight - PLAYER_SIZE) / 2;
       const offset = targetY - y;
-      platforms.forEach(p => {
-        p.style.top = (parseFloat(p.style.top) + offset) + "px";
-      });
+      platforms.forEach(p => { p.style.top = (parseFloat(p.style.top) + offset) + "px"; });
       lavaY += offset;
       lavaEl.style.top = lavaY + "px";
       lowestPlatformY += offset;
@@ -1367,7 +1557,10 @@
       const g = Math.floor(6 + heightProgress * 4);
       const b = Math.floor(23 + heightProgress * 27);
       document.body.style.background = `rgb(${r}, ${g}, ${b})`;
-      if (y + PLAYER_SIZE >= lavaY - LAVA_HITBOX_OFFSET) {
+
+      // ── Lava hitbox: use exact visual top of lava element ──
+      // lavaEl top is lavaY; player bottom is y + PLAYER_SIZE
+      if (y + PLAYER_SIZE >= lavaY + LAVA_HITBOX_OFFSET) {
         die(true);
         return;
       }
@@ -1382,6 +1575,7 @@
       animationId = requestAnimationFrame(update);
     }
 
+    // ─── Key events ──────────────────────────────────────────────────
     document.addEventListener("keydown", e => {
       if (isDead) return;
       keys[e.key] = true;
@@ -1389,6 +1583,7 @@
     });
     document.addEventListener("keyup", e => { keys[e.key] = false; });
 
+    // ─── Pause menu events ───────────────────────────────────────────
     continueBtn.addEventListener("click", togglePause);
 
     extraBtn.addEventListener("click", () => {
@@ -1411,16 +1606,6 @@
       extraMenu.style.display = "block";
       pauseTitle.textContent = translations[currentLanguage].extra;
     });
-    audioSettingsBtn.addEventListener("click", () => {
-      settingsMenu.style.display = "none";
-      audioMenu.style.display = "block";
-      pauseTitle.textContent = translations[currentLanguage].settingsAudioSettings;
-    });
-    audioBackBtn.addEventListener("click", () => {
-      audioMenu.style.display = "none";
-      settingsMenu.style.display = "block";
-      pauseTitle.textContent = translations[currentLanguage].settings;
-    });
     helpBtn.addEventListener("click", () => {
       extraMenu.style.display = "none";
       helpMenu.style.display = "block";
@@ -1435,7 +1620,7 @@
       extraMenu.style.display = "none";
       achievementsPauseMenu.style.display = "block";
       pauseTitle.textContent = "ACHIEVEMENTS";
-      renderAchievementsList('achievements-pause-list');
+      renderAchievementsList('achievements-pause-list', '', 'all');
     });
     achievementsBackBtn.addEventListener("click", () => {
       achievementsPauseMenu.style.display = "none";
@@ -1443,17 +1628,126 @@
       pauseTitle.textContent = translations[currentLanguage].extra;
     });
     restartBtn.addEventListener("click", () => {
+      showPauseMain();
       pauseMenu.classList.remove("active");
-      helpMenu.style.display = "none";
-      settingsMenu.style.display = "none";
-      audioMenu.style.display = "none";
-      extraMenu.style.display = "none";
-      achievementsPauseMenu.style.display = "none";
-      mainMenuDiv.style.display = "block";
-      pauseTitle.textContent = translations[currentLanguage].paused;
       paused = false;
       saveMaxHeight();
       resetGame();
+    });
+
+    // Back to main menu from pause
+    document.getElementById('pause-main-menu-btn').addEventListener('click', async () => {
+      const ok = await customConfirm('Return to Main Menu? Your current run will be lost.');
+      if (!ok) return;
+      pauseMenu.classList.remove("active");
+      paused = false;
+      gameStarted = false;
+      if (animationId) cancelAnimationFrame(animationId);
+      stopWalkingSound();
+      stopLavaSound();
+      platforms.forEach(p => { p.style.display = 'none'; platformPool.push(p); });
+      platforms = [];
+      document.getElementById('hud').style.display = 'none';
+      document.getElementById('hp-display').style.display = 'none';
+      document.getElementById('pause-hint').style.display = 'none';
+      document.getElementById('main-menu-screen').style.display = 'flex';
+    });
+
+    // ─── Pause settings nav tabs ─────────────────────────────────────
+    function setupSettingsNavTabs(navPrefix, panelPrefix, tabs) {
+      tabs.forEach(tab => {
+        document.getElementById(navPrefix + tab).addEventListener('click', () => {
+          tabs.forEach(t => {
+            document.getElementById(navPrefix + t).classList.remove('active');
+            document.getElementById(panelPrefix + t).style.display = 'none';
+          });
+          document.getElementById(navPrefix + tab).classList.add('active');
+          document.getElementById(panelPrefix + tab).style.display = '';
+        });
+      });
+    }
+    setupSettingsNavTabs('psnav-', 'pspanel-', ['graphics', 'audio', 'hud']);
+    setupSettingsNavTabs('snav-', 'spanel-', ['graphics', 'audio', 'hud']);
+
+    // ─── Audio dropdown toggles ──────────────────────────────────────
+    function setupAudioDropdowns() {
+      SOUND_KEYS.forEach(k => {
+        // Main menu audio rows
+        const mmRow = document.getElementById('asr-' + k);
+        const mmDrop = document.getElementById('adrop-' + k);
+        if (mmRow && mmDrop) {
+          mmRow.querySelector('.audio-sound-header').addEventListener('click', (e) => {
+            // Only toggle dropdown if not clicking the toggle switch
+            if (e.target.closest('.toggle')) return;
+            mmDrop.style.display = mmDrop.style.display === 'none' ? 'block' : 'none';
+          });
+        }
+        // Pause audio rows
+        const pRow = document.getElementById('pasr-' + k);
+        const pDrop = document.getElementById('padrop-' + k);
+        if (pRow && pDrop) {
+          pRow.querySelector('.audio-sound-header').addEventListener('click', (e) => {
+            if (e.target.closest('.toggle')) return;
+            pDrop.style.display = pDrop.style.display === 'none' ? 'block' : 'none';
+          });
+        }
+
+        // Volume sliders
+        ['vol-' + k, 'pvol-' + k].forEach(volId => {
+          const el = document.getElementById(volId);
+          if (el) {
+            el.addEventListener('input', () => {
+              saveSoundVol(k, parseInt(el.value));
+              // sync the other slider
+              const otherId = volId.startsWith('p') ? 'vol-' + k : 'pvol-' + k;
+              const other = document.getElementById(otherId);
+              if (other) other.value = el.value;
+              updateAllVolumes();
+            });
+          }
+        });
+      });
+    }
+    setupAudioDropdowns();
+
+    // ─── Pause audio toggles ─────────────────────────────────────────
+    audioRespawn.addEventListener("change", saveAudioSettings);
+    audioLava.addEventListener("change", saveAudioSettings);
+    audioJump.addEventListener("change", saveAudioSettings);
+    audioWalking.addEventListener("change", saveAudioSettings);
+    audioBrick.addEventListener("change", saveAudioSettings);
+    audioAmbient.addEventListener("change", saveAudioSettings);
+    audioAchievement.addEventListener("change", saveAudioSettings);
+
+    allSoundsToggle.addEventListener("change", e => {
+      allSoundsEnabled = e.target.checked;
+      localStorage.setItem('allSounds', allSoundsEnabled);
+      updateAllVolumes();
+      const mm = document.getElementById('mm-all-sounds');
+      if (mm) mm.checked = e.target.checked;
+    });
+
+    // Pause HUD toggles
+    document.getElementById('p-feat-double-jump').addEventListener('change', e => {
+      doubleJumpEnabled = e.target.checked;
+      localStorage.setItem('featDoubleJump', doubleJumpEnabled);
+      document.getElementById('feat-double-jump').checked = doubleJumpEnabled;
+      document.getElementById('mm-feat-double-jump').checked = doubleJumpEnabled;
+      updateLanguage(currentLanguage);
+    });
+    document.getElementById('p-feat-show-height').addEventListener('change', e => {
+      showHeightEnabled = e.target.checked;
+      localStorage.setItem('featShowHeight', showHeightEnabled);
+      document.getElementById('feat-show-height').checked = showHeightEnabled;
+      document.getElementById('mm-feat-show-height').checked = showHeightEnabled;
+      updateLanguage(currentLanguage);
+    });
+    document.getElementById('p-feat-show-top').addEventListener('change', e => {
+      showTopEnabled = e.target.checked;
+      localStorage.setItem('featShowTop', showTopEnabled);
+      document.getElementById('feat-show-top').checked = showTopEnabled;
+      document.getElementById('mm-feat-show-top').checked = showTopEnabled;
+      updateLanguage(currentLanguage);
     });
 
     effectsToggle.addEventListener("change", e => {
@@ -1472,40 +1766,8 @@
       if (mm) mm.value = e.target.value;
     });
     difficultySelect.addEventListener("change", e => changeDifficulty(e.target.value));
-    allSoundsToggle.addEventListener("change", e => {
-      allSoundsEnabled = e.target.checked;
-      localStorage.setItem('allSounds', allSoundsEnabled);
-      updateAllVolumes();
-      const mm = document.getElementById('mm-all-sounds');
-      if (mm) mm.checked = e.target.checked;
-    });
-    masterVolume.addEventListener("input", e => {
-      masterVol = parseInt(e.target.value);
-      localStorage.setItem('masterVolume', masterVol);
-      updateAllVolumes();
-      const mm = document.getElementById('mm-master-volume');
-      if (mm) mm.value = e.target.value;
-    });
 
-    audioRespawn.addEventListener("change", saveAudioSettings);
-    audioLava.addEventListener("change", saveAudioSettings);
-    audioJump.addEventListener("change", saveAudioSettings);
-    audioWalking.addEventListener("change", saveAudioSettings);
-    audioBrick.addEventListener("change", saveAudioSettings);
-    audioAmbient.addEventListener("change", saveAudioSettings);
-    audioAchievement.addEventListener("change", saveAudioSettings);
-
-    document.getElementById('p-apply-colors-btn').addEventListener('click', () => {
-      customColors.btn = readColorInputs('p-btn-');
-      customColors.txt = readColorInputs('p-txt-');
-      saveColors();
-      applyColors();
-      syncColorInputs();
-    });
-    document.getElementById('p-reset-colors-btn').addEventListener('click', resetColors);
-    document.getElementById('pause-reset-data-btn').addEventListener('click', () => {
-      if (confirm('Reset ALL data? This cannot be undone.')) resetAllData();
-    });
+    document.getElementById('pause-reset-data-btn').addEventListener('click', resetAllData);
 
     deathScreen.addEventListener("click", () => {
       deathScreen.classList.remove("active");
@@ -1521,15 +1783,28 @@
       }
     });
 
+    // ─── Main menu events ────────────────────────────────────────────
     document.getElementById('mm-play-btn').addEventListener('click', () => {
-      syncAudioSettingsFromMainMenu();
       document.getElementById('main-menu-screen').style.display = 'none';
+      document.getElementById('mm-play-select-screen').style.display = 'flex';
+    });
+
+    document.getElementById('mm-play-select-back-btn').addEventListener('click', () => {
+      document.getElementById('mm-play-select-screen').style.display = 'none';
+      document.getElementById('main-menu-screen').style.display = 'flex';
+    });
+
+    document.getElementById('mode-singleplayer-btn').addEventListener('click', () => {
+      document.getElementById('mm-play-select-screen').style.display = 'none';
       document.getElementById('hud').style.display = '';
       document.getElementById('hp-display').style.display = '';
       document.getElementById('pause-hint').style.display = '';
       gameStarted = true;
       resetGame();
     });
+
+    document.getElementById('mode-multiplayer-btn').addEventListener('click', showComingSoon);
+    document.getElementById('mode-challenge-btn').addEventListener('click', showComingSoon);
 
     document.getElementById('mm-settings-btn').addEventListener('click', () => {
       document.getElementById('main-menu-screen').style.display = 'none';
@@ -1547,20 +1822,54 @@
       document.getElementById('mm-extra-screen').style.display = 'none';
       document.getElementById('main-menu-screen').style.display = 'flex';
     });
-    document.getElementById('mm-achievements-btn').addEventListener('click', () => {
-      document.getElementById('main-menu-screen').style.display = 'none';
-      document.getElementById('mm-achievements-screen').style.display = 'flex';
-      renderAchievementsList('achievements-list');
+    document.getElementById('mm-changelog-btn').addEventListener('click', () => {
+      document.getElementById('mm-extra-screen').style.display = 'none';
+      document.getElementById('mm-changelog-screen').style.display = 'flex';
     });
-    document.getElementById('mm-achievements-back-btn').addEventListener('click', () => {
-      document.getElementById('mm-achievements-screen').style.display = 'none';
-      document.getElementById('main-menu-screen').style.display = 'flex';
+    document.getElementById('mm-changelog-back-btn').addEventListener('click', () => {
+      document.getElementById('mm-changelog-screen').style.display = 'none';
+      document.getElementById('mm-extra-screen').style.display = 'flex';
+    });
+    document.getElementById('mm-help-btn').addEventListener('click', () => {
+      document.getElementById('mm-extra-screen').style.display = 'none';
+      document.getElementById('mm-help-screen').style.display = 'flex';
     });
     document.getElementById('mm-help-back-btn').addEventListener('click', () => {
       document.getElementById('mm-help-screen').style.display = 'none';
       document.getElementById('mm-extra-screen').style.display = 'flex';
     });
+    document.getElementById('mm-community-btn').addEventListener('click', () => {
+      document.getElementById('mm-extra-screen').style.display = 'none';
+      document.getElementById('mm-community-screen').style.display = 'flex';
+    });
+    document.getElementById('mm-community-back-btn').addEventListener('click', () => {
+      document.getElementById('mm-community-screen').style.display = 'none';
+      document.getElementById('mm-extra-screen').style.display = 'flex';
+    });
+    document.getElementById('community-discord-btn').addEventListener('click', showComingSoon);
+    document.getElementById('community-youtube-btn').addEventListener('click', showComingSoon);
 
+    document.getElementById('mm-achievements-btn').addEventListener('click', () => {
+      document.getElementById('main-menu-screen').style.display = 'none';
+      document.getElementById('mm-achievements-screen').style.display = 'flex';
+      renderAchievementsList('achievements-list', '', 'all');
+    });
+    document.getElementById('mm-achievements-back-btn').addEventListener('click', () => {
+      document.getElementById('mm-achievements-screen').style.display = 'none';
+      document.getElementById('main-menu-screen').style.display = 'flex';
+    });
+
+    document.getElementById('mm-leaderboard-btn').addEventListener('click', showComingSoon);
+
+    // Achievement search/filter
+    document.getElementById('ach-search').addEventListener('input', () => {
+      renderAchievementsList('achievements-list', document.getElementById('ach-search').value, document.getElementById('ach-filter').value);
+    });
+    document.getElementById('ach-filter').addEventListener('change', () => {
+      renderAchievementsList('achievements-list', document.getElementById('ach-search').value, document.getElementById('ach-filter').value);
+    });
+
+    // ─── Settings screen events ──────────────────────────────────────
     document.getElementById('mm-effects-toggle').addEventListener('change', e => {
       toggleEffects(e.target.checked);
       effectsToggle.checked = e.target.checked;
@@ -1584,42 +1893,69 @@
       allSoundsToggle.checked = e.target.checked;
       updateAllVolumes();
     });
-    document.getElementById('mm-master-volume').addEventListener('input', e => {
-      masterVol = parseInt(e.target.value);
-      localStorage.setItem('masterVolume', masterVol);
-      masterVolume.value = e.target.value;
-      updateAllVolumes();
+
+    // MM audio toggles sync to pause
+    const mmAudioMap = {
+      'mm-audio-respawn': audioRespawn, 'mm-audio-lava': audioLava, 'mm-audio-jump': audioJump,
+      'mm-audio-walking': audioWalking, 'mm-audio-brick': audioBrick, 'mm-audio-ambient': audioAmbient,
+      'mm-audio-achievement': audioAchievement
+    };
+    Object.entries(mmAudioMap).forEach(([id, pauseEl]) => {
+      document.getElementById(id).addEventListener('change', e => {
+        pauseEl.checked = e.target.checked;
+        saveAudioSettings();
+      });
     });
-    ['mm-audio-respawn','mm-audio-lava','mm-audio-jump','mm-audio-walking','mm-audio-brick','mm-audio-ambient','mm-audio-achievement'].forEach(id => {
-      document.getElementById(id).addEventListener('change', syncAudioSettingsFromMainMenu);
+
+    document.getElementById('mm-reset-data-btn').addEventListener('click', resetAllData);
+
+    // MM HUD toggles
+    document.getElementById('mm-feat-double-jump').addEventListener('change', e => {
+      doubleJumpEnabled = e.target.checked;
+      localStorage.setItem('featDoubleJump', doubleJumpEnabled);
+      document.getElementById('feat-double-jump').checked = doubleJumpEnabled;
+      document.getElementById('p-feat-double-jump').checked = doubleJumpEnabled;
+      updateLanguage(currentLanguage);
     });
-    document.getElementById('apply-colors-btn').addEventListener('click', () => {
-      customColors.btn = readColorInputs('btn-');
-      customColors.txt = readColorInputs('txt-');
-      saveColors();
-      applyColors();
-      syncColorInputs();
+    document.getElementById('mm-feat-show-height').addEventListener('change', e => {
+      showHeightEnabled = e.target.checked;
+      localStorage.setItem('featShowHeight', showHeightEnabled);
+      document.getElementById('feat-show-height').checked = showHeightEnabled;
+      document.getElementById('p-feat-show-height').checked = showHeightEnabled;
+      updateLanguage(currentLanguage);
     });
-    document.getElementById('reset-colors-btn').addEventListener('click', resetColors);
-    document.getElementById('mm-reset-data-btn').addEventListener('click', () => {
-      if (confirm('Reset ALL data? This cannot be undone.')) resetAllData();
+    document.getElementById('mm-feat-show-top').addEventListener('change', e => {
+      showTopEnabled = e.target.checked;
+      localStorage.setItem('featShowTop', showTopEnabled);
+      document.getElementById('feat-show-top').checked = showTopEnabled;
+      document.getElementById('p-feat-show-top').checked = showTopEnabled;
+      updateLanguage(currentLanguage);
     });
+
+    // Extra screen feature toggles (sync to MM HUD and pause)
     document.getElementById('feat-double-jump').addEventListener('change', e => {
       doubleJumpEnabled = e.target.checked;
       localStorage.setItem('featDoubleJump', doubleJumpEnabled);
+      document.getElementById('mm-feat-double-jump').checked = doubleJumpEnabled;
+      document.getElementById('p-feat-double-jump').checked = doubleJumpEnabled;
       updateLanguage(currentLanguage);
     });
     document.getElementById('feat-show-height').addEventListener('change', e => {
       showHeightEnabled = e.target.checked;
       localStorage.setItem('featShowHeight', showHeightEnabled);
+      document.getElementById('mm-feat-show-height').checked = showHeightEnabled;
+      document.getElementById('p-feat-show-height').checked = showHeightEnabled;
       updateLanguage(currentLanguage);
     });
     document.getElementById('feat-show-top').addEventListener('change', e => {
       showTopEnabled = e.target.checked;
       localStorage.setItem('featShowTop', showTopEnabled);
+      document.getElementById('mm-feat-show-top').checked = showTopEnabled;
+      document.getElementById('p-feat-show-top').checked = showTopEnabled;
       updateLanguage(currentLanguage);
     });
 
+    // ─── Init ────────────────────────────────────────────────────────
     function init() {
       initializeVolumes();
 
@@ -1637,24 +1973,20 @@
 
       allSoundsToggle.checked = allSoundsEnabled;
       document.getElementById('mm-all-sounds').checked = allSoundsEnabled;
-      masterVolume.value = masterVol;
-      document.getElementById('mm-master-volume').value = masterVol;
-
-      document.getElementById('mm-audio-respawn').checked = audioSettings.respawn;
-      document.getElementById('mm-audio-lava').checked = audioSettings.lava;
-      document.getElementById('mm-audio-jump').checked = audioSettings.jump;
-      document.getElementById('mm-audio-walking').checked = audioSettings.walking;
-      document.getElementById('mm-audio-brick').checked = audioSettings.brick;
-      document.getElementById('mm-audio-ambient').checked = audioSettings.ambient;
-      document.getElementById('mm-audio-achievement').checked = audioSettings.achievement;
 
       document.getElementById('feat-double-jump').checked = doubleJumpEnabled;
       document.getElementById('feat-show-height').checked = showHeightEnabled;
       document.getElementById('feat-show-top').checked = showTopEnabled;
+      document.getElementById('mm-feat-double-jump').checked = doubleJumpEnabled;
+      document.getElementById('mm-feat-show-height').checked = showHeightEnabled;
+      document.getElementById('mm-feat-show-top').checked = showTopEnabled;
+      document.getElementById('p-feat-double-jump').checked = doubleJumpEnabled;
+      document.getElementById('p-feat-show-height').checked = showHeightEnabled;
+      document.getElementById('p-feat-show-top').checked = showTopEnabled;
 
-      syncColorInputs();
       applyColors();
       updateLanguage(currentLanguage);
+      updateAudioRowHighlights();
 
       document.getElementById('hud').style.display = 'none';
       document.getElementById('hp-display').style.display = 'none';
